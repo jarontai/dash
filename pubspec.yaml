@@ -1,5 +1,5 @@
 name: dash
-description: A toy interpreter written in Dart.
+description: A toy language & interpreter written in Dart.
 # version: 0.1.0
 homepage: https://github.com/jarontai/dash
 author: jarontai <jaroncn@gmail.com>
