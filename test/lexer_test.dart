@@ -1,19 +1,38 @@
 import 'package:dash/dash.dart';
+import 'package:dash/src/lexer.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('basic', () {
-    var input = '=+(){},;';
+    var input = '=+-*/!><,;(){} == != >= <= true false if else return var 2.5 1';
 
     var expectTokens = [
       Tokens.assign,
       Tokens.plus,
+      Tokens.minus,
+      Tokens.mul,
+      Tokens.div,
+      Tokens.bang,
+      Tokens.gt,
+      Tokens.lt,
+      Tokens.comma,
+      Tokens.semi,
       Tokens.lparen,
       Tokens.rparen,
       Tokens.lbrace,
       Tokens.rbrace,
-      Tokens.comma,
-      Tokens.semi,
+      Tokens.eq,
+      Tokens.neq,
+      Tokens.gte,
+      Tokens.lte,
+      Tokens.kTrue,
+      Tokens.kFalse,
+      Tokens.kIf,
+      Tokens.kElse,
+      Tokens.kReturn,
+      Tokens.kVar,
+      Token.number('2.5'),
+      Token.number('1'),
       Tokens.eof,
     ];
 
@@ -27,7 +46,8 @@ void main() {
   });
 
   test('function', () {
-    var input = '''var one = 1;
+    var input = '''
+      var one = 1;
       var tpf = 2.5;
 
       var add = (x, y) {

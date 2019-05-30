@@ -3,35 +3,42 @@ import 'util.dart';
 /// The lexer, which response for producing [Token]s from souce code [input].
 class Lexer with CharHelper {
   String input;
-  int position = 0;
-  int readPosition = 0;
-  String ch;
-  static final Set<String> _keywordsSet = {'var', 'return'};
-
+  int _position = 0;
+  int _readPosition = 0;
+  String _ch;
+  static final Set<String> _keywordsSet = {
+    'var',
+    'return',
+    'if',
+    'else',
+    'true',
+    'false'
+  };
+  int _length;
   // TODO: use runes for utf8 encoding?
   // List<int> _runes;
 
   Lexer(this.input) {
     // _runes = input.runes.toList();
+    _length = input.length;
     readChar();
   }
 
   Token nextToken() {
     // skip whitespaces
-    while (isWhitespace(ch)) {
+    while (isWhitespace(_ch)) {
       readChar();
     }
 
     Token token;
-    switch (ch) {
+    switch (_ch) {
       case '=':
-        token = Tokens.assign;
-        break;
-      case ',':
-        token = Tokens.comma;
-        break;
-      case ';':
-        token = Tokens.semi;
+        if (peekChar() == '=') {
+          readChar();
+          token = Tokens.eq;
+        } else {
+          token = Tokens.assign;
+        }
         break;
       case '+':
         token = Tokens.plus;
@@ -44,6 +51,36 @@ class Lexer with CharHelper {
         break;
       case '/':
         token = Tokens.div;
+        break;
+      case '!':
+        if (peekChar() == '=') {
+          readChar();
+          token = Tokens.neq;
+        } else {
+          token = Tokens.bang;
+        }
+        break;
+      case '>':
+        if (peekChar() == '=') {
+          readChar();
+          token = Tokens.gte;
+        } else {
+          token = Tokens.gt;
+        }
+        break;
+      case '<':
+        if (peekChar() == '=') {
+          readChar();
+          token = Tokens.lte;
+        } else {
+          token = Tokens.lt;
+        }
+        break;
+      case ',':
+        token = Tokens.comma;
+        break;
+      case ';':
+        token = Tokens.semi;
         break;
       case '(':
         token = Tokens.lparen;
@@ -61,15 +98,13 @@ class Lexer with CharHelper {
         token = Tokens.eof;
         break;
       default:
-        if (isLetter(ch)) {
+        if (isLetter(_ch)) {
           String ident = readIdentifier();
-          token = _keywordsSet.contains(ident)
+          return _keywordsSet.contains(ident)
               ? Token.keyword(ident)
               : Token.identifier(ident);
-          return token;
-        } else if (isNum(ch)) {
-          token = Token.number(readNumber());
-          return token;
+        } else if (isNum(_ch)) {
+          return Token.number(readNumber());
         } else {
           token = Tokens.illegal;
         }
@@ -80,31 +115,39 @@ class Lexer with CharHelper {
   }
 
   readChar() {
-    if (readPosition >= input.length) {
-      ch = '';
+    if (_readPosition >= _length) {
+      _ch = '';
     } else {
-      ch = input[readPosition];
+      _ch = input[_readPosition];
     }
-    position = readPosition;
-    readPosition += 1;
+    _position = _readPosition;
+    _readPosition += 1;
+  }
+
+  String peekChar() {
+    if (_readPosition >= _length) {
+      return '';
+    } else {
+      return input[_readPosition];
+    }
   }
 
   String readIdentifier() {
-    var startPosition = position;
+    var startPosition = _position;
     readChar();
-    while (isLetter(ch)) {
+    while (isLetter(_ch)) {
       readChar();
     }
-    return input.substring(startPosition, position);
+    return input.substring(startPosition, _position);
   }
 
   String readNumber() {
-    var startPosition = position;
+    var startPosition = _position;
     readChar();
-    while (isNum(ch) || ch == '.') {
+    while (isNum(_ch) || _ch == '.') {
       readChar();
     }
-    return input.substring(startPosition, position);    
+    return input.substring(startPosition, _position);
   }
 }
 
@@ -125,10 +168,6 @@ class Token {
   Token.number(this.literal) {
     tokenType = TokenType.NUMBER;
   }
-
-  // Token.db(this.literal) {
-  //   tokenType = TokenType.DOUBLE;
-  // }
 }
 
 enum TokenType {
@@ -136,13 +175,12 @@ enum TokenType {
   EOF,
 
   IDENTIFIER,
+  KEYWORD,
+
   NUMBER,
-  DOUBLE,
   BOOLEAN,
 
-  ASSIGN,
-  PLUS,
-  MINUS,
+  OPERATOR,
 
   COMMA,
   SEMI,
@@ -150,24 +188,24 @@ enum TokenType {
   RPAREN,
   LBRACE,
   RBRACE,
-
-  KEYWORD,
 }
 
 abstract class Tokens {
   static final Token illegal = Token(TokenType.ILLEGAL, 'ILLEGAL');
   static final Token eof = Token(TokenType.ILLEGAL, '');
 
-  // static final Token IDENTIFIER = "IDENTIFIER";
-  // static final Token INT = "INT";
-  // static final Token DOUBLE = "DOUBLE";
-  // static final Token BOOLEAN = "BOOLEAN";
-
-  static final Token assign = Token(TokenType.ASSIGN, '=');
-  static final Token plus = Token(TokenType.PLUS, '+');
-  static final Token minus = Token(TokenType.PLUS, '-');
-  static final Token mul = Token(TokenType.PLUS, '*');
-  static final Token div = Token(TokenType.PLUS, '/');
+  static final Token assign = Token(TokenType.OPERATOR, '=');
+  static final Token plus = Token(TokenType.OPERATOR, '+');
+  static final Token minus = Token(TokenType.OPERATOR, '-');
+  static final Token mul = Token(TokenType.OPERATOR, '*');
+  static final Token div = Token(TokenType.OPERATOR, '/');
+  static final Token bang = Token(TokenType.OPERATOR, '!');
+  static final Token gt = Token(TokenType.OPERATOR, '>');
+  static final Token gte = Token(TokenType.OPERATOR, '>=');
+  static final Token lt = Token(TokenType.OPERATOR, '<');
+  static final Token lte = Token(TokenType.OPERATOR, '<=');
+  static final Token eq = Token(TokenType.OPERATOR, '==');
+  static final Token neq = Token(TokenType.OPERATOR, '!=');
 
   static final Token comma = Token(TokenType.COMMA, ',');
   static final Token semi = Token(TokenType.SEMI, ';');
@@ -178,4 +216,8 @@ abstract class Tokens {
 
   static final Token kVar = Token(TokenType.KEYWORD, 'var');
   static final Token kReturn = Token(TokenType.KEYWORD, 'return');
+  static final Token kIf = Token(TokenType.KEYWORD, 'if');
+  static final Token kElse = Token(TokenType.KEYWORD, 'else');
+  static final Token kTrue = Token(TokenType.KEYWORD, 'true');
+  static final Token kFalse = Token(TokenType.KEYWORD, 'false');
 }

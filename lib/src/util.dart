@@ -7,7 +7,7 @@ mixin CharHelper {
   static const _9Code = 57;
 
   isLetter(String ch) {
-    int code = ch.runes.first;
+    int code = ch.runes.isEmpty ? 0 : ch.runes.first;
     return (code >= _laCode && code <= _lzCode) ||
         (code >= _uaCode && code <= _uzCode) ||
         (ch == '_');
@@ -18,7 +18,7 @@ mixin CharHelper {
   }
 
   isNum(String ch) {
-    int code = ch.runes.first;
+    int code = ch.runes.isEmpty ? 0 : ch.runes.first;
     return code >= _0Code && code <= _9Code;
   }
 }
