@@ -34,10 +34,14 @@ The Dash interpreter is build to parse the Dash language, which includes followi
   * the AST (Abstract Syntax Tree)
   * the evaluator
 
+## Run REPL
+
+    $ pub run bin/repl
+    
+
 ## Test
 
-    pub get
-    pub run test
+    $ pub run test
 
 ## References
 

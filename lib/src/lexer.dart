@@ -168,6 +168,10 @@ class Token {
   Token.number(this.literal) {
     tokenType = TokenType.NUMBER;
   }
+
+  String toString() {
+    return '{ Type: $tokenType, Literal: $literal }';
+  }
 }
 
 enum TokenType {
@@ -192,7 +196,7 @@ enum TokenType {
 
 abstract class Tokens {
   static final Token illegal = Token(TokenType.ILLEGAL, 'ILLEGAL');
-  static final Token eof = Token(TokenType.ILLEGAL, '');
+  static final Token eof = Token(TokenType.EOF, '');
 
   static final Token assign = Token(TokenType.OPERATOR, '=');
   static final Token plus = Token(TokenType.OPERATOR, '+');
