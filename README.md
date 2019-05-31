@@ -12,6 +12,19 @@ The little Dash language is a subset of the [Dart](https://dart.dev) language, w
   * string, array and map
   * functions and closures
 
+  ```
+    // Dash code
+
+    var one = 1;
+    var tpf = 2.5;
+
+    var add = (x, y) {
+      return x + y;
+    };
+
+    var result = add(one, tpf);
+  ```
+
 ## Interpreter
 
 The Dash interpreter is build to parse the Dash language, which includes following:
@@ -23,6 +36,7 @@ The Dash interpreter is build to parse the Dash language, which includes followi
 
 ## Test
 
+    pub get
     pub run test
 
 ## References
