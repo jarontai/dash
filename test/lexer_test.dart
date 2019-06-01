@@ -1,5 +1,4 @@
 import 'package:dash/dash.dart';
-import 'package:dash/src/lexer.dart';
 import 'package:test/test.dart';
 
 void main() {

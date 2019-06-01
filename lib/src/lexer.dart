@@ -21,20 +21,20 @@ class Lexer with CharHelper {
   Lexer(this.input) {
     // _runes = input.runes.toList();
     _length = input.length;
-    readChar();
+    _readChar();
   }
 
   Token nextToken() {
     // skip whitespaces
     while (isWhitespace(_ch)) {
-      readChar();
+      _readChar();
     }
 
     Token token;
     switch (_ch) {
       case '=':
-        if (peekChar() == '=') {
-          readChar();
+        if (_peekChar() == '=') {
+          _readChar();
           token = Tokens.eq;
         } else {
           token = Tokens.assign;
@@ -53,24 +53,24 @@ class Lexer with CharHelper {
         token = Tokens.div;
         break;
       case '!':
-        if (peekChar() == '=') {
-          readChar();
+        if (_peekChar() == '=') {
+          _readChar();
           token = Tokens.neq;
         } else {
           token = Tokens.bang;
         }
         break;
       case '>':
-        if (peekChar() == '=') {
-          readChar();
+        if (_peekChar() == '=') {
+          _readChar();
           token = Tokens.gte;
         } else {
           token = Tokens.gt;
         }
         break;
       case '<':
-        if (peekChar() == '=') {
-          readChar();
+        if (_peekChar() == '=') {
+          _readChar();
           token = Tokens.lte;
         } else {
           token = Tokens.lt;
@@ -99,22 +99,22 @@ class Lexer with CharHelper {
         break;
       default:
         if (isLetter(_ch)) {
-          String ident = readIdentifier();
+          String ident = _readIdentifier();
           return _keywordsSet.contains(ident)
               ? Token.keyword(ident)
               : Token.identifier(ident);
         } else if (isNum(_ch)) {
-          return Token.number(readNumber());
+          return Token.number(_readNumber());
         } else {
           token = Tokens.illegal;
         }
         break;
     }
-    readChar();
+    _readChar();
     return token;
   }
 
-  readChar() {
+  _readChar() {
     if (_readPosition >= _length) {
       _ch = '';
     } else {
@@ -124,7 +124,7 @@ class Lexer with CharHelper {
     _readPosition += 1;
   }
 
-  String peekChar() {
+  String _peekChar() {
     if (_readPosition >= _length) {
       return '';
     } else {
@@ -132,20 +132,20 @@ class Lexer with CharHelper {
     }
   }
 
-  String readIdentifier() {
+  String _readIdentifier() {
     var startPosition = _position;
-    readChar();
+    _readChar();
     while (isLetter(_ch)) {
-      readChar();
+      _readChar();
     }
     return input.substring(startPosition, _position);
   }
 
-  String readNumber() {
+  String _readNumber() {
     var startPosition = _position;
-    readChar();
+    _readChar();
     while (isNum(_ch) || _ch == '.') {
-      readChar();
+      _readChar();
     }
     return input.substring(startPosition, _position);
   }
@@ -186,12 +186,13 @@ enum TokenType {
 
   OPERATOR,
 
-  COMMA,
-  SEMI,
-  LPAREN,
-  RPAREN,
-  LBRACE,
-  RBRACE,
+  DELIMITER,
+  // COMMA,
+  // SEMI,
+  // LPAREN,
+  // RPAREN,
+  // LBRACE,
+  // RBRACE,
 }
 
 abstract class Tokens {
@@ -211,12 +212,12 @@ abstract class Tokens {
   static final Token eq = Token(TokenType.OPERATOR, '==');
   static final Token neq = Token(TokenType.OPERATOR, '!=');
 
-  static final Token comma = Token(TokenType.COMMA, ',');
-  static final Token semi = Token(TokenType.SEMI, ';');
-  static final Token lparen = Token(TokenType.LPAREN, '(');
-  static final Token rparen = Token(TokenType.RPAREN, ')');
-  static final Token lbrace = Token(TokenType.LBRACE, '{');
-  static final Token rbrace = Token(TokenType.RBRACE, '}');
+  static final Token comma = Token(TokenType.DELIMITER, ',');
+  static final Token semi = Token(TokenType.DELIMITER, ';');
+  static final Token lparen = Token(TokenType.DELIMITER, '(');
+  static final Token rparen = Token(TokenType.DELIMITER, ')');
+  static final Token lbrace = Token(TokenType.DELIMITER, '{');
+  static final Token rbrace = Token(TokenType.DELIMITER, '}');
 
   static final Token kVar = Token(TokenType.KEYWORD, 'var');
   static final Token kReturn = Token(TokenType.KEYWORD, 'return');
