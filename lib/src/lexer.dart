@@ -6,13 +6,13 @@ class Lexer with CharHelper {
   int _position = 0;
   int _readPosition = 0;
   String _ch;
-  static final Set<String> _keywordsSet = {
-    'var',
-    'return',
-    'if',
-    'else',
-    'true',
-    'false'
+  static final Map<String, Token> _keywordsTokenMap = {
+    'var': Tokens.kVar,
+    'return': Tokens.kReturn,
+    'if': Tokens.kIf,
+    'else': Tokens.kElse,
+    'true': Tokens.kTrue,
+    'false': Tokens.kFalse
   };
   int _length;
   // TODO: use runes for utf8 encoding?
@@ -100,8 +100,8 @@ class Lexer with CharHelper {
       default:
         if (isLetter(_ch)) {
           String ident = _readIdentifier();
-          return _keywordsSet.contains(ident)
-              ? Token.keyword(ident)
+          return _keywordsTokenMap.containsKey(ident)
+              ? _keywordsTokenMap[ident]
               : Token.identifier(ident);
         } else if (isNum(_ch)) {
           return Token.number(_readNumber());
@@ -161,10 +161,6 @@ class Token {
     tokenType = TokenType.IDENTIFIER;
   }
 
-  Token.keyword(this.literal) {
-    tokenType = TokenType.KEYWORD;
-  }
-
   Token.number(this.literal) {
     tokenType = TokenType.NUMBER;
   }
@@ -179,50 +175,66 @@ enum TokenType {
   EOF,
 
   IDENTIFIER,
-  KEYWORD,
 
   NUMBER,
   BOOLEAN,
 
-  OPERATOR,
+  ASSIGN,
+  PLUS,
+  MINUS,
+  MUL,
+  DIV,
+  BANG,
+  GT,
+  GTE,
+  LT,
+  LTE,
+  EQ,
+  NEQ,
 
-  DELIMITER,
-  // COMMA,
-  // SEMI,
-  // LPAREN,
-  // RPAREN,
-  // LBRACE,
-  // RBRACE,
+  COMMA,
+  SEMI,
+  LPAREN,
+  RPAREN,
+  LBRACE,
+  RBRACE,
+
+  VAR,
+  RETURN,
+  IF,
+  ELSE,
+  TRUE,
+  FALSE,
 }
 
 abstract class Tokens {
   static final Token illegal = Token(TokenType.ILLEGAL, 'ILLEGAL');
   static final Token eof = Token(TokenType.EOF, '');
 
-  static final Token assign = Token(TokenType.OPERATOR, '=');
-  static final Token plus = Token(TokenType.OPERATOR, '+');
-  static final Token minus = Token(TokenType.OPERATOR, '-');
-  static final Token mul = Token(TokenType.OPERATOR, '*');
-  static final Token div = Token(TokenType.OPERATOR, '/');
-  static final Token bang = Token(TokenType.OPERATOR, '!');
-  static final Token gt = Token(TokenType.OPERATOR, '>');
-  static final Token gte = Token(TokenType.OPERATOR, '>=');
-  static final Token lt = Token(TokenType.OPERATOR, '<');
-  static final Token lte = Token(TokenType.OPERATOR, '<=');
-  static final Token eq = Token(TokenType.OPERATOR, '==');
-  static final Token neq = Token(TokenType.OPERATOR, '!=');
+  static final Token assign = Token(TokenType.ASSIGN, '=');
+  static final Token plus = Token(TokenType.PLUS, '+');
+  static final Token minus = Token(TokenType.MINUS, '-');
+  static final Token mul = Token(TokenType.MUL, '*');
+  static final Token div = Token(TokenType.DIV, '/');
+  static final Token bang = Token(TokenType.BANG, '!');
+  static final Token gt = Token(TokenType.GT, '>');
+  static final Token gte = Token(TokenType.GTE, '>=');
+  static final Token lt = Token(TokenType.LT, '<');
+  static final Token lte = Token(TokenType.LTE, '<=');
+  static final Token eq = Token(TokenType.EQ, '==');
+  static final Token neq = Token(TokenType.NEQ, '!=');
 
-  static final Token comma = Token(TokenType.DELIMITER, ',');
-  static final Token semi = Token(TokenType.DELIMITER, ';');
-  static final Token lparen = Token(TokenType.DELIMITER, '(');
-  static final Token rparen = Token(TokenType.DELIMITER, ')');
-  static final Token lbrace = Token(TokenType.DELIMITER, '{');
-  static final Token rbrace = Token(TokenType.DELIMITER, '}');
+  static final Token comma = Token(TokenType.COMMA, ',');
+  static final Token semi = Token(TokenType.SEMI, ';');
+  static final Token lparen = Token(TokenType.LPAREN, '(');
+  static final Token rparen = Token(TokenType.RPAREN, ')');
+  static final Token lbrace = Token(TokenType.LBRACE, '{');
+  static final Token rbrace = Token(TokenType.RBRACE, '}');
 
-  static final Token kVar = Token(TokenType.KEYWORD, 'var');
-  static final Token kReturn = Token(TokenType.KEYWORD, 'return');
-  static final Token kIf = Token(TokenType.KEYWORD, 'if');
-  static final Token kElse = Token(TokenType.KEYWORD, 'else');
-  static final Token kTrue = Token(TokenType.KEYWORD, 'true');
-  static final Token kFalse = Token(TokenType.KEYWORD, 'false');
+  static final Token kVar = Token(TokenType.VAR, 'var');
+  static final Token kReturn = Token(TokenType.RETURN, 'return');
+  static final Token kIf = Token(TokenType.IF, 'if');
+  static final Token kElse = Token(TokenType.ELSE, 'else');
+  static final Token kTrue = Token(TokenType.TRUE, 'true');
+  static final Token kFalse = Token(TokenType.FALSE, 'false');
 }
