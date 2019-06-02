@@ -28,5 +28,7 @@ void main() {
       expect(varStmt.name.value, identifier);
       expect(varStmt.name.tokenLiteral, identifier);
     }
+
+    expect(parser.errors.isEmpty, true);
   });
 }

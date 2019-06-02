@@ -36,6 +36,8 @@ class VarStatement implements Statement {
   Identifier name;
   Expression value;
 
+  VarStatement(this.token) {}
+
   @override
   // TODO: implement tokenLiteral
   String get tokenLiteral => null;  
@@ -43,7 +45,9 @@ class VarStatement implements Statement {
 
 class Identifier implements Expression {
   Token token;
-  String value;
+  String get value => token.literal;
+
+  Identifier(this.token);
 
   @override
   String get tokenLiteral => token.literal;
