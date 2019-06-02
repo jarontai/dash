@@ -36,7 +36,11 @@ class Parser {
       case TokenType.VAR:
         return parseVarStatement();
         break;
+      case TokenType.RETURN:
+        return parseReturnStatement();
+        break;
       default:
+        return null;
     }
   }
 
@@ -52,6 +56,22 @@ class Parser {
     if (!expectPeek(TokenType.ASSIGN)) {
       return null;
     }
+
+    // TODO:
+
+    while (!currentTokenIs(TokenType.SEMI)) {
+      _nextToken();
+    }
+
+    return stmt;
+  }
+
+  Statement parseReturnStatement() {
+    var stmt = ReturnStatement(currentToken);
+
+    _nextToken();
+
+    // TODO:
 
     while (!currentTokenIs(TokenType.SEMI)) {
       _nextToken();
@@ -87,7 +107,8 @@ class Parser {
   }
 
   peekError(TokenType tokenType) {
-    var msg = 'Expected next token to be $tokenType, got ${peekToken.tokenType}';
+    var msg =
+        'Expected next token to be $tokenType, got ${peekToken.tokenType}';
     errors.add(msg);
   }
 }

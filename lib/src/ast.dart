@@ -31,18 +31,6 @@ class Program implements Node {
   }
 }
 
-class VarStatement implements Statement {
-  Token token;
-  Identifier name;
-  Expression value;
-
-  VarStatement(this.token) {}
-
-  @override
-  // TODO: implement tokenLiteral
-  String get tokenLiteral => null;  
-}
-
 class Identifier implements Expression {
   Token token;
   String get value => token.literal;
@@ -53,3 +41,26 @@ class Identifier implements Expression {
   String get tokenLiteral => token.literal;
   
 }
+
+class VarStatement implements Statement {
+  Token token;
+  Identifier name;
+  Expression value;
+
+  VarStatement(this.token);
+
+  @override
+  String get tokenLiteral => token.literal;  
+}
+
+class ReturnStatement implements Statement {
+  Token token;
+  Identifier name;
+  Expression value;
+
+  ReturnStatement(this.token);
+
+  @override
+  String get tokenLiteral => token.literal;  
+}
+
