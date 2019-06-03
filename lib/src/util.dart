@@ -6,18 +6,18 @@ mixin CharHelper {
   static const _0Code = 48;
   static const _9Code = 57;
 
-  isLetter(String ch) {
+  bool isLetter(String ch) {
     int code = ch.runes.isEmpty ? 0 : ch.runes.first;
     return (code >= _laCode && code <= _lzCode) ||
         (code >= _uaCode && code <= _uzCode) ||
         (ch == '_');
   }
 
-  isWhitespace(String ch) {
+  bool isWhitespace(String ch) {
     return (ch == ' ') || (ch == '\t') || (ch == '\r') || (ch == '\n');
   }
 
-  isNum(String ch) {
+  bool isNum(String ch) {
     int code = ch.runes.isEmpty ? 0 : ch.runes.first;
     return code >= _0Code && code <= _9Code;
   }

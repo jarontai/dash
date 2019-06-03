@@ -166,7 +166,7 @@ class Token {
   }
 
   String toString() {
-    return '{ Type: $tokenType, Literal: $literal }';
+    return 'Token(type: $tokenType, literal: $literal)';
   }
 }
 

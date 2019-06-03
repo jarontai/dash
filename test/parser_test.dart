@@ -18,11 +18,11 @@ void main() {
     expect(program, isNotNull);
     expect(program.statements, isNotNull);
     expect(program.statements.length, 3);
-    
+
     for (var i = 0; i < program.statements.length; i++) {
       var stmt = program.statements[i];
       expect(stmt, isA<VarStatement>());
-      
+
       var identifier = expectIdentifiers[i];
       var varStmt = stmt as VarStatement;
       expect(varStmt.name.value, identifier);
@@ -45,16 +45,27 @@ void main() {
     expect(program, isNotNull);
     expect(program.statements, isNotNull);
     expect(program.statements.length, 3);
-    
+
     for (var i = 0; i < program.statements.length; i++) {
       var stmt = program.statements[i];
       expect(stmt, isA<ReturnStatement>());
-      
+
       var varStmt = stmt as ReturnStatement;
       expect(varStmt.tokenLiteral, 'return');
-
     }
 
     expect(parser.errors.isEmpty, true);
-  });  
+  });
+
+  test('statement construction', () {
+    var program = Program();
+    program.addStatement(VarStatement(
+      Tokens.kVar,
+      name: Identifier(Token.identifier('myVar')),
+      value: Identifier(Token.identifier('anotherVar'))
+    ));
+
+    var result = '''var myVar = anotherVar;''';
+    expect(program.toString(), result);
+  });
 }

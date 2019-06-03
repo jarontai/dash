@@ -1,6 +1,6 @@
 import 'lexer.dart';
 
-/// AST node interface, all the nodes must implement 
+/// AST node interface.
 abstract class Node {
   String get tokenLiteral;
 }
@@ -29,6 +29,12 @@ class Program implements Node {
       return '';
     }
   }
+
+  String toString() {
+    var sb = StringBuffer();
+    _statements.forEach(sb.write);
+    return sb.toString();
+  }
 }
 
 class Identifier implements Expression {
@@ -39,7 +45,11 @@ class Identifier implements Expression {
 
   @override
   String get tokenLiteral => token.literal;
-  
+
+  @override
+  String toString() {
+    return value;
+  }
 }
 
 class VarStatement implements Statement {
@@ -47,10 +57,21 @@ class VarStatement implements Statement {
   Identifier name;
   Expression value;
 
-  VarStatement(this.token);
+  VarStatement(this.token, { this.name, this.value });
 
   @override
-  String get tokenLiteral => token.literal;  
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    var sb = StringBuffer();
+    sb..write(tokenLiteral)..write(' ')..write(name)..write(" = ");
+    if (value != null) {
+      sb.write(value);
+    }
+    sb.write(';');
+    return sb.toString();
+  }
 }
 
 class ReturnStatement implements Statement {
@@ -58,9 +79,32 @@ class ReturnStatement implements Statement {
   Identifier name;
   Expression value;
 
-  ReturnStatement(this.token);
+  ReturnStatement(this.token, { this.name, this.value });
 
   @override
-  String get tokenLiteral => token.literal;  
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    var sb = StringBuffer();
+    sb..write(tokenLiteral)..write(' ');
+    if (value != null) {
+      sb.write(value);
+    }
+    sb.write(';');
+    return sb.toString();
+  }  
 }
 
+class ExpressionStatement implements Statement {
+  Token token;
+  Expression expression;
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    return expression == null ? '' : expression.toString();
+  }  
+}
