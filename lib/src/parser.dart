@@ -20,7 +20,7 @@ class Parser {
 
   Program parseProgram() {
     Program program = Program();
-    while (currentToken.tokenType != TokenType.EOF) {
+    while (currentToken.tokenType != TokenType.eof) {
       var stmt = parseStatement();
       if (stmt != null) {
         program.addStatement(stmt);
@@ -33,10 +33,10 @@ class Parser {
   Statement parseStatement() {
     // TODO:
     switch (currentToken.tokenType) {
-      case TokenType.VAR:
+      case TokenType.kvar:
         return parseVarStatement();
         break;
-      case TokenType.RETURN:
+      case TokenType.kreturn:
         return parseReturnStatement();
         break;
       default:
@@ -47,19 +47,19 @@ class Parser {
   Statement parseVarStatement() {
     var stmt = VarStatement(currentToken);
 
-    if (!expectPeek(TokenType.IDENTIFIER)) {
+    if (!expectPeek(TokenType.identifier)) {
       return null;
     }
 
     stmt.name = Identifier(currentToken);
 
-    if (!expectPeek(TokenType.ASSIGN)) {
+    if (!expectPeek(TokenType.assign)) {
       return null;
     }
 
     // TODO:
 
-    while (!currentTokenIs(TokenType.SEMI)) {
+    while (!currentTokenIs(TokenType.semi)) {
       _nextToken();
     }
 
@@ -73,7 +73,7 @@ class Parser {
 
     // TODO:
 
-    while (!currentTokenIs(TokenType.SEMI)) {
+    while (!currentTokenIs(TokenType.semi)) {
       _nextToken();
     }
 

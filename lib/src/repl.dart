@@ -12,7 +12,7 @@ class Repl {
     while (input != null) {
       var lexer = Lexer(input);
 
-      for (var token = lexer.nextToken(); token.tokenType != TokenType.EOF; token = lexer.nextToken()) {
+      for (var token = lexer.nextToken(); token.tokenType != TokenType.eof; token = lexer.nextToken()) {
         // TODO:
         print(token);
       }
