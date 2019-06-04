@@ -1,11 +1,3 @@
-
-        ____             __  
-       / __ \____ ______/ /_ 
-      / / / / __ `/ ___/ __ \
-     / /_/ / /_/ (__  ) / / /
-    /_____/\__,_/____/_/ /_/   A tiny interpreter written in Dart.
-      
-
 # Dash - A tiny interpreter written in Dart.
 
 Dash is a interpreter fully build with [Dart](https://dart.dev). Dash is also a toy language which is a subset of the [Dart](https://dart.dev) language.
