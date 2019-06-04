@@ -10,12 +10,10 @@ abstract class Statement extends Node {}
 abstract class Expression extends Node {}
 
 class Program implements Node {
-  List<Statement> _statements;
+  List<Statement> _statements = [];
   List<Statement> get statements => _statements;
 
-  Program() {
-    _statements = <Statement>[];
-  }
+  Program();
 
   addStatement(Statement stmt) {
     _statements.add(stmt);
@@ -99,6 +97,8 @@ class ReturnStatement implements Statement {
 class ExpressionStatement implements Statement {
   Token token;
   Expression expression;
+
+  ExpressionStatement(this.token);
 
   @override
   String get tokenLiteral => token.literal;

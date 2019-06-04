@@ -18,6 +18,7 @@ void main() {
     expect(program, isNotNull);
     expect(program.statements, isNotNull);
     expect(program.statements.length, 3);
+    expect(parser.errors.isEmpty, true);
 
     for (var i = 0; i < program.statements.length; i++) {
       var stmt = program.statements[i];
@@ -28,8 +29,6 @@ void main() {
       expect(varStmt.name.value, identifier);
       expect(varStmt.name.tokenLiteral, identifier);
     }
-
-    expect(parser.errors.isEmpty, true);
   });
 
   test('return statement', () {
@@ -45,6 +44,7 @@ void main() {
     expect(program, isNotNull);
     expect(program.statements, isNotNull);
     expect(program.statements.length, 3);
+    expect(parser.errors.isEmpty, true);
 
     for (var i = 0; i < program.statements.length; i++) {
       var stmt = program.statements[i];
@@ -53,8 +53,6 @@ void main() {
       var varStmt = stmt as ReturnStatement;
       expect(varStmt.tokenLiteral, 'return');
     }
-
-    expect(parser.errors.isEmpty, true);
   });
 
   test('statement construction', () {
@@ -67,5 +65,28 @@ void main() {
 
     var result = '''var myVar = anotherVar;''';
     expect(program.toString(), result);
+  });
+
+  test('identifier expressions', () {
+    var input = '''
+      myVar;''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 1);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<Identifier>());
+      expect(expStmt.tokenLiteral, 'myVar');
+    }
   });
 }

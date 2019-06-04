@@ -2,10 +2,11 @@ import 'util.dart';
 
 /// The lexer, which response for producing [Token]s from souce code [input].
 class Lexer with CharHelper {
-  String input;
+  final String input;
   int _position = 0;
   int _readPosition = 0;
   String _ch;
+  int _length;
   static final Map<String, Token> _keywordsTokenMap = {
     'var': Tokens.kVar,
     'return': Tokens.kReturn,
@@ -14,7 +15,6 @@ class Lexer with CharHelper {
     'true': Tokens.kTrue,
     'false': Tokens.kFalse
   };
-  int _length;
   // TODO: use runes for utf8 encoding?
   // List<int> _runes;
 

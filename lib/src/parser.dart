@@ -1,16 +1,22 @@
 import 'lexer.dart';
 import 'ast.dart';
 
+typedef PrefixParserFn = Expression Function();
+typedef InfixParserFn = Expression Function(Expression expression);
+
 class Parser {
-  Lexer lexer;
+  final Lexer lexer;
   Token currentToken;
   Token peekToken;
-  List<String> errors;
+  final List<String> errors = [];
+  final Map<TokenType, PrefixParserFn> prefixParserFns = {};
+  final Map<TokenType, InfixParserFn> infixParserFns = {};
 
   Parser(this.lexer) {
     _nextToken();
     _nextToken();
-    errors = <String>[];
+
+    prefixParserFns[TokenType.identifier] = parseIdentifer;
   }
 
   _nextToken() {
@@ -40,7 +46,7 @@ class Parser {
         return parseReturnStatement();
         break;
       default:
-        return null;
+        return parseExpressionStatement();
     }
   }
 
@@ -62,7 +68,6 @@ class Parser {
     while (!currentTokenIs(TokenType.semi)) {
       _nextToken();
     }
-
     return stmt;
   }
 
@@ -76,8 +81,32 @@ class Parser {
     while (!currentTokenIs(TokenType.semi)) {
       _nextToken();
     }
-
     return stmt;
+  }
+
+  ExpressionStatement parseExpressionStatement() {
+    var stmt = ExpressionStatement(currentToken);
+    stmt.expression = parseExpression(Precedence.lowest);
+
+    while (!currentTokenIs(TokenType.semi)) {
+      _nextToken();
+    }
+    return stmt;
+  }
+
+  Expression parseExpression(Precedence precedence) {
+    var prefix = prefixParserFns[currentToken.tokenType];
+    if (prefix == null) {
+      return null;
+    }
+
+    var leftExp = prefix();
+    
+    return leftExp;
+  }
+
+  Expression parseIdentifer() {
+    return Identifier(currentToken);
   }
 
   bool expectPeek(TokenType tokenType) {
@@ -111,4 +140,14 @@ class Parser {
         'Expected next token to be $tokenType, got ${peekToken.tokenType}';
     errors.add(msg);
   }
+}
+
+enum Precedence {
+  lowest,
+  equals, // ==
+  ltgt, // > < >= <=
+  sum, // + -
+  product, // * /
+  prefix, // -x or !x
+  call // function()
 }

@@ -4,7 +4,7 @@ import 'package:dash/src/lexer.dart';
 
 /// Dash's repl (Read Eval Print Loop).
 class Repl {
-  String _prompt = '>> ';
+  final String _prompt = '>> ';
 
   run() {
     stdout.write(_prompt);
