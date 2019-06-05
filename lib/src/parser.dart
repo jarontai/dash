@@ -17,6 +17,7 @@ class Parser {
     _nextToken();
 
     prefixParserFns[TokenType.identifier] = parseIdentifer;
+    prefixParserFns[TokenType.number] = parseNumberLiteral;
   }
 
   _nextToken() {
@@ -107,6 +108,15 @@ class Parser {
 
   Expression parseIdentifer() {
     return Identifier(currentToken);
+  }
+
+  Expression parseNumberLiteral() {
+    num value = num.tryParse(currentToken.literal);
+    if (value == null) {
+      errors.add('NumberLiteral parse error: ${currentToken.literal}');
+      return null;
+    }
+    return NumberLiteral(currentToken, value);
   }
 
   bool expectPeek(TokenType tokenType) {

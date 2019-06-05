@@ -50,6 +50,16 @@ class Identifier implements Expression {
   }
 }
 
+class NumberLiteral implements Expression {
+  Token token;
+  num value;
+
+  NumberLiteral(this.token, this.value);
+
+  @override
+  String get tokenLiteral => token.literal;
+}
+
 class VarStatement implements Statement {
   Token token;
   Identifier name;

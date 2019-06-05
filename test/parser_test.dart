@@ -89,4 +89,27 @@ void main() {
       expect(expStmt.tokenLiteral, 'myVar');
     }
   });
+
+  test('number literal expressions', () {
+    var input = '''
+      5.5;''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 1);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<NumberLiteral>());
+      expect(expStmt.tokenLiteral, '5.5');
+    }
+  });
 }
