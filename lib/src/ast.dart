@@ -118,3 +118,19 @@ class ExpressionStatement implements Statement {
     return expression == null ? '' : expression.toString();
   }  
 }
+
+class PrefixExpression implements Expression {
+  Token token;
+  String op;
+  Expression right;
+
+  PrefixExpression(this.token, this.op);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    return '($op$right)';
+  }    
+}

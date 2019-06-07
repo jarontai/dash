@@ -18,6 +18,8 @@ class Parser {
 
     prefixParserFns[TokenType.identifier] = parseIdentifer;
     prefixParserFns[TokenType.number] = parseNumberLiteral;
+    prefixParserFns[TokenType.minus] = parsePrefixExpression;
+    prefixParserFns[TokenType.bang] = parsePrefixExpression;
   }
 
   _nextToken() {
@@ -98,6 +100,7 @@ class Parser {
   Expression parseExpression(Precedence precedence) {
     var prefix = prefixParserFns[currentToken.tokenType];
     if (prefix == null) {
+      errors.add('No prefix parse funtion found for: ${currentToken}');
       return null;
     }
 
@@ -117,6 +120,13 @@ class Parser {
       return null;
     }
     return NumberLiteral(currentToken, value);
+  }
+
+  Expression parsePrefixExpression() {
+    var exp = PrefixExpression(currentToken, currentToken.literal);
+    _nextToken();
+    exp.right = parseExpression(Precedence.prefix);
+    return exp;
   }
 
   bool expectPeek(TokenType tokenType) {

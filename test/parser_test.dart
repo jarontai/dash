@@ -112,4 +112,38 @@ void main() {
       expect(expStmt.tokenLiteral, '5.5');
     }
   });
+
+  test('prefix expressions', () {
+    var input = '''
+      -233;!88;''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 2);
+    expect(parser.errors.isEmpty, true);
+
+    var expectOps = ['-', '!'];
+    var expectLiteral = ['233', '88'];
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<PrefixExpression>());
+
+      var preExp = expStmt.expression as PrefixExpression;
+      expect(preExp.op, expectOps[i]);
+
+      expect(preExp.right, isA<NumberLiteral>());
+
+      var literal = preExp.right as NumberLiteral;
+
+      expect(literal.value.toString(), expectLiteral[i]);
+      expect(literal.tokenLiteral, expectLiteral[i]);
+    }
+  });
 }
