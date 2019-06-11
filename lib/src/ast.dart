@@ -58,6 +58,11 @@ class NumberLiteral implements Expression {
 
   @override
   String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    return value.toString();
+  }
 }
 
 class VarStatement implements Statement {
@@ -132,5 +137,22 @@ class PrefixExpression implements Expression {
   @override
   String toString() {
     return '($op$right)';
+  }    
+}
+
+class InfixExpression implements Expression {
+  Token token;
+  String op;
+  Expression right;
+  Expression left;
+
+  InfixExpression(this.token, this.op, this.left);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    return '($left $op $right)';
   }    
 }

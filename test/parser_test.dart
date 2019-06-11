@@ -57,11 +57,9 @@ void main() {
 
   test('statement construction', () {
     var program = Program();
-    program.addStatement(VarStatement(
-      Tokens.kVar,
-      name: Identifier(Token.identifier('myVar')),
-      value: Identifier(Token.identifier('anotherVar'))
-    ));
+    program.addStatement(VarStatement(Tokens.kVar,
+        name: Identifier(Token.identifier('myVar')),
+        value: Identifier(Token.identifier('anotherVar'))));
 
     var result = '''var myVar = anotherVar;''';
     expect(program.toString(), result);
@@ -144,6 +142,100 @@ void main() {
 
       expect(literal.value.toString(), expectLiteral[i]);
       expect(literal.tokenLiteral, expectLiteral[i]);
+    }
+  });
+
+  test('infix expressions', () {
+    var input = '''
+      5 + 5;
+      5 - 5;
+      5 * 5;
+      5 / 5;
+      5 > 5;
+      5 < 5;
+      5 >= 5;
+      5 <= 5;
+      5 == 5;
+      5 != 5;''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 10);
+    expect(parser.errors.isEmpty, true);
+
+    var expectOps = ['+', '-', '*', '/', '>', '<', '>=', '<=', '==', '!='];
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<InfixExpression>());
+
+      var preExp = expStmt.expression as InfixExpression;
+
+      print(preExp);
+
+      expect(preExp.op, expectOps[i]);
+
+      expect(preExp.right, isA<NumberLiteral>());
+      expect(preExp.left, isA<NumberLiteral>());
+
+      var literalRight = preExp.right as NumberLiteral;
+      var literalLeft = preExp.left as NumberLiteral;
+
+      expect(literalRight.value.toString(), '5');
+      expect(literalLeft.value.toString(), '5');
+    }
+  });
+
+  test('precedence tests', () {
+    var input = '''
+      -a * b;
+      !-a;
+      a + b + c;
+      a + b - c;
+      a * b * c;
+      a * b / c;
+      a + b / c;
+      a + b * c + d / e - f;
+      5 > 4 == 3 < 4;
+      5 < 4 != 3 > 4;
+      3 + 4 * 5 == 3 * 1+ 4 * 5;
+      ''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(parser.errors.isEmpty, true);
+
+    var expects = [
+      '((-a) * b)',
+      '(!(-a))',
+      '((a + b) + c)',
+      '((a + b) - c)',
+      '((a * b) * c)',
+      '((a * b) / c)',
+      '(a + (b / c))',
+      '(((a + (b * c)) + (d / e)) - f)',
+      '((5 > 4) == (3 < 4))',
+      '((5 < 4) != (3 > 4))',
+      '((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))'
+    ];
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<Expression>());
+      var preExp = expStmt.expression;
+      expect(preExp.toString(), expects[i]);
     }
   });
 }

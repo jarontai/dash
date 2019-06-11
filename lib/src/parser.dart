@@ -11,6 +11,18 @@ class Parser {
   final List<String> errors = [];
   final Map<TokenType, PrefixParserFn> prefixParserFns = {};
   final Map<TokenType, InfixParserFn> infixParserFns = {};
+  final Map<TokenType, Precedence> precedenceMap = {
+    TokenType.eq: Precedence.equals,
+    TokenType.neq: Precedence.equals,
+    TokenType.lt: Precedence.ltgt,
+    TokenType.lte: Precedence.ltgt,
+    TokenType.gt: Precedence.ltgt,
+    TokenType.gte: Precedence.ltgt,
+    TokenType.plus: Precedence.sum,
+    TokenType.minus: Precedence.sum,
+    TokenType.mul: Precedence.product,
+    TokenType.div: Precedence.product,
+  };
 
   Parser(this.lexer) {
     _nextToken();
@@ -20,6 +32,17 @@ class Parser {
     prefixParserFns[TokenType.number] = parseNumberLiteral;
     prefixParserFns[TokenType.minus] = parsePrefixExpression;
     prefixParserFns[TokenType.bang] = parsePrefixExpression;
+
+    infixParserFns[TokenType.eq] = parseInfixExpression;
+    infixParserFns[TokenType.neq] = parseInfixExpression;
+    infixParserFns[TokenType.lt] = parseInfixExpression;
+    infixParserFns[TokenType.lte] = parseInfixExpression;
+    infixParserFns[TokenType.gt] = parseInfixExpression;
+    infixParserFns[TokenType.gte] = parseInfixExpression;
+    infixParserFns[TokenType.plus] = parseInfixExpression;
+    infixParserFns[TokenType.minus] = parseInfixExpression;
+    infixParserFns[TokenType.mul] = parseInfixExpression;
+    infixParserFns[TokenType.div] = parseInfixExpression;
   }
 
   _nextToken() {
@@ -104,8 +127,16 @@ class Parser {
       return null;
     }
 
-    var leftExp = prefix();
-    
+    var leftExp = prefix();    
+    while (!peekTokenIs(TokenType.semi) && precedence.index < peekPrecedence().index) {
+      var infix = infixParserFns[peekToken.tokenType];
+      if (infix == null) {
+        return leftExp;
+      }
+      _nextToken();
+      leftExp = infix(leftExp);
+    }
+  
     return leftExp;
   }
 
@@ -126,6 +157,14 @@ class Parser {
     var exp = PrefixExpression(currentToken, currentToken.literal);
     _nextToken();
     exp.right = parseExpression(Precedence.prefix);
+    return exp;
+  }
+
+  Expression parseInfixExpression(Expression left) {
+    var exp = InfixExpression(currentToken, currentToken.literal, left);
+    var precedence = currPrecedence();
+    _nextToken();
+    exp.right = parseExpression(precedence);
     return exp;
   }
 
@@ -155,6 +194,10 @@ class Parser {
     return result;
   }
 
+  Precedence currPrecedence() => precedenceMap[currentToken.tokenType] ?? Precedence.lowest;
+  
+  Precedence peekPrecedence() => precedenceMap[peekToken.tokenType] ?? Precedence.lowest;
+
   peekError(TokenType tokenType) {
     var msg =
         'Expected next token to be $tokenType, got ${peekToken.tokenType}';
@@ -171,3 +214,4 @@ enum Precedence {
   prefix, // -x or !x
   call // function()
 }
+
