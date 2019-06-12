@@ -34,6 +34,7 @@ class Parser {
     prefixParserFns[TokenType.bang] = parsePrefixExpression;
     prefixParserFns[TokenType.ktrue] = parseBoolean;
     prefixParserFns[TokenType.kfalse] = parseBoolean;
+    prefixParserFns[TokenType.lparen] = parseGroupedExpression;
 
     infixParserFns[TokenType.eq] = parseInfixExpression;
     infixParserFns[TokenType.neq] = parseInfixExpression;
@@ -171,6 +172,15 @@ class Parser {
     var precedence = currPrecedence();
     _nextToken();
     exp.right = parseExpression(precedence);
+    return exp;
+  }
+
+  Expression parseGroupedExpression() {
+    _nextToken();
+    var exp = parseExpression(Precedence.lowest);
+    if (!expectPeek(TokenType.rparen)) {
+      return null;
+    }
     return exp;
   }
 
