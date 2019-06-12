@@ -111,6 +111,29 @@ void main() {
     }
   });
 
+  test('boolean literal expressions', () {
+    var input = '''
+      true;false;''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 2);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<BooleanLiteral>());
+      expect(expStmt.tokenLiteral, isIn(['true', 'false']));
+    }
+  });
+
   test('prefix expressions', () {
     var input = '''
       -233;!88;''';
@@ -156,7 +179,10 @@ void main() {
       5 >= 5;
       5 <= 5;
       5 == 5;
-      5 != 5;''';
+      5 != 5;
+      true == false;
+      true != false;
+      ''';
 
     Lexer lexer = Lexer(input);
     Parser parser = Parser(lexer);
@@ -164,10 +190,23 @@ void main() {
 
     expect(program, isNotNull);
     expect(program.statements, isNotNull);
-    expect(program.statements.length, 10);
+    expect(program.statements.length, 12);
     expect(parser.errors.isEmpty, true);
 
-    var expectOps = ['+', '-', '*', '/', '>', '<', '>=', '<=', '==', '!='];
+    var expectOps = [
+      '+',
+      '-',
+      '*',
+      '/',
+      '>',
+      '<',
+      '>=',
+      '<=',
+      '==',
+      '!=',
+      '==',
+      '!='
+    ];
 
     for (var i = 0; i < program.statements.length; i++) {
       var stmt = program.statements[i];
@@ -177,18 +216,27 @@ void main() {
 
       var preExp = expStmt.expression as InfixExpression;
 
-      print(preExp);
-
       expect(preExp.op, expectOps[i]);
 
-      expect(preExp.right, isA<NumberLiteral>());
-      expect(preExp.left, isA<NumberLiteral>());
+      if (preExp.left is NumberLiteral) {
+        expect(preExp.right, isA<NumberLiteral>());
+        expect(preExp.left, isA<NumberLiteral>());
 
-      var literalRight = preExp.right as NumberLiteral;
-      var literalLeft = preExp.left as NumberLiteral;
+        var literalRight = preExp.right as NumberLiteral;
+        var literalLeft = preExp.left as NumberLiteral;
 
-      expect(literalRight.value.toString(), '5');
-      expect(literalLeft.value.toString(), '5');
+        expect(literalLeft.value.toString(), '5');
+        expect(literalRight.value.toString(), '5');
+      } else if (preExp.left is BooleanLiteral) {
+        expect(preExp.right, isA<BooleanLiteral>());
+        expect(preExp.left, isA<BooleanLiteral>());
+
+        var literalRight = preExp.right as BooleanLiteral;
+        var literalLeft = preExp.left as BooleanLiteral;
+
+        expect(literalLeft.value.toString(), 'true');
+        expect(literalRight.value.toString(), 'false');
+      }
     }
   });
 
@@ -205,6 +253,8 @@ void main() {
       5 > 4 == 3 < 4;
       5 < 4 != 3 > 4;
       3 + 4 * 5 == 3 * 1+ 4 * 5;
+      3 > 5 == false;
+      3 < 5 == true;
       ''';
 
     Lexer lexer = Lexer(input);
@@ -226,7 +276,9 @@ void main() {
       '(((a + (b * c)) + (d / e)) - f)',
       '((5 > 4) == (3 < 4))',
       '((5 < 4) != (3 > 4))',
-      '((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))'
+      '((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))',
+      '((3 > 5) == false)',
+      '((3 < 5) == true)',
     ];
 
     for (var i = 0; i < program.statements.length; i++) {

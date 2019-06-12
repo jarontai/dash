@@ -65,6 +65,21 @@ class NumberLiteral implements Expression {
   }
 }
 
+class BooleanLiteral implements Expression {
+  Token token;
+  bool value;
+
+  BooleanLiteral(this.token, this.value);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
+
 class VarStatement implements Statement {
   Token token;
   Identifier name;
