@@ -25,8 +25,8 @@ class Parser {
   };
 
   Parser(this.lexer) {
-    _nextToken();
-    _nextToken();
+    nextToken();
+    nextToken();
 
     prefixParserFns[TokenType.identifier] = parseIdentifer;
     prefixParserFns[TokenType.number] = parseNumberLiteral;
@@ -49,7 +49,7 @@ class Parser {
     infixParserFns[TokenType.div] = parseInfixExpression;
   }
 
-  _nextToken() {
+  nextToken() {
     currentToken = peekToken;
     peekToken = lexer.nextToken();
   }
@@ -61,7 +61,7 @@ class Parser {
       if (stmt != null) {
         program.addStatement(stmt);
       }
-      _nextToken();
+      nextToken();
     }
     return program;
   }
@@ -96,7 +96,7 @@ class Parser {
     // TODO:
 
     while (!currentTokenIs(TokenType.semi)) {
-      _nextToken();
+      nextToken();
     }
     return stmt;
   }
@@ -104,12 +104,12 @@ class Parser {
   Statement parseReturnStatement() {
     var stmt = ReturnStatement(currentToken);
 
-    _nextToken();
+    nextToken();
 
     // TODO:
 
     while (!currentTokenIs(TokenType.semi)) {
-      _nextToken();
+      nextToken();
     }
     return stmt;
   }
@@ -119,7 +119,7 @@ class Parser {
     stmt.expression = parseExpression(Precedence.lowest);
 
     if (peekTokenIs(TokenType.semi)) {
-      _nextToken();
+      nextToken();
     }
     return stmt;
   }
@@ -137,7 +137,7 @@ class Parser {
       if (infix == null) {
         return leftExp;
       }
-      _nextToken();
+      nextToken();
       leftExp = infix(leftExp);
     }
   
@@ -163,7 +163,7 @@ class Parser {
 
   Expression parsePrefixExpression() {
     var exp = PrefixExpression(currentToken, currentToken.literal);
-    _nextToken();
+    nextToken();
     exp.right = parseExpression(Precedence.prefix);
     return exp;
   }
@@ -171,13 +171,13 @@ class Parser {
   Expression parseInfixExpression(Expression left) {
     var exp = InfixExpression(currentToken, currentToken.literal, left);
     var precedence = currPrecedence();
-    _nextToken();
+    nextToken();
     exp.right = parseExpression(precedence);
     return exp;
   }
 
   Expression parseGroupedExpression() {
-    _nextToken();
+    nextToken();
     var exp = parseExpression(Precedence.lowest);
     if (!expectPeek(TokenType.rparen)) {
       return null;
@@ -191,7 +191,7 @@ class Parser {
       return null;
     }
 
-    _nextToken();
+    nextToken();
     
     exp.condition = parseExpression(Precedence.lowest);
     if (!expectPeek(TokenType.rparen)) {
@@ -204,7 +204,7 @@ class Parser {
     exp.consequence = parseBlockStatement();
 
     if (peekTokenIs(TokenType.kelse)) {
-      _nextToken();
+      nextToken();
 
       if (!expectPeek(TokenType.lbrace)) {
         return null;
@@ -218,14 +218,14 @@ class Parser {
 
   BlockStatement parseBlockStatement() {
     var block = BlockStatement(currentToken);
-    _nextToken();
+    nextToken();
 
     while (!currentTokenIs(TokenType.rbrace)) {
       var stmt = parseStatement();
       if (stmt != null) {
         block.statements.add(stmt);
       }
-      _nextToken();
+      nextToken();
     }
 
     return block;
@@ -233,7 +233,7 @@ class Parser {
 
   bool expectPeek(TokenType tokenType) {
     if (peekTokenIs(tokenType)) {
-      _nextToken();
+      nextToken();
       return true;
     } else {
       peekError(tokenType);

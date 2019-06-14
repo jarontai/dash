@@ -1,6 +1,6 @@
 # Dash - A tiny interpreter written in Dart.
 
-Dash is a interpreter fully build with [Dart](https://dart.dev). Dash is also a toy language which is a subset of the [Dart](https://dart.dev) language.
+Dash is a interpreter fully build with [Dart](https://dart.dev). Dash is also a small dynamic language which is a subset of the [Dart](https://dart.dev) language.
 
 ## Language
 
