@@ -171,3 +171,37 @@ class InfixExpression implements Expression {
     return '($left $op $right)';
   }    
 }
+
+class BlockStatement implements Statement {
+  Token token;
+  List<Statement> statements = [];
+
+  BlockStatement(this.token);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    var result = StringBuffer();
+    result.writeAll(statements);
+    return result.toString();
+  }
+}
+
+class IfExpression implements Expression {
+  Token token;
+  Expression condition;
+  BlockStatement consequence;
+  BlockStatement alternative;
+
+  IfExpression(this.token);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    return 'if $condition $consequence ${alternative == null ? '' : alternative}';
+  }    
+}

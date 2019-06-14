@@ -35,6 +35,7 @@ class Parser {
     prefixParserFns[TokenType.ktrue] = parseBoolean;
     prefixParserFns[TokenType.kfalse] = parseBoolean;
     prefixParserFns[TokenType.lparen] = parseGroupedExpression;
+    prefixParserFns[TokenType.kif] = parseIfExpression;
 
     infixParserFns[TokenType.eq] = parseInfixExpression;
     infixParserFns[TokenType.neq] = parseInfixExpression;
@@ -117,7 +118,7 @@ class Parser {
     var stmt = ExpressionStatement(currentToken);
     stmt.expression = parseExpression(Precedence.lowest);
 
-    while (!currentTokenIs(TokenType.semi)) {
+    if (peekTokenIs(TokenType.semi)) {
       _nextToken();
     }
     return stmt;
@@ -182,6 +183,52 @@ class Parser {
       return null;
     }
     return exp;
+  }
+
+  Expression parseIfExpression() {
+    var exp = IfExpression(currentToken);
+    if (!expectPeek(TokenType.lparen)) {
+      return null;
+    }
+
+    _nextToken();
+    
+    exp.condition = parseExpression(Precedence.lowest);
+    if (!expectPeek(TokenType.rparen)) {
+      return null;
+    }
+    if (!expectPeek(TokenType.lbrace)) {
+      return null;
+    }
+    
+    exp.consequence = parseBlockStatement();
+
+    if (peekTokenIs(TokenType.kelse)) {
+      _nextToken();
+
+      if (!expectPeek(TokenType.lbrace)) {
+        return null;
+      }
+
+      exp.alternative = parseBlockStatement();
+    }
+
+    return exp;
+  }
+
+  BlockStatement parseBlockStatement() {
+    var block = BlockStatement(currentToken);
+    _nextToken();
+
+    while (!currentTokenIs(TokenType.rbrace)) {
+      var stmt = parseStatement();
+      if (stmt != null) {
+        block.statements.add(stmt);
+      }
+      _nextToken();
+    }
+
+    return block;
   }
 
   bool expectPeek(TokenType tokenType) {

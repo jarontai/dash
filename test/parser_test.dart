@@ -300,4 +300,34 @@ void main() {
       expect(preExp.toString(), expects[i]);
     }
   });
+
+  test('if statement', () {
+    var input = '''
+    if (x < y) { x; } else { y; }''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 1);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var varStmt = stmt as ExpressionStatement;
+      expect(varStmt.expression, isA<IfExpression>());
+
+      var exp = varStmt.expression as IfExpression;
+      expect(exp.condition.toString(), '(x < y)');
+      expect(exp.consequence.statements.length, 1);
+      expect(exp.consequence.statements.first, isA<ExpressionStatement>());
+      expect(exp.consequence.statements.first.toString(), 'x');
+      expect(exp.alternative.statements.first, isA<ExpressionStatement>());
+      expect(exp.alternative.statements.first.toString(), 'y');
+    }
+  });
 }
