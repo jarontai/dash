@@ -8,6 +8,7 @@ class Parser {
   final Lexer lexer;
   Token currentToken;
   Token peekToken;
+  Token deepPeekToken;
   final List<String> errors = [];
   final Map<TokenType, PrefixParserFn> prefixParserFns = {};
   final Map<TokenType, InfixParserFn> infixParserFns = {};
@@ -27,6 +28,7 @@ class Parser {
   Parser(this.lexer) {
     nextToken();
     nextToken();
+    nextToken();
 
     prefixParserFns[TokenType.identifier] = parseIdentifer;
     prefixParserFns[TokenType.number] = parseNumberLiteral;
@@ -34,7 +36,7 @@ class Parser {
     prefixParserFns[TokenType.bang] = parsePrefixExpression;
     prefixParserFns[TokenType.ktrue] = parseBoolean;
     prefixParserFns[TokenType.kfalse] = parseBoolean;
-    prefixParserFns[TokenType.lparen] = parseGroupedExpression;
+    prefixParserFns[TokenType.lparen] = parseLparen;
     prefixParserFns[TokenType.kif] = parseIfExpression;
 
     infixParserFns[TokenType.eq] = parseInfixExpression;
@@ -51,7 +53,8 @@ class Parser {
 
   nextToken() {
     currentToken = peekToken;
-    peekToken = lexer.nextToken();
+    peekToken = deepPeekToken;
+    deepPeekToken = lexer.nextToken();
   }
 
   Program parseProgram() {
@@ -131,8 +134,9 @@ class Parser {
       return null;
     }
 
-    var leftExp = prefix();    
-    while (!peekTokenIs(TokenType.semi) && precedence.index < peekPrecedence().index) {
+    var leftExp = prefix();
+    while (!peekTokenIs(TokenType.semi) &&
+        precedence.index < peekPrecedence().index) {
       var infix = infixParserFns[peekToken.tokenType];
       if (infix == null) {
         return leftExp;
@@ -140,7 +144,7 @@ class Parser {
       nextToken();
       leftExp = infix(leftExp);
     }
-  
+
     return leftExp;
   }
 
@@ -176,6 +180,13 @@ class Parser {
     return exp;
   }
 
+  Expression parseLparen() {
+    if (peekTokenIs(TokenType.rparen) || deepPeekTokenIs(TokenType.comma) || deepPeekTokenIs(TokenType.rparen)) {
+      return parseFunctionLiteral();
+    }
+    return parseGroupedExpression();
+  }
+
   Expression parseGroupedExpression() {
     nextToken();
     var exp = parseExpression(Precedence.lowest);
@@ -185,6 +196,45 @@ class Parser {
     return exp;
   }
 
+  Expression parseFunctionLiteral() {
+    var fn = FunctionLiteral(currentToken);
+    if (!peekTokenIs(TokenType.rparen) && !deepPeekTokenIs(TokenType.comma) && !deepPeekTokenIs(TokenType.rparen)) {
+      return null;
+    }
+
+    fn.parameters.addAll(parseFunctionParameters());
+    if (!expectPeek(TokenType.lbrace)) {
+      return null;
+    }
+    fn.body = parseBlockStatement();
+
+    return fn;
+  }
+
+  List<Identifier> parseFunctionParameters() {
+    var result = <Identifier>[];
+
+    if (peekTokenIs(TokenType.rparen)) {
+      nextToken();
+      return result;
+    }
+
+    nextToken();
+
+    result.add(Identifier(currentToken));
+    while (peekTokenIs(TokenType.comma)) {
+      nextToken();
+      nextToken();
+      result.add(Identifier(currentToken));
+    }
+    
+    if (!expectPeek(TokenType.rparen)) {
+      return null;
+    }
+
+    return result;
+  }
+
   Expression parseIfExpression() {
     var exp = IfExpression(currentToken);
     if (!expectPeek(TokenType.lparen)) {
@@ -192,7 +242,7 @@ class Parser {
     }
 
     nextToken();
-    
+
     exp.condition = parseExpression(Precedence.lowest);
     if (!expectPeek(TokenType.rparen)) {
       return null;
@@ -200,7 +250,7 @@ class Parser {
     if (!expectPeek(TokenType.lbrace)) {
       return null;
     }
-    
+
     exp.consequence = parseBlockStatement();
 
     if (peekTokenIs(TokenType.kelse)) {
@@ -249,6 +299,14 @@ class Parser {
     return result;
   }
 
+  bool deepPeekTokenIs(TokenType tokenType) {
+    var result = false;
+    if (deepPeekToken != null && deepPeekToken.tokenType == tokenType) {
+      result = true;
+    }
+    return result;
+  }
+
   bool currentTokenIs(TokenType tokenType) {
     var result = false;
     if (currentToken != null && currentToken.tokenType == tokenType) {
@@ -257,9 +315,11 @@ class Parser {
     return result;
   }
 
-  Precedence currPrecedence() => precedenceMap[currentToken.tokenType] ?? Precedence.lowest;
-  
-  Precedence peekPrecedence() => precedenceMap[peekToken.tokenType] ?? Precedence.lowest;
+  Precedence currPrecedence() =>
+      precedenceMap[currentToken.tokenType] ?? Precedence.lowest;
+
+  Precedence peekPrecedence() =>
+      precedenceMap[peekToken.tokenType] ?? Precedence.lowest;
 
   peekError(TokenType tokenType) {
     var msg =
@@ -277,4 +337,3 @@ enum Precedence {
   prefix, // -x or !x
   call // function()
 }
-

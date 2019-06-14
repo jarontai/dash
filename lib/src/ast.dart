@@ -36,7 +36,7 @@ class Program implements Node {
 }
 
 class Identifier implements Expression {
-  Token token;
+  final Token token;
   String get value => token.literal;
 
   Identifier(this.token);
@@ -51,7 +51,7 @@ class Identifier implements Expression {
 }
 
 class NumberLiteral implements Expression {
-  Token token;
+  final Token token;
   num value;
 
   NumberLiteral(this.token, this.value);
@@ -66,7 +66,7 @@ class NumberLiteral implements Expression {
 }
 
 class BooleanLiteral implements Expression {
-  Token token;
+  final Token token;
   bool value;
 
   BooleanLiteral(this.token, this.value);
@@ -81,11 +81,11 @@ class BooleanLiteral implements Expression {
 }
 
 class VarStatement implements Statement {
-  Token token;
+  final Token token;
   Identifier name;
   Expression value;
 
-  VarStatement(this.token, { this.name, this.value });
+  VarStatement(this.token, {this.name, this.value});
 
   @override
   String get tokenLiteral => token.literal;
@@ -103,11 +103,11 @@ class VarStatement implements Statement {
 }
 
 class ReturnStatement implements Statement {
-  Token token;
+  final Token token;
   Identifier name;
   Expression value;
 
-  ReturnStatement(this.token, { this.name, this.value });
+  ReturnStatement(this.token, {this.name, this.value});
 
   @override
   String get tokenLiteral => token.literal;
@@ -121,11 +121,11 @@ class ReturnStatement implements Statement {
     }
     sb.write(';');
     return sb.toString();
-  }  
+  }
 }
 
 class ExpressionStatement implements Statement {
-  Token token;
+  final Token token;
   Expression expression;
 
   ExpressionStatement(this.token);
@@ -136,11 +136,11 @@ class ExpressionStatement implements Statement {
   @override
   String toString() {
     return expression == null ? '' : expression.toString();
-  }  
+  }
 }
 
 class PrefixExpression implements Expression {
-  Token token;
+  final Token token;
   String op;
   Expression right;
 
@@ -152,11 +152,11 @@ class PrefixExpression implements Expression {
   @override
   String toString() {
     return '($op$right)';
-  }    
+  }
 }
 
 class InfixExpression implements Expression {
-  Token token;
+  final Token token;
   String op;
   Expression right;
   Expression left;
@@ -169,11 +169,11 @@ class InfixExpression implements Expression {
   @override
   String toString() {
     return '($left $op $right)';
-  }    
+  }
 }
 
 class BlockStatement implements Statement {
-  Token token;
+  final Token token;
   List<Statement> statements = [];
 
   BlockStatement(this.token);
@@ -190,7 +190,7 @@ class BlockStatement implements Statement {
 }
 
 class IfExpression implements Expression {
-  Token token;
+  final Token token;
   Expression condition;
   BlockStatement consequence;
   BlockStatement alternative;
@@ -203,5 +203,23 @@ class IfExpression implements Expression {
   @override
   String toString() {
     return 'if $condition $consequence ${alternative == null ? '' : alternative}';
-  }    
+  }
+}
+
+class FunctionLiteral implements Expression {
+  final Token token;
+  final List<Identifier> parameters = [];
+  BlockStatement body;
+
+  FunctionLiteral(this.token);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    var result = StringBuffer();
+    result..write('(')..write(parameters.join(','))..write(')')..write(body);
+    return result.toString();
+  }
 }

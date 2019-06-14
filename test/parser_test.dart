@@ -330,4 +330,39 @@ void main() {
       expect(exp.alternative.statements.first.toString(), 'y');
     }
   });
+
+  test('function literal', () {
+    var input = '''
+      (){};
+      (x){};
+      (x, y) {
+        return x + y;
+      };''';
+
+    var expectParams = [
+      '',
+      'x',
+      'x,y'
+    ];
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 3);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var exp = stmt as ExpressionStatement;
+      expect(exp.expression, isA<FunctionLiteral>());
+
+      var fn = exp.expression as FunctionLiteral;
+      expect(fn.parameters.join(','), expectParams[i]);
+    }
+  });
 }
