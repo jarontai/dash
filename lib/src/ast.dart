@@ -219,7 +219,25 @@ class FunctionLiteral implements Expression {
   @override
   String toString() {
     var result = StringBuffer();
-    result..write('(')..write(parameters.join(','))..write(')')..write(body);
+    result..write('(')..write(parameters.join(', '))..write(')')..write(body);
+    return result.toString();
+  }
+}
+
+class CallExpression implements Expression {
+  final Token token;
+  Expression function;
+  List<Expression> arguments;
+
+  CallExpression(this.token, this.function);
+
+  @override
+  String get tokenLiteral => token.literal;
+
+  @override
+  String toString() {
+    var result = StringBuffer();
+    result..write(function)..write('(')..write(arguments.join(', '))..write(')');
     return result.toString();
   }
 }

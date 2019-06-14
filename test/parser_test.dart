@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dash/dash.dart';
 import 'package:dash/src/ast.dart';
 import 'package:test/test.dart';
@@ -28,6 +30,7 @@ void main() {
       var varStmt = stmt as VarStatement;
       expect(varStmt.name.value, identifier);
       expect(varStmt.name.tokenLiteral, identifier);
+      expect(varStmt.value.toString(), (i + 1).toString());
     }
   });
 
@@ -36,6 +39,12 @@ void main() {
       return 1;
       return 2.5;
       return result;''';
+
+    var expects = [
+      '1',
+      '2.5',
+      'result',
+    ];
 
     Lexer lexer = Lexer(input);
     Parser parser = Parser(lexer);
@@ -50,8 +59,9 @@ void main() {
       var stmt = program.statements[i];
       expect(stmt, isA<ReturnStatement>());
 
-      var varStmt = stmt as ReturnStatement;
-      expect(varStmt.tokenLiteral, 'return');
+      var returnStmt = stmt as ReturnStatement;
+      expect(returnStmt.tokenLiteral, 'return');
+      expect(returnStmt.value.toString(), expects[i]);
     }
   });
 
@@ -260,6 +270,8 @@ void main() {
       2 / (5 + 5);
       -(5 + 5);
       !(true == true);
+      add(a + b + c * d / f + g);
+      add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8));
       ''';
 
     Lexer lexer = Lexer(input);
@@ -289,6 +301,8 @@ void main() {
       '(2 / (5 + 5))',
       '(-(5 + 5))',
       '(!(true == true))',
+      'add((((a + b) + ((c * d) / f)) + g))',
+      'add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))'
     ];
 
     for (var i = 0; i < program.statements.length; i++) {
@@ -339,11 +353,7 @@ void main() {
         return x + y;
       };''';
 
-    var expectParams = [
-      '',
-      'x',
-      'x,y'
-    ];
+    var expectParams = ['', 'x', 'x,y'];
 
     Lexer lexer = Lexer(input);
     Parser parser = Parser(lexer);
@@ -363,6 +373,35 @@ void main() {
 
       var fn = exp.expression as FunctionLiteral;
       expect(fn.parameters.join(','), expectParams[i]);
+    }
+  });
+
+  test('function call', () {
+    var input = '''
+      add(1, 2 * 3, 4 + 5);''';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 1);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<CallExpression>());
+
+      var exp = expStmt.expression as CallExpression;
+      expect(exp.function.toString(), 'add');
+      expect(exp.arguments.length, 3);
+      expect(exp.arguments[0].toString(), '1');
+      expect(exp.arguments[1].toString(), '(2 * 3)');
+      expect(exp.arguments[2].toString(), '(4 + 5)');
     }
   });
 }

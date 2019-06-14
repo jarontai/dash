@@ -23,6 +23,7 @@ class Parser {
     TokenType.minus: Precedence.sum,
     TokenType.mul: Precedence.product,
     TokenType.div: Precedence.product,
+    TokenType.lparen: Precedence.call
   };
 
   Parser(this.lexer) {
@@ -49,6 +50,8 @@ class Parser {
     infixParserFns[TokenType.minus] = parseInfixExpression;
     infixParserFns[TokenType.mul] = parseInfixExpression;
     infixParserFns[TokenType.div] = parseInfixExpression;
+    infixParserFns[TokenType.lparen] = parseCallExpression;
+    ;
   }
 
   nextToken() {
@@ -96,7 +99,8 @@ class Parser {
       return null;
     }
 
-    // TODO:
+    nextToken();
+    stmt.value = parseExpression(Precedence.lowest);
 
     while (!currentTokenIs(TokenType.semi)) {
       nextToken();
@@ -109,7 +113,7 @@ class Parser {
 
     nextToken();
 
-    // TODO:
+    stmt.value = parseExpression(Precedence.lowest);
 
     while (!currentTokenIs(TokenType.semi)) {
       nextToken();
@@ -181,7 +185,9 @@ class Parser {
   }
 
   Expression parseLparen() {
-    if (peekTokenIs(TokenType.rparen) || deepPeekTokenIs(TokenType.comma) || deepPeekTokenIs(TokenType.rparen)) {
+    if (peekTokenIs(TokenType.rparen) ||
+        deepPeekTokenIs(TokenType.comma) ||
+        deepPeekTokenIs(TokenType.rparen)) {
       return parseFunctionLiteral();
     }
     return parseGroupedExpression();
@@ -198,7 +204,9 @@ class Parser {
 
   Expression parseFunctionLiteral() {
     var fn = FunctionLiteral(currentToken);
-    if (!peekTokenIs(TokenType.rparen) && !deepPeekTokenIs(TokenType.comma) && !deepPeekTokenIs(TokenType.rparen)) {
+    if (!peekTokenIs(TokenType.rparen) &&
+        !deepPeekTokenIs(TokenType.comma) &&
+        !deepPeekTokenIs(TokenType.rparen)) {
       return null;
     }
 
@@ -227,7 +235,7 @@ class Parser {
       nextToken();
       result.add(Identifier(currentToken));
     }
-    
+
     if (!expectPeek(TokenType.rparen)) {
       return null;
     }
@@ -264,6 +272,34 @@ class Parser {
     }
 
     return exp;
+  }
+
+  Expression parseCallExpression(Expression function) {
+    var exp = CallExpression(currentToken, function);
+    exp.arguments = parseCallArguments();
+    return exp;
+  }
+
+  List<Expression> parseCallArguments() {
+    var result = <Expression>[];
+    if (peekTokenIs(TokenType.rparen)) {
+      return result;
+    }
+
+    nextToken();
+    result.add(parseExpression(Precedence.lowest));
+
+    while (peekTokenIs(TokenType.comma)) {
+      nextToken();
+      nextToken();
+      result.add(parseExpression(Precedence.lowest));
+    }
+
+    if (!expectPeek(TokenType.rparen)) {
+      return null;
+    }
+
+    return result;
   }
 
   BlockStatement parseBlockStatement() {
