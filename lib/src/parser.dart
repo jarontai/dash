@@ -51,7 +51,6 @@ class Parser {
     infixParserFns[TokenType.mul] = parseInfixExpression;
     infixParserFns[TokenType.div] = parseInfixExpression;
     infixParserFns[TokenType.lparen] = parseCallExpression;
-    ;
   }
 
   nextToken() {
@@ -73,7 +72,6 @@ class Parser {
   }
 
   Statement parseStatement() {
-    // TODO:
     switch (currentToken.tokenType) {
       case TokenType.kvar:
         return parseVarStatement();
