@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:dash/dash.dart';
-import 'package:dash/src/ast.dart';
 import 'package:test/test.dart';
 
 void main() {
