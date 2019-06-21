@@ -1,21 +1,28 @@
 import 'dart:io';
 
-import 'package:dash/src/lexer.dart';
+import 'lexer.dart';
+import 'parser.dart';
+import 'evaluator.dart';
 
 /// Dash's repl (Read Eval Print Loop).
 class Repl {
   final String _prompt = '>> ';
 
   run() {
+    var evaluator = Evaluator();
     stdout.write(_prompt);
     var input = stdin.readLineSync();
     while (input != null) {
       var lexer = Lexer(input);
-
-      for (var token = lexer.nextToken(); token.tokenType != TokenType.eof; token = lexer.nextToken()) {
-        // TODO:
-        print(token);
+      var parser = Parser(lexer);
+      var program = parser.parseProgram();
+      if (parser.errors.isNotEmpty) {
+        parser.errors.forEach(print);
+        continue;
       }
+
+      var evaluated = evaluator.eval(program);
+      stdout.writeln(evaluated);
 
       stdout.write(_prompt);
       input = stdin.readLineSync();

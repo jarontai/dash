@@ -5,14 +5,14 @@ typedef PrefixParserFn = Expression Function();
 typedef InfixParserFn = Expression Function(Expression expression);
 
 class Parser {
-  final Lexer lexer;
-  Token currentToken;
-  Token peekToken;
-  Token deepPeekToken;
+  final Lexer _lexer;
+  Token _currentToken;
+  Token _peekToken;
+  Token _deepPeekToken;
   final List<String> errors = [];
-  final Map<TokenType, PrefixParserFn> prefixParserFns = {};
-  final Map<TokenType, InfixParserFn> infixParserFns = {};
-  final Map<TokenType, Precedence> precedenceMap = {
+  final Map<TokenType, PrefixParserFn> _prefixParserFns = {};
+  final Map<TokenType, InfixParserFn> _infixParserFns = {};
+  final Map<TokenType, Precedence> _precedenceMap = {
     TokenType.eq: Precedence.equals,
     TokenType.neq: Precedence.equals,
     TokenType.lt: Precedence.ltgt,
@@ -26,338 +26,338 @@ class Parser {
     TokenType.lparen: Precedence.call
   };
 
-  Parser(this.lexer) {
-    nextToken();
-    nextToken();
-    nextToken();
+  Parser(this._lexer) {
+    _nextToken();
+    _nextToken();
+    _nextToken();
 
-    prefixParserFns[TokenType.identifier] = parseIdentifer;
-    prefixParserFns[TokenType.number] = parseNumberLiteral;
-    prefixParserFns[TokenType.minus] = parsePrefixExpression;
-    prefixParserFns[TokenType.bang] = parsePrefixExpression;
-    prefixParserFns[TokenType.ktrue] = parseBoolean;
-    prefixParserFns[TokenType.kfalse] = parseBoolean;
-    prefixParserFns[TokenType.lparen] = parseLparen;
-    prefixParserFns[TokenType.kif] = parseIfExpression;
+    _prefixParserFns[TokenType.identifier] = _parseIdentifer;
+    _prefixParserFns[TokenType.number] = _parseNumberLiteral;
+    _prefixParserFns[TokenType.minus] = _parsePrefixExpression;
+    _prefixParserFns[TokenType.bang] = _parsePrefixExpression;
+    _prefixParserFns[TokenType.ktrue] = _parseBoolean;
+    _prefixParserFns[TokenType.kfalse] = _parseBoolean;
+    _prefixParserFns[TokenType.lparen] = _parseLparen;
+    _prefixParserFns[TokenType.kif] = _parseIfExpression;
 
-    infixParserFns[TokenType.eq] = parseInfixExpression;
-    infixParserFns[TokenType.neq] = parseInfixExpression;
-    infixParserFns[TokenType.lt] = parseInfixExpression;
-    infixParserFns[TokenType.lte] = parseInfixExpression;
-    infixParserFns[TokenType.gt] = parseInfixExpression;
-    infixParserFns[TokenType.gte] = parseInfixExpression;
-    infixParserFns[TokenType.plus] = parseInfixExpression;
-    infixParserFns[TokenType.minus] = parseInfixExpression;
-    infixParserFns[TokenType.mul] = parseInfixExpression;
-    infixParserFns[TokenType.div] = parseInfixExpression;
-    infixParserFns[TokenType.lparen] = parseCallExpression;
+    _infixParserFns[TokenType.eq] = _parseInfixExpression;
+    _infixParserFns[TokenType.neq] = _parseInfixExpression;
+    _infixParserFns[TokenType.lt] = _parseInfixExpression;
+    _infixParserFns[TokenType.lte] = _parseInfixExpression;
+    _infixParserFns[TokenType.gt] = _parseInfixExpression;
+    _infixParserFns[TokenType.gte] = _parseInfixExpression;
+    _infixParserFns[TokenType.plus] = _parseInfixExpression;
+    _infixParserFns[TokenType.minus] = _parseInfixExpression;
+    _infixParserFns[TokenType.mul] = _parseInfixExpression;
+    _infixParserFns[TokenType.div] = _parseInfixExpression;
+    _infixParserFns[TokenType.lparen] = _parseCallExpression;
   }
 
-  nextToken() {
-    currentToken = peekToken;
-    peekToken = deepPeekToken;
-    deepPeekToken = lexer.nextToken();
+  _nextToken() {
+    _currentToken = _peekToken;
+    _peekToken = _deepPeekToken;
+    _deepPeekToken = _lexer.nextToken();
   }
 
   Program parseProgram() {
     Program program = Program();
-    while (currentToken.tokenType != TokenType.eof) {
-      var stmt = parseStatement();
+    while (_currentToken.tokenType != TokenType.eof) {
+      var stmt = _parseStatement();
       if (stmt != null) {
         program.addStatement(stmt);
       }
-      nextToken();
+      _nextToken();
     }
     return program;
   }
 
-  Statement parseStatement() {
-    switch (currentToken.tokenType) {
+  Statement _parseStatement() {
+    switch (_currentToken.tokenType) {
       case TokenType.kvar:
-        return parseVarStatement();
+        return _parseVarStatement();
         break;
       case TokenType.kreturn:
-        return parseReturnStatement();
+        return _parseReturnStatement();
         break;
       default:
-        return parseExpressionStatement();
+        return _parseExpressionStatement();
     }
   }
 
-  Statement parseVarStatement() {
-    var stmt = VarStatement(currentToken);
+  Statement _parseVarStatement() {
+    var stmt = VarStatement(_currentToken);
 
-    if (!expectPeek(TokenType.identifier)) {
+    if (!_expectPeek(TokenType.identifier)) {
       return null;
     }
 
-    stmt.name = Identifier(currentToken);
+    stmt.name = Identifier(_currentToken);
 
-    if (!expectPeek(TokenType.assign)) {
+    if (!_expectPeek(TokenType.assign)) {
       return null;
     }
 
-    nextToken();
-    stmt.value = parseExpression(Precedence.lowest);
+    _nextToken();
+    stmt.value = _parseExpression(Precedence.lowest);
 
-    while (!currentTokenIs(TokenType.semi)) {
-      nextToken();
+    while (!_currentTokenIs(TokenType.semi)) {
+      _nextToken();
     }
     return stmt;
   }
 
-  Statement parseReturnStatement() {
-    var stmt = ReturnStatement(currentToken);
+  Statement _parseReturnStatement() {
+    var stmt = ReturnStatement(_currentToken);
 
-    nextToken();
+    _nextToken();
 
-    stmt.value = parseExpression(Precedence.lowest);
+    stmt.value = _parseExpression(Precedence.lowest);
 
-    while (!currentTokenIs(TokenType.semi)) {
-      nextToken();
+    while (!_currentTokenIs(TokenType.semi)) {
+      _nextToken();
     }
     return stmt;
   }
 
-  ExpressionStatement parseExpressionStatement() {
-    var stmt = ExpressionStatement(currentToken);
-    stmt.expression = parseExpression(Precedence.lowest);
+  ExpressionStatement _parseExpressionStatement() {
+    var stmt = ExpressionStatement(_currentToken);
+    stmt.expression = _parseExpression(Precedence.lowest);
 
-    if (peekTokenIs(TokenType.semi)) {
-      nextToken();
+    if (_peekTokenIs(TokenType.semi)) {
+      _nextToken();
     }
     return stmt;
   }
 
-  Expression parseExpression(Precedence precedence) {
-    var prefix = prefixParserFns[currentToken.tokenType];
+  Expression _parseExpression(Precedence precedence) {
+    var prefix = _prefixParserFns[_currentToken.tokenType];
     if (prefix == null) {
-      errors.add('No prefix parse funtion found for: ${currentToken}');
+      errors.add('No prefix parse funtion found for: ${_currentToken}');
       return null;
     }
 
     var leftExp = prefix();
-    while (!peekTokenIs(TokenType.semi) &&
-        precedence.index < peekPrecedence().index) {
-      var infix = infixParserFns[peekToken.tokenType];
+    while (!_peekTokenIs(TokenType.semi) &&
+        precedence.index < _peekPrecedence().index) {
+      var infix = _infixParserFns[_peekToken.tokenType];
       if (infix == null) {
         return leftExp;
       }
-      nextToken();
+      _nextToken();
       leftExp = infix(leftExp);
     }
 
     return leftExp;
   }
 
-  Expression parseIdentifer() {
-    return Identifier(currentToken);
+  Expression _parseIdentifer() {
+    return Identifier(_currentToken);
   }
 
-  Expression parseNumberLiteral() {
-    num value = num.tryParse(currentToken.literal);
+  Expression _parseNumberLiteral() {
+    num value = num.tryParse(_currentToken.literal);
     if (value == null) {
-      errors.add('NumberLiteral parse error: ${currentToken.literal}');
+      errors.add('NumberLiteral parse error: ${_currentToken.literal}');
       return null;
     }
-    return NumberLiteral(currentToken, value);
+    return NumberLiteral(_currentToken, value);
   }
 
-  Expression parseBoolean() {
-    return BooleanLiteral(currentToken, currentTokenIs(TokenType.ktrue));
+  Expression _parseBoolean() {
+    return BooleanLiteral(_currentToken, _currentTokenIs(TokenType.ktrue));
   }
 
-  Expression parsePrefixExpression() {
-    var exp = PrefixExpression(currentToken, currentToken.literal);
-    nextToken();
-    exp.right = parseExpression(Precedence.prefix);
+  Expression _parsePrefixExpression() {
+    var exp = PrefixExpression(_currentToken, _currentToken.literal);
+    _nextToken();
+    exp.right = _parseExpression(Precedence.prefix);
     return exp;
   }
 
-  Expression parseInfixExpression(Expression left) {
-    var exp = InfixExpression(currentToken, currentToken.literal, left);
-    var precedence = currPrecedence();
-    nextToken();
-    exp.right = parseExpression(precedence);
+  Expression _parseInfixExpression(Expression left) {
+    var exp = InfixExpression(_currentToken, _currentToken.literal, left);
+    var precedence = _currPrecedence();
+    _nextToken();
+    exp.right = _parseExpression(precedence);
     return exp;
   }
 
-  Expression parseLparen() {
-    if (peekTokenIs(TokenType.rparen) ||
-        deepPeekTokenIs(TokenType.comma) ||
-        deepPeekTokenIs(TokenType.rparen)) {
-      return parseFunctionLiteral();
+  Expression _parseLparen() {
+    if (_peekTokenIs(TokenType.rparen) ||
+        _deepPeekTokenIs(TokenType.comma) ||
+        _deepPeekTokenIs(TokenType.rparen)) {
+      return _parseFunctionLiteral();
     }
-    return parseGroupedExpression();
+    return _parseGroupedExpression();
   }
 
-  Expression parseGroupedExpression() {
-    nextToken();
-    var exp = parseExpression(Precedence.lowest);
-    if (!expectPeek(TokenType.rparen)) {
+  Expression _parseGroupedExpression() {
+    _nextToken();
+    var exp = _parseExpression(Precedence.lowest);
+    if (!_expectPeek(TokenType.rparen)) {
       return null;
     }
     return exp;
   }
 
-  Expression parseFunctionLiteral() {
-    var fn = FunctionLiteral(currentToken);
-    if (!peekTokenIs(TokenType.rparen) &&
-        !deepPeekTokenIs(TokenType.comma) &&
-        !deepPeekTokenIs(TokenType.rparen)) {
+  Expression _parseFunctionLiteral() {
+    var fn = FunctionLiteral(_currentToken);
+    if (!_peekTokenIs(TokenType.rparen) &&
+        !_deepPeekTokenIs(TokenType.comma) &&
+        !_deepPeekTokenIs(TokenType.rparen)) {
       return null;
     }
 
-    fn.parameters.addAll(parseFunctionParameters());
-    if (!expectPeek(TokenType.lbrace)) {
+    fn.parameters.addAll(_parseFunctionParameters());
+    if (!_expectPeek(TokenType.lbrace)) {
       return null;
     }
-    fn.body = parseBlockStatement();
+    fn.body = _parseBlockStatement();
 
     return fn;
   }
 
-  List<Identifier> parseFunctionParameters() {
+  List<Identifier> _parseFunctionParameters() {
     var result = <Identifier>[];
 
-    if (peekTokenIs(TokenType.rparen)) {
-      nextToken();
+    if (_peekTokenIs(TokenType.rparen)) {
+      _nextToken();
       return result;
     }
 
-    nextToken();
+    _nextToken();
 
-    result.add(Identifier(currentToken));
-    while (peekTokenIs(TokenType.comma)) {
-      nextToken();
-      nextToken();
-      result.add(Identifier(currentToken));
+    result.add(Identifier(_currentToken));
+    while (_peekTokenIs(TokenType.comma)) {
+      _nextToken();
+      _nextToken();
+      result.add(Identifier(_currentToken));
     }
 
-    if (!expectPeek(TokenType.rparen)) {
+    if (!_expectPeek(TokenType.rparen)) {
       return null;
     }
 
     return result;
   }
 
-  Expression parseIfExpression() {
-    var exp = IfExpression(currentToken);
-    if (!expectPeek(TokenType.lparen)) {
+  Expression _parseIfExpression() {
+    var exp = IfExpression(_currentToken);
+    if (!_expectPeek(TokenType.lparen)) {
       return null;
     }
 
-    nextToken();
+    _nextToken();
 
-    exp.condition = parseExpression(Precedence.lowest);
-    if (!expectPeek(TokenType.rparen)) {
+    exp.condition = _parseExpression(Precedence.lowest);
+    if (!_expectPeek(TokenType.rparen)) {
       return null;
     }
-    if (!expectPeek(TokenType.lbrace)) {
+    if (!_expectPeek(TokenType.lbrace)) {
       return null;
     }
 
-    exp.consequence = parseBlockStatement();
+    exp.consequence = _parseBlockStatement();
 
-    if (peekTokenIs(TokenType.kelse)) {
-      nextToken();
+    if (_peekTokenIs(TokenType.kelse)) {
+      _nextToken();
 
-      if (!expectPeek(TokenType.lbrace)) {
+      if (!_expectPeek(TokenType.lbrace)) {
         return null;
       }
 
-      exp.alternative = parseBlockStatement();
+      exp.alternative = _parseBlockStatement();
     }
 
     return exp;
   }
 
-  Expression parseCallExpression(Expression function) {
-    var exp = CallExpression(currentToken, function);
-    exp.arguments = parseCallArguments();
+  Expression _parseCallExpression(Expression function) {
+    var exp = CallExpression(_currentToken, function);
+    exp.arguments = _parseCallArguments();
     return exp;
   }
 
-  List<Expression> parseCallArguments() {
+  List<Expression> _parseCallArguments() {
     var result = <Expression>[];
-    if (peekTokenIs(TokenType.rparen)) {
+    if (_peekTokenIs(TokenType.rparen)) {
       return result;
     }
 
-    nextToken();
-    result.add(parseExpression(Precedence.lowest));
+    _nextToken();
+    result.add(_parseExpression(Precedence.lowest));
 
-    while (peekTokenIs(TokenType.comma)) {
-      nextToken();
-      nextToken();
-      result.add(parseExpression(Precedence.lowest));
+    while (_peekTokenIs(TokenType.comma)) {
+      _nextToken();
+      _nextToken();
+      result.add(_parseExpression(Precedence.lowest));
     }
 
-    if (!expectPeek(TokenType.rparen)) {
+    if (!_expectPeek(TokenType.rparen)) {
       return null;
     }
 
     return result;
   }
 
-  BlockStatement parseBlockStatement() {
-    var block = BlockStatement(currentToken);
-    nextToken();
+  BlockStatement _parseBlockStatement() {
+    var block = BlockStatement(_currentToken);
+    _nextToken();
 
-    while (!currentTokenIs(TokenType.rbrace)) {
-      var stmt = parseStatement();
+    while (!_currentTokenIs(TokenType.rbrace)) {
+      var stmt = _parseStatement();
       if (stmt != null) {
         block.statements.add(stmt);
       }
-      nextToken();
+      _nextToken();
     }
 
     return block;
   }
 
-  bool expectPeek(TokenType tokenType) {
-    if (peekTokenIs(tokenType)) {
-      nextToken();
+  bool _expectPeek(TokenType tokenType) {
+    if (_peekTokenIs(tokenType)) {
+      _nextToken();
       return true;
     } else {
-      peekError(tokenType);
+      _peekError(tokenType);
       return false;
     }
   }
 
-  bool peekTokenIs(TokenType tokenType) {
+  bool _peekTokenIs(TokenType tokenType) {
     var result = false;
-    if (peekToken != null && peekToken.tokenType == tokenType) {
+    if (_peekToken != null && _peekToken.tokenType == tokenType) {
       result = true;
     }
     return result;
   }
 
-  bool deepPeekTokenIs(TokenType tokenType) {
+  bool _deepPeekTokenIs(TokenType tokenType) {
     var result = false;
-    if (deepPeekToken != null && deepPeekToken.tokenType == tokenType) {
+    if (_deepPeekToken != null && _deepPeekToken.tokenType == tokenType) {
       result = true;
     }
     return result;
   }
 
-  bool currentTokenIs(TokenType tokenType) {
+  bool _currentTokenIs(TokenType tokenType) {
     var result = false;
-    if (currentToken != null && currentToken.tokenType == tokenType) {
+    if (_currentToken != null && _currentToken.tokenType == tokenType) {
       result = true;
     }
     return result;
   }
 
-  Precedence currPrecedence() =>
-      precedenceMap[currentToken.tokenType] ?? Precedence.lowest;
+  Precedence _currPrecedence() =>
+      _precedenceMap[_currentToken.tokenType] ?? Precedence.lowest;
 
-  Precedence peekPrecedence() =>
-      precedenceMap[peekToken.tokenType] ?? Precedence.lowest;
+  Precedence _peekPrecedence() =>
+      _precedenceMap[_peekToken.tokenType] ?? Precedence.lowest;
 
-  peekError(TokenType tokenType) {
+  _peekError(TokenType tokenType) {
     var msg =
-        'Expected next token to be $tokenType, got ${peekToken.tokenType}';
+        'Expected next token to be $tokenType, got ${_peekToken.tokenType}';
     errors.add(msg);
   }
 }
