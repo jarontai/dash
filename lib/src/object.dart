@@ -26,6 +26,15 @@ class Boolean implements EvalObject {
 
   bool value;
 
+  static final Boolean _true = Boolean._internal(true);
+  static final Boolean _false = Boolean._internal(false);
+
+  factory Boolean(bool value) {
+    return value ? _true : _false;
+  }
+
+  Boolean._internal(this.value);
+
   @override
   String toString() {
     return value.toString();
@@ -34,6 +43,12 @@ class Boolean implements EvalObject {
 
 class Null implements EvalObject {
   ObjectType get type => ObjectType.NULL;
+
+  static final Null _null = Null._internal();
+
+  factory Null() => _null;
+
+  Null._internal();
 
   @override
   String toString() {
