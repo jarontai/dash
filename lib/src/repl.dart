@@ -13,6 +13,10 @@ class Repl {
     stdout.write(_prompt);
     var input = stdin.readLineSync();
     while (input != null) {
+      if (input == 'exit') {
+        break;
+      }
+
       var lexer = Lexer(input);
       var parser = Parser(lexer);
       var program = parser.parseProgram();

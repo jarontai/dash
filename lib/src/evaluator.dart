@@ -76,6 +76,10 @@ class Evaluator {
 
     if (left is Number && right is Number) {
       result = evalNumberInfixOperatorExpression(op, left, right);
+    } else if (op == '==') {
+      result = Boolean(left == right);
+    } else if (op == '!=') {
+      result = Boolean(left != right);
     }
 
     return result;
@@ -100,6 +104,24 @@ class Evaluator {
         break;
       case '/':
         result = Number(leftVal / rightVal);
+        break;
+      case '<':
+        result = Boolean(leftVal < rightVal);
+        break;
+      case '<=':
+        result = Boolean(leftVal <= rightVal);
+        break;
+      case '>':
+        result = Boolean(leftVal > rightVal);
+        break;
+      case '>=':
+        result = Boolean(leftVal >= rightVal);
+        break;
+      case '==':
+        result = Boolean(leftVal == rightVal);
+        break;
+      case '!=':
+        result = Boolean(leftVal != rightVal);
         break;
     }
 

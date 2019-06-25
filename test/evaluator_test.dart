@@ -82,4 +82,46 @@ void main() {
       expect((obj as Number).value, expects[i]);
     }
   });
+
+  test('boolean operators', () {
+    var inputs = [
+      'true',
+      'false',
+      '5<10',
+      '5>10',
+      '5<=10',
+      '5<=5',
+      '5>=5',
+      '5>=10',
+      'true==true',
+      'false==true',
+      '(5<10)==true',
+      '(5>=10)!=false',
+    ];
+    var expects = [
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false
+    ];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.eval(program);
+      expect(obj, isA<Boolean>());
+      expect((obj as Boolean).value, expects[i]);
+    }
+  });
 }

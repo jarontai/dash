@@ -35,9 +35,13 @@ The Dash interpreter is build to parse the Dash language, which includes followi
   * the evaluator
 
 ## Run REPL
-// TODO:
 
     $ pub run bin/repl
+    >> 2 * 5 + 10
+    20
+    >> 10 / 2 != 5
+    false
+    ......
     
 
 ## Test
