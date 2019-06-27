@@ -15,11 +15,8 @@ class Lexer with CharHelper {
     'true': Tokens.kTrue,
     'false': Tokens.kFalse
   };
-  // TODO: use runes for utf8 encoding?
-  // List<int> _runes;
 
   Lexer(this.input) {
-    // _runes = input.runes.toList();
     _length = input.length;
     _readChar();
   }
