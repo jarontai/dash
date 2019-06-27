@@ -6,7 +6,7 @@ class Evaluator {
     EvalObject result = Null();
 
     if (node is ast.Program) {
-      result = evalStatements(node.statements);
+      result = evalProgram(node);
     } else if (node is ast.ExpressionStatement) {
       result = eval(node.expression);
     } else if (node is ast.NumberLiteral) {
@@ -21,19 +21,24 @@ class Evaluator {
       var right = eval(node.right);
       result = evalInfixExpression(node.op, left, right);
     } else if (node is ast.BlockStatement) {
-      result = evalStatements(node.statements);
+      result = evalBlockStatements(node.statements);
     } else if (node is ast.IfExpression) {
       result = evalIfExpression(node);
+    } else if (node is ast.ReturnStatement) {
+      result = ReturnValue(eval(node.value));
     }
 
     return result;
   }
 
-  EvalObject evalStatements(List<ast.Statement> statements) {
+  EvalObject evalBlockStatements(List<ast.Statement> statements) {
     EvalObject result;
 
     for (ast.Statement stmt in statements) {
       result = eval(stmt);
+      if (result != null && result is ReturnValue) {
+        break;
+      }
     }
 
     return result;
@@ -142,10 +147,25 @@ class Evaluator {
       }
     }
 
-     if (conditionVal) {
-       return eval(node.consequence);
-     } else {
-       return eval(node.alternative);
-     }
+    if (conditionVal) {
+      return eval(node.consequence);
+    } else {
+      return eval(node.alternative);
+    }
+  }
+
+  EvalObject evalProgram(ast.Program program) {
+    EvalObject result;
+
+    for (ast.Statement stmt in program.statements) {
+      var evalResult = eval(stmt);
+      if (evalResult is ReturnValue) {
+        result = evalResult.value;
+        break;
+      }
+      result = evalResult;
+    }
+
+    return result;
   }
 }

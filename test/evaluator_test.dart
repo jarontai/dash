@@ -161,4 +161,39 @@ void main() {
       }
     }
   });
+
+  test('return', () {
+    var inputs = [
+      'return 10;',
+      'return 10; 5;',
+      'return 2 * 5; 5;',
+      '1; return 2 * 5; 5;',
+      'if (5 < 10) { return 10; }',
+      'if (5 > 10) { return 5; } else { return 10; }',
+      'if (5 > 10) { return 5; } else { if (5 < 10) { return 10; } }',
+    ];
+    var expects = [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+    ];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.eval(program);
+      if (obj is Number) {
+        expect(obj.value, expects[i]);
+      } else if (obj is Null) {
+        expect(null, expects[i]);
+      }
+    }
+  });
 }

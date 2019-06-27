@@ -1,8 +1,5 @@
-enum ObjectType {
-  NUMBER,
-  BOOLEAN,
-  NULL
-}
+// TODO: remove?
+enum ObjectType { NUMBER, BOOLEAN, NULL }
 
 abstract class EvalObject {
   ObjectType get type;
@@ -53,5 +50,18 @@ class Null implements EvalObject {
   @override
   String toString() {
     return 'null';
-  }  
+  }
+}
+
+class ReturnValue implements EvalObject {
+  @override
+  // TODO: implement type
+  ObjectType get type => null;
+
+  Object value;
+
+  ReturnValue(this.value);
+
+  @override
+  String toString() => value.toString();
 }
