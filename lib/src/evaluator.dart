@@ -20,6 +20,10 @@ class Evaluator {
       var left = eval(node.left);
       var right = eval(node.right);
       result = evalInfixExpression(node.op, left, right);
+    } else if (node is ast.BlockStatement) {
+      result = evalStatements(node.statements);
+    } else if (node is ast.IfExpression) {
+      result = evalIfExpression(node);
     }
 
     return result;
@@ -126,5 +130,22 @@ class Evaluator {
     }
 
     return result;
+  }
+
+  EvalObject evalIfExpression(ast.IfExpression node) {
+    var condition = eval(node.condition);
+
+    bool conditionVal = false;
+    if (condition is Boolean) {
+      if (condition.value) {
+        conditionVal = true;
+      }
+    }
+
+     if (conditionVal) {
+       return eval(node.consequence);
+     } else {
+       return eval(node.alternative);
+     }
   }
 }

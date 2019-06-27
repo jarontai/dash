@@ -124,4 +124,41 @@ void main() {
       expect((obj as Boolean).value, expects[i]);
     }
   });
+
+  test('if else', () {
+    var inputs = [
+      'if (true) { 10 }',
+      'if (false) { 10 }',
+      'if (1) { 10 }',
+      'if (1) { 10 } else { 20 }',
+      'if (1 < 2) { 10 }',
+      'if (1 > 2) { 10 }',
+      'if (1 < 2) { 10 } else { 20 }',
+      'if (1 > 2) { 10 } else { 20 }',
+    ];
+    var expects = [
+      10,
+      null,
+      null,
+      20,
+      10,
+      null,
+      10,
+      20
+    ];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.eval(program);
+      if (obj is Number) {
+        expect(obj.value, expects[i]);
+      } else if (obj is Null) {
+        expect(null, expects[i]);
+      }
+    }
+  });
 }
