@@ -170,7 +170,7 @@ void main() {
       '1; return 2 * 5; 5;',
       'if (5 < 10) { return 10; }',
       'if (5 > 10) { return 5; } else { return 10; }',
-      'if (5 > 10) { return 5; } else { if (5 < 10) { return 10; } }',
+      'if (5 > 10) { return 5; } else { if (5 < 10) { return 10; } return 1; }',
     ];
     var expects = [
       10,
@@ -194,6 +194,37 @@ void main() {
       } else if (obj is Null) {
         expect(null, expects[i]);
       }
+    }
+  });
+
+  test('error handling', () {
+    var inputs =[
+      '5 + true;',
+      '-true;',
+      'true + false;',
+      'if (1 < 10) { true + false; }',
+      'if (1 > 10) { return 1; } else { return true + false; }',
+      'if (1 > 10) { return 1; } else { if (1 < 10) { return true + false; } return 1;}',
+    ];
+
+    var expects = [
+      'type mismatch: NUMBER + BOOLEAN',
+      'unknown operator: -BOOLEAN',
+      'unknown operator: BOOLEAN + BOOLEAN',
+      'unknown operator: BOOLEAN + BOOLEAN',
+      'unknown operator: BOOLEAN + BOOLEAN',
+      'unknown operator: BOOLEAN + BOOLEAN',
+    ];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.eval(program);
+      expect(obj, isA<ErrorObject>());
+      expect((obj as ErrorObject).message, expects[i]);
     }
   });
 }

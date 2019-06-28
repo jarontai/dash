@@ -1,12 +1,29 @@
-// TODO: remove?
-enum ObjectType { NUMBER, BOOLEAN, NULL }
-
 abstract class EvalObject {
-  ObjectType get type;
+  String get type;
+}
+
+class ErrorObject implements EvalObject {
+  @override
+  String get type => 'ERROR';
+
+  String message;
+
+  ErrorObject.prefix(String op, EvalObject right) {
+    this.message = 'unknown operator: $op${right.type}';
+  }
+
+  ErrorObject.infix(String op, EvalObject left, EvalObject right, {bool typeMismatch = false}) {
+    this.message = '${typeMismatch ? 'type mismatch' : 'unknown operator'}: ${left.type} $op ${right.type}';
+  }
+
+  @override
+  String toString() {
+    return message;
+  }
 }
 
 class Number implements EvalObject {
-  ObjectType get type => ObjectType.NUMBER;
+  String get type => 'NUMBER';
 
   num value;
 
@@ -19,7 +36,7 @@ class Number implements EvalObject {
 }
 
 class Boolean implements EvalObject {
-  ObjectType get type => ObjectType.BOOLEAN;
+  String get type => 'BOOLEAN';
 
   bool value;
 
@@ -39,7 +56,7 @@ class Boolean implements EvalObject {
 }
 
 class Null implements EvalObject {
-  ObjectType get type => ObjectType.NULL;
+  String get type => 'NULL';
 
   static final Null _null = Null._internal();
 
@@ -55,8 +72,7 @@ class Null implements EvalObject {
 
 class ReturnValue implements EvalObject {
   @override
-  // TODO: implement type
-  ObjectType get type => null;
+  String get type => 'RETURN';
 
   Object value;
 

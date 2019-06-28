@@ -1,6 +1,8 @@
 import 'ast.dart' as ast;
 import 'object.dart';
 
+export 'object.dart';
+
 class Evaluator {
   EvalObject eval(ast.Node node) {
     EvalObject result = Null();
@@ -15,17 +17,32 @@ class Evaluator {
       result = Boolean(node.value);
     } else if (node is ast.PrefixExpression) {
       var right = eval(node.right);
-      result = evalPrefixExpression(node.op, right);
+      if (right is ErrorObject) {
+        result = right;
+      } else {
+        result = evalPrefixExpression(node.op, right);
+      }
     } else if (node is ast.InfixExpression) {
       var left = eval(node.left);
       var right = eval(node.right);
-      result = evalInfixExpression(node.op, left, right);
+      if (left is ErrorObject) {
+        result = left;
+      } else if (right is ErrorObject) {
+        result = right;
+      } else {
+        result = evalInfixExpression(node.op, left, right);
+      }
     } else if (node is ast.BlockStatement) {
       result = evalBlockStatements(node.statements);
     } else if (node is ast.IfExpression) {
       result = evalIfExpression(node);
     } else if (node is ast.ReturnStatement) {
-      result = ReturnValue(eval(node.value));
+      var val = eval(node.value);
+      if (val is ErrorObject) {
+        result = val;
+      } else {
+        result = ReturnValue(val);
+      }
     }
 
     return result;
@@ -36,7 +53,7 @@ class Evaluator {
 
     for (ast.Statement stmt in statements) {
       result = eval(stmt);
-      if (result != null && result is ReturnValue) {
+      if (result != null && (result is ReturnValue || result is ErrorObject)) {
         break;
       }
     }
@@ -45,7 +62,7 @@ class Evaluator {
   }
 
   EvalObject evalPrefixExpression(String op, EvalObject right) {
-    EvalObject result = Null();
+    EvalObject result;
 
     switch (op) {
       case '!':
@@ -55,40 +72,51 @@ class Evaluator {
       case '-':
         result = evalMinusPrefixOperatorExpression(right);
         break;
+
+      default:
+        result = ErrorObject.prefix(op, right);
     }
 
     return result;
   }
 
   EvalObject evalBangOperatorExpression(EvalObject right) {
-    EvalObject result = Null();
+    EvalObject result;
 
     if (right is Boolean) {
       result = right.value ? Boolean(false) : Boolean(true);
+    } else {
+      result = ErrorObject.prefix('!', right);
     }
 
     return result;
   }
 
   EvalObject evalMinusPrefixOperatorExpression(EvalObject right) {
-    EvalObject result = Null();
+    EvalObject result;
 
     if (right is Number) {
       result = Number(-right.value);
+    } else {
+      result = ErrorObject.prefix('-', right);
     }
 
     return result;
   }
 
   EvalObject evalInfixExpression(String op, EvalObject left, EvalObject right) {
-    EvalObject result = Null();
+    EvalObject result;
 
-    if (left is Number && right is Number) {
+    if (left.runtimeType != right.runtimeType) {
+      result = ErrorObject.infix(op, left, right, typeMismatch: true);
+    } else if (left is Number && right is Number) {
       result = evalNumberInfixOperatorExpression(op, left, right);
     } else if (op == '==') {
       result = Boolean(left == right);
     } else if (op == '!=') {
       result = Boolean(left != right);
+    } else {
+      result = ErrorObject.infix(op, left, right);
     }
 
     return result;
@@ -96,7 +124,7 @@ class Evaluator {
 
   EvalObject evalNumberInfixOperatorExpression(
       String op, Number left, Number right) {
-    EvalObject result = Null();
+    EvalObject result;
 
     num leftVal = left.value;
     num rightVal = right.value;
@@ -132,6 +160,8 @@ class Evaluator {
       case '!=':
         result = Boolean(leftVal != rightVal);
         break;
+      default:
+        result = ErrorObject.prefix(op, right);
     }
 
     return result;
@@ -139,6 +169,9 @@ class Evaluator {
 
   EvalObject evalIfExpression(ast.IfExpression node) {
     var condition = eval(node.condition);
+    if (condition is ErrorObject) {
+      return condition;
+    }
 
     bool conditionVal = false;
     if (condition is Boolean) {
@@ -162,7 +195,10 @@ class Evaluator {
       if (evalResult is ReturnValue) {
         result = evalResult.value;
         break;
-      }
+      } else if (evalResult is ErrorObject) {
+        result = evalResult;
+        break;
+      }     
       result = evalResult;
     }
 
