@@ -39,8 +39,8 @@ The Dash interpreter is build to parse the Dash language, which includes followi
     $ pub run bin/repl
     >> 2 * 5 + 10
     20
-    >> 10 / 2 != 5
-    false
+    >> var a = 1; var b = 2; a + b;
+    3
     ......
     
 

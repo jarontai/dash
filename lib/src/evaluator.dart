@@ -4,6 +4,16 @@ import 'object.dart';
 export 'object.dart';
 
 class Evaluator {
+  Environment _env;
+
+  Evaluator() {
+    _env = Environment();
+  }
+
+  Evaluator.fromEnv(Environment env) {
+    _env = env;
+  }
+
   EvalObject eval(ast.Node node) {
     EvalObject result = Null();
 
@@ -43,6 +53,13 @@ class Evaluator {
       } else {
         result = ReturnValue(val);
       }
+    } else if (node is ast.VarStatement) {
+      var val = eval(node.value);
+      if (val is! ErrorObject) {
+        _env[node.name.value] = val;
+      }
+    } else if (node is ast.Identifier) {
+      result = evalIdentifier(node);
     }
 
     return result;
@@ -198,10 +215,14 @@ class Evaluator {
       } else if (evalResult is ErrorObject) {
         result = evalResult;
         break;
-      }     
+      }
       result = evalResult;
     }
 
     return result;
+  }
+
+  EvalObject evalIdentifier(ast.Identifier node) {
+    return _env.containsKey(node.value) ? _env[node.value] : ErrorObject.identifier(node.value);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 abstract class EvalObject {
   String get type;
 }
@@ -9,11 +11,15 @@ class ErrorObject implements EvalObject {
   String message;
 
   ErrorObject.prefix(String op, EvalObject right) {
-    this.message = 'unknown operator: $op${right.type}';
+    message = 'unknown operator: $op${right.type}';
   }
 
   ErrorObject.infix(String op, EvalObject left, EvalObject right, {bool typeMismatch = false}) {
-    this.message = '${typeMismatch ? 'type mismatch' : 'unknown operator'}: ${left.type} $op ${right.type}';
+    message = '${typeMismatch ? 'type mismatch' : 'unknown operator'}: ${left.type} $op ${right.type}';
+  }
+
+  ErrorObject.identifier(String value) {
+    message = 'identifier not found: $value';
   }
 
   @override
@@ -80,4 +86,32 @@ class ReturnValue implements EvalObject {
 
   @override
   String toString() => value.toString();
+}
+
+class Environment extends MapBase {
+  final Map<String, EvalObject> _store = {};
+  
+  @override
+  operator [](Object key) {
+    return _store[key.toString()];
+  }
+
+  @override
+  void operator []=(key, value) {
+    _store[key.toString()] = value;
+  }
+
+  @override
+  void clear() {
+    _store.clear();
+  }
+
+  @override
+  Iterable get keys => _store.keys;
+
+  @override
+  remove(Object key) {
+    return _store.remove(key);
+  }
+
 }

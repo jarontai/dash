@@ -205,6 +205,7 @@ void main() {
       'if (1 < 10) { true + false; }',
       'if (1 > 10) { return 1; } else { return true + false; }',
       'if (1 > 10) { return 1; } else { if (1 < 10) { return true + false; } return 1;}',
+      'foobar',
     ];
 
     var expects = [
@@ -214,6 +215,7 @@ void main() {
       'unknown operator: BOOLEAN + BOOLEAN',
       'unknown operator: BOOLEAN + BOOLEAN',
       'unknown operator: BOOLEAN + BOOLEAN',
+      'identifier not found: foobar',
     ];
 
     Evaluator evaluator = Evaluator();
@@ -225,6 +227,33 @@ void main() {
       var obj = evaluator.eval(program);
       expect(obj, isA<ErrorObject>());
       expect((obj as ErrorObject).message, expects[i]);
+    }
+  });
+
+  test('var binding', () {
+    var inputs = [
+      'var a = 10; a;',
+      'var a = 10; a * a;',
+      'var a = 10; var b = a; b;',
+      'var a = 10; var b = a; var c = a + b + 10; c;',
+    ];
+    var expects = [
+      10,
+      100,
+      10,
+      30,
+    ];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.eval(program);
+      if (obj is Number) {
+        expect(obj.value, expects[i]);
+      }
     }
   });
 }
