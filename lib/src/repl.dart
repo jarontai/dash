@@ -25,7 +25,7 @@ class Repl {
         continue;
       }
 
-      var evaluated = evaluator.eval(program);
+      var evaluated = evaluator.evalWithEnv(program);
       stdout.writeln(evaluated);
 
       stdout.write(_prompt);

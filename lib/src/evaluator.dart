@@ -4,37 +4,35 @@ import 'object.dart';
 export 'object.dart';
 
 class Evaluator {
-  Environment _env;
-
-  Evaluator() {
-    _env = Environment();
+  EvalObject evalWithEnv(ast.Node node) {
+    return eval(node, Environment());
   }
 
-  Evaluator.fromEnv(Environment env) {
-    _env = env;
-  }
+  EvalObject eval(ast.Node node, Environment env) {
+    if (env == null) {
+      env = Environment();
+    }
 
-  EvalObject eval(ast.Node node) {
     EvalObject result = Null();
 
     if (node is ast.Program) {
-      result = evalProgram(node);
+      result = evalProgram(node, env);
     } else if (node is ast.ExpressionStatement) {
-      result = eval(node.expression);
+      result = eval(node.expression, env);
     } else if (node is ast.NumberLiteral) {
       result = Number(node.value);
     } else if (node is ast.BooleanLiteral) {
       result = Boolean(node.value);
     } else if (node is ast.PrefixExpression) {
-      var right = eval(node.right);
+      var right = eval(node.right, env);
       if (right is ErrorObject) {
         result = right;
       } else {
         result = evalPrefixExpression(node.op, right);
       }
     } else if (node is ast.InfixExpression) {
-      var left = eval(node.left);
-      var right = eval(node.right);
+      var left = eval(node.left, env);
+      var right = eval(node.right, env);
       if (left is ErrorObject) {
         result = left;
       } else if (right is ErrorObject) {
@@ -43,33 +41,66 @@ class Evaluator {
         result = evalInfixExpression(node.op, left, right);
       }
     } else if (node is ast.BlockStatement) {
-      result = evalBlockStatements(node.statements);
+      result = evalBlockStatements(node.statements, env);
     } else if (node is ast.IfExpression) {
-      result = evalIfExpression(node);
+      result = evalIfExpression(node, env);
     } else if (node is ast.ReturnStatement) {
-      var val = eval(node.value);
+      var val = eval(node.value, env);
       if (val is ErrorObject) {
         result = val;
       } else {
         result = ReturnValue(val);
       }
     } else if (node is ast.VarStatement) {
-      var val = eval(node.value);
+      var val = eval(node.value, env);
       if (val is! ErrorObject) {
-        _env[node.name.value] = val;
+        env.put(node.name.value, val);
       }
     } else if (node is ast.Identifier) {
-      result = evalIdentifier(node);
+      result = evalIdentifier(node, env);
+    } else if (node is ast.FunctionLiteral) {
+      result = FunctionObject(node.parameters, node.body, env);
+    } else if (node is ast.CallExpression) {
+      var fn = eval(node.function, env);
+      if (fn is ErrorObject) {
+        result = fn;
+      } else {
+        var args = evalExpressions(node.arguments, env);
+        if (args.length == 1 && args[0] is ErrorObject) {
+          result = args[0];
+        } else {
+          result = applyFunction(fn, args);
+        }
+      }
     }
 
     return result;
   }
 
-  EvalObject evalBlockStatements(List<ast.Statement> statements) {
+  EvalObject evalProgram(ast.Program program, Environment env) {
+    EvalObject result;
+
+    for (ast.Statement stmt in program.statements) {
+      var evalResult = eval(stmt, env);
+      if (evalResult is ReturnValue) {
+        result = evalResult.value;
+        break;
+      } else if (evalResult is ErrorObject) {
+        result = evalResult;
+        break;
+      }
+      result = evalResult;
+    }
+
+    return result;
+  }
+
+  EvalObject evalBlockStatements(
+      List<ast.Statement> statements, Environment env) {
     EvalObject result;
 
     for (ast.Statement stmt in statements) {
-      result = eval(stmt);
+      result = eval(stmt, env);
       if (result != null && (result is ReturnValue || result is ErrorObject)) {
         break;
       }
@@ -184,8 +215,8 @@ class Evaluator {
     return result;
   }
 
-  EvalObject evalIfExpression(ast.IfExpression node) {
-    var condition = eval(node.condition);
+  EvalObject evalIfExpression(ast.IfExpression node, Environment env) {
+    var condition = eval(node.condition, env);
     if (condition is ErrorObject) {
       return condition;
     }
@@ -198,31 +229,44 @@ class Evaluator {
     }
 
     if (conditionVal) {
-      return eval(node.consequence);
+      return eval(node.consequence, env);
     } else {
-      return eval(node.alternative);
+      return eval(node.alternative, env);
     }
   }
 
-  EvalObject evalProgram(ast.Program program) {
-    EvalObject result;
+  EvalObject evalIdentifier(ast.Identifier node, Environment env) {
+    return env.containsKey(node.value)
+        ? env.fetch(node.value)
+        : ErrorObject.identifier(node.value);
+  }
 
-    for (ast.Statement stmt in program.statements) {
-      var evalResult = eval(stmt);
-      if (evalResult is ReturnValue) {
-        result = evalResult.value;
-        break;
-      } else if (evalResult is ErrorObject) {
-        result = evalResult;
-        break;
+  List<EvalObject> evalExpressions(
+      List<ast.Expression> arguments, Environment env) {
+    var result = <EvalObject>[];
+    for (var exp in arguments) {
+      var val = eval(exp, env);
+      if (val is ErrorObject) {
+        return [val];
       }
-      result = evalResult;
+      result.add(val);
     }
-
     return result;
   }
 
-  EvalObject evalIdentifier(ast.Identifier node) {
-    return _env.containsKey(node.value) ? _env[node.value] : ErrorObject.identifier(node.value);
+  EvalObject applyFunction(EvalObject fn, List<EvalObject> args) {
+    if (fn is FunctionObject) {
+      var extEnv =  Environment.withOuter(fn.env);
+      for (var index = 0; index < fn.parameters.length; index++) {
+        var p = fn.parameters[index];
+        extEnv.put(p.value, args[index]);
+      }
+      var result = eval(fn.body, extEnv);
+      if (result is ReturnValue) {
+        return result.value;
+      }
+      return result;
+    }
+    return ErrorObject.fn(fn.type);
   }
 }

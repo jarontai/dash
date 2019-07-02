@@ -1,4 +1,4 @@
-import 'dart:collection';
+import 'ast.dart' as ast;
 
 abstract class EvalObject {
   String get type;
@@ -14,12 +14,18 @@ class ErrorObject implements EvalObject {
     message = 'unknown operator: $op${right.type}';
   }
 
-  ErrorObject.infix(String op, EvalObject left, EvalObject right, {bool typeMismatch = false}) {
-    message = '${typeMismatch ? 'type mismatch' : 'unknown operator'}: ${left.type} $op ${right.type}';
+  ErrorObject.infix(String op, EvalObject left, EvalObject right,
+      {bool typeMismatch = false}) {
+    message =
+        '${typeMismatch ? 'type mismatch' : 'unknown operator'}: ${left.type} $op ${right.type}';
   }
 
   ErrorObject.identifier(String value) {
     message = 'identifier not found: $value';
+  }
+
+  ErrorObject.fn(String type) {
+    message = 'not a function: $type';
   }
 
   @override
@@ -88,30 +94,48 @@ class ReturnValue implements EvalObject {
   String toString() => value.toString();
 }
 
-class Environment extends MapBase {
-  final Map<String, EvalObject> _store = {};
-  
-  @override
-  operator [](Object key) {
-    return _store[key.toString()];
-  }
+class FunctionObject implements EvalObject {
+  final List<ast.Identifier> parameters;
+  final ast.BlockStatement body;
+  Environment env;
+
+  FunctionObject(this.parameters, this.body, this.env);
 
   @override
-  void operator []=(key, value) {
+  String get type => 'FUNCTION';
+
+  @override
+  String toString() {
+    var result = StringBuffer();
+    result..write('(')..write(parameters.join(', '))..write(')')..write(body);
+    return result.toString();
+  }
+}
+
+class Environment {
+  final Map<String, EvalObject> _store = <String, EvalObject>{};
+  final Environment _outer;
+
+  Environment() : _outer = null;
+
+  Environment.withOuter(this._outer);
+
+  EvalObject fetch(Object key) {
+    var result = _store[key.toString()];
+    if (result == null && _outer != null) {
+      result = _outer.fetch(key.toString());
+    }
+    return result;
+  }
+
+  void put(key, value) {
     _store[key.toString()] = value;
   }
 
-  @override
-  void clear() {
-    _store.clear();
+  bool containsKey(String key) {
+    if (_outer == null) {
+      return _store.containsKey(key);
+    }
+    return _store.containsKey(key) || _outer.containsKey(key);
   }
-
-  @override
-  Iterable get keys => _store.keys;
-
-  @override
-  remove(Object key) {
-    return _store.remove(key);
-  }
-
 }

@@ -13,7 +13,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<Number>());
       expect((obj as Number).value, expects[i]);
     }
@@ -29,7 +29,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<Boolean>());
       expect((obj as Boolean).value, expects[i]);
     }
@@ -45,7 +45,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<Boolean>());
       expect((obj as Boolean).value, expects[i]);
     }
@@ -61,7 +61,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<Number>());
       expect((obj as Number).value, expects[i]);
     }
@@ -77,7 +77,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<Number>());
       expect((obj as Number).value, expects[i]);
     }
@@ -119,7 +119,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<Boolean>());
       expect((obj as Boolean).value, expects[i]);
     }
@@ -153,7 +153,8 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
+      expect(((obj is Number) || (obj is Null)), true);
       if (obj is Number) {
         expect(obj.value, expects[i]);
       } else if (obj is Null) {
@@ -188,7 +189,8 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
+      expect(((obj is Number) || (obj is Null)), true);
       if (obj is Number) {
         expect(obj.value, expects[i]);
       } else if (obj is Null) {
@@ -224,7 +226,7 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
+      var obj = evaluator.evalWithEnv(program);
       expect(obj, isA<ErrorObject>());
       expect((obj as ErrorObject).message, expects[i]);
     }
@@ -250,10 +252,38 @@ void main() {
       Parser parser = Parser(lexer);
       Program program = parser.parseProgram();
 
-      var obj = evaluator.eval(program);
-      if (obj is Number) {
-        expect(obj.value, expects[i]);
-      }
+      var obj = evaluator.evalWithEnv(program);
+      expect(obj, isA<Number>());
+      expect((obj as Number).value, expects[i]);
+    }
+  });
+
+  test('function', () {
+    var inputs = [
+      'var fn = (x) { return x; }; fn(10);',
+      'var fn = (x) { return x + x; }; fn(10);',
+      'var fn = (x, y) { return x + y; }; fn(10, 20);',
+      'var fn = (x) { return x + 10; }; fn(10);',
+      'var fn = (x, y) { return x + y; }; fn(10, fn(10, 10));',
+
+    ];
+    var expects = [
+      10,
+      20,
+      30,
+      20,
+      30
+    ];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.evalWithEnv(program);
+      expect(obj, isA<Number>());
+      expect((obj as Number).value, expects[i]);
     }
   });
 }
