@@ -132,7 +132,7 @@ class Lexer with CharHelper {
   String _readIdentifier() {
     var startPosition = _position;
     _readChar();
-    while (isLetter(_ch)) {
+    while (isLetter(_ch) || isNum(_ch)) {
       _readChar();
     }
     return input.substring(startPosition, _position);

@@ -260,11 +260,11 @@ void main() {
 
   test('function', () {
     var inputs = [
-      'var fn = (x) { return x; }; fn(10);',
-      'var fn = (x) { return x + x; }; fn(10);',
-      'var fn = (x, y) { return x + y; }; fn(10, 20);',
-      'var fn = (x) { return x + 10; }; fn(10);',
-      'var fn = (x, y) { return x + y; }; fn(10, fn(10, 10));',
+      'var fn1 = (x) { return x; }; fn1(10);',
+      'var fn2 = (x) { return x + x; }; fn2(10);',
+      'var fn3 = (x, y) { return x + y; }; fn3(10, 20);',
+      'var fn4 = (x) { return x + 10; }; fn4(10);',
+      'var fn5 = (x, y) { return x + y; }; fn5(10, fn5(10, 10));',
 
     ];
     var expects = [
