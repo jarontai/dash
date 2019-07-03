@@ -22,11 +22,10 @@ class Repl {
       var program = parser.parseProgram();
       if (parser.errors.isNotEmpty) {
         parser.errors.forEach(print);
-        continue;
+      } else {
+        var evaluated = evaluator.evalWithEnv(program);
+        stdout.writeln(evaluated);
       }
-
-      var evaluated = evaluator.evalWithEnv(program);
-      stdout.writeln(evaluated);
 
       stdout.write(_prompt);
       input = stdin.readLineSync();

@@ -103,7 +103,7 @@ class Lexer with CharHelper {
         } else if (isNum(_ch)) {
           return Token.number(_readNumber());
         } else {
-          token = Tokens.illegal;
+          token = Token.illegal(_ch);
         }
         break;
     }
@@ -159,6 +159,8 @@ class Token {
 
   const Token.number(this.literal) : tokenType = TokenType.number;
 
+  const Token.illegal(this.literal) : tokenType = TokenType.illegal;
+
   String toString() {
     return 'Token(type: $tokenType, literal: $literal)';
   }
@@ -203,7 +205,6 @@ enum TokenType {
 
 /// The pre-defined [Token] constants.
 abstract class Tokens {
-  static const Token illegal = const Token(TokenType.illegal, 'ILLEGAL');
   static const Token eof = const Token(TokenType.eof, '');
 
   static const Token assign = const Token(TokenType.assign, '=');

@@ -62,6 +62,11 @@ class Parser {
   Program parseProgram() {
     Program program = Program();
     while (_currentToken.tokenType != TokenType.eof) {
+      if (_currentToken.tokenType == TokenType.illegal) {
+        errors.add('Illegal token: ${_currentToken}');
+        break;
+      }
+
       var stmt = _parseStatement();
       if (stmt != null) {
         program.addStatement(stmt);
