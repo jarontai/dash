@@ -265,14 +265,15 @@ void main() {
       'var fn3 = (x, y) { return x + y; }; fn3(10, 20);',
       'var fn4 = (x) { return x + 10; }; fn4(10);',
       'var fn5 = (x, y) { return x + y; }; fn5(10, fn5(10, 10));',
-
+      'var newAdder = (num) { return (x) { return x + num; }; }; var add5 = newAdder(5); add5(5);',
     ];
     var expects = [
       10,
       20,
       30,
       20,
-      30
+      30,
+      10
     ];
 
     Evaluator evaluator = Evaluator();
