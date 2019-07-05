@@ -118,6 +118,28 @@ void main() {
     }
   });
 
+  test('string literal expressions', () {
+    var input = '"123456"';
+
+    Lexer lexer = Lexer(input);
+    Parser parser = Parser(lexer);
+    Program program = parser.parseProgram();
+
+    expect(program, isNotNull);
+    expect(program.statements, isNotNull);
+    expect(program.statements.length, 1);
+    expect(parser.errors.isEmpty, true);
+
+    for (var i = 0; i < program.statements.length; i++) {
+      var stmt = program.statements[i];
+      expect(stmt, isA<ExpressionStatement>());
+
+      var expStmt = stmt as ExpressionStatement;
+      expect(expStmt.expression, isA<StringLiteral>());
+      expect(expStmt.tokenLiteral, '123456');
+    }
+  });
+
   test('boolean literal expressions', () {
     var input = '''
       true;false;''';

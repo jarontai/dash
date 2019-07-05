@@ -41,6 +41,10 @@ The Dash interpreter is build to parse the Dash language, which includes followi
     20
     >> var a = 1; var b = 2; a + b;
     3
+    >> a
+    1
+    >> c
+    identifier not found: c
     ......
     
 

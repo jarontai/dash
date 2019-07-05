@@ -91,6 +91,12 @@ class Lexer with CharHelper {
       case '}':
         token = Tokens.rbrace;
         break;
+      case '\'':
+        token = Token.string(_readString('\''));
+        break;
+      case '"':
+        token = Token.string(_readString('"'));
+        break;
       case '':
         token = Tokens.eof;
         break;
@@ -146,6 +152,15 @@ class Lexer with CharHelper {
     }
     return input.substring(startPosition, _position);
   }
+
+  String _readString(String quote) {
+    var startPosition = _position + 1;
+    _readChar();
+    while (_ch != quote) {
+      _readChar();
+    }
+    return input.substring(startPosition, _position);
+  }
 }
 
 /// A object represents the basic unit of lexical analysis.
@@ -161,6 +176,8 @@ class Token {
 
   const Token.illegal(this.literal) : tokenType = TokenType.illegal;
 
+  const Token.string(this.literal) : tokenType = TokenType.string;
+
   String toString() {
     return 'Token(type: $tokenType, literal: $literal)';
   }
@@ -174,6 +191,7 @@ enum TokenType {
 
   number,
   boolean,
+  string,
 
   assign,
   plus,

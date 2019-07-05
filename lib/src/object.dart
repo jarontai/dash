@@ -47,6 +47,19 @@ class Number implements EvalObject {
   }
 }
 
+class StringObject implements EvalObject {
+  String get type => 'STRING';
+
+  String value;
+
+  StringObject(this.value);
+
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
+
 class Boolean implements EvalObject {
   String get type => 'BOOLEAN';
 
