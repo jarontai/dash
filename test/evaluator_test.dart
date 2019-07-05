@@ -35,6 +35,22 @@ void main() {
     }
   });
 
+  test('string', () {
+    var inputs = ['"5"', '\'10\'', '"2.5"'];
+    var expects = ['5', '10', '2.5'];
+
+    Evaluator evaluator = Evaluator();
+    for (var i = 0; i < inputs.length; i++) {
+      Lexer lexer = Lexer(inputs[i]);
+      Parser parser = Parser(lexer);
+      Program program = parser.parseProgram();
+
+      var obj = evaluator.evalWithEnv(program);
+      expect(obj, isA<StringObject>());
+      expect((obj as StringObject).value, expects[i]);
+    }
+  });
+
   test('bang', () {
     var inputs = ['!true', '!false', '!!true', '!!false'];
     var expects = [false, true, true, false];
@@ -238,12 +254,16 @@ void main() {
       'var a = 10; a * a;',
       'var a = 10; var b = a; b;',
       'var a = 10; var b = a; var c = a + b + 10; c;',
+      'var a = "abc"; a;',
+      'var a = "abcd"; var b = a; b;',
     ];
     var expects = [
       10,
       100,
       10,
       30,
+      "abc",
+      "abcd",
     ];
 
     Evaluator evaluator = Evaluator();
@@ -253,8 +273,12 @@ void main() {
       Program program = parser.parseProgram();
 
       var obj = evaluator.evalWithEnv(program);
-      expect(obj, isA<Number>());
-      expect((obj as Number).value, expects[i]);
+      expect(obj.runtimeType, isIn([Number, StringObject]));
+      if (obj is Number) {
+        expect(obj.value, expects[i]);
+      } else if (obj is StringObject) {
+        expect(obj.value, expects[i]);
+      }
     }
   });
 

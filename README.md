@@ -41,6 +41,10 @@ The Dash interpreter is build to parse the Dash language, which includes followi
     20
     >> var a = 1; var b = 2; a + b;
     3
+    >> a
+    1
+    >> c
+    identifier not found: c
     ......
     
 
@@ -48,6 +52,6 @@ The Dash interpreter is build to parse the Dash language, which includes followi
 
     $ pub run test
 
-## References
+## Reference
 
-Dash is an dartify version of [Writing An Interpreter In Go](https://interpreterbook.com/), which is a great book of interpreter implementation.
+Dash is a dartify version of [Writing An Interpreter In Go](https://interpreterbook.com/), which is a great book of interpreter implementation.

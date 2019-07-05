@@ -21,6 +21,8 @@ class Evaluator {
       result = eval(node.expression, env);
     } else if (node is ast.NumberLiteral) {
       result = Number(node.value);
+    } else if (node is ast.StringLiteral) {
+      result = StringObject(node.value);
     } else if (node is ast.BooleanLiteral) {
       result = Boolean(node.value);
     } else if (node is ast.PrefixExpression) {

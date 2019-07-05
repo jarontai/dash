@@ -12,6 +12,7 @@ class Repl {
     var evaluator = Evaluator();
     stdout.write(_prompt);
     var input = stdin.readLineSync();
+    var env = Environment();
     while (input != null) {
       if (input == 'exit') {
         break;
@@ -23,8 +24,10 @@ class Repl {
       if (parser.errors.isNotEmpty) {
         parser.errors.forEach(print);
       } else {
-        var evaluated = evaluator.evalWithEnv(program);
-        stdout.writeln(evaluated);
+        var evaluated = evaluator.eval(program, env);
+        if (evaluated != null) {
+          stdout.writeln(evaluated);
+        }
       }
 
       stdout.write(_prompt);

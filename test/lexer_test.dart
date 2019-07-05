@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('basic', () {
-    var input = '=+-*/!><,;(){} == != >= <= true false if else return var 2.5 1';
+    var input = '=+-*/!><,;(){} == != >= <= true false if else return var 2.5 1 "" "123" \'\' \'abc\'';
 
     var expectTokens = [
       Tokens.assign,
@@ -32,6 +32,10 @@ void main() {
       Tokens.kVar,
       Token.number('2.5'),
       Token.number('1'),
+      Token.string(''),
+      Token.string('123'),
+      Token.string(''),
+      Token.string('abc'),
       Tokens.eof,
     ];
 

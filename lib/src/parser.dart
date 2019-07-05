@@ -39,6 +39,7 @@ class Parser {
     _prefixParserFns[TokenType.kfalse] = _parseBoolean;
     _prefixParserFns[TokenType.lparen] = _parseLparen;
     _prefixParserFns[TokenType.kif] = _parseIfExpression;
+    _prefixParserFns[TokenType.string] = _parseStringLiteral;
 
     _infixParserFns[TokenType.eq] = _parseInfixExpression;
     _infixParserFns[TokenType.neq] = _parseInfixExpression;
@@ -166,6 +167,10 @@ class Parser {
       return null;
     }
     return NumberLiteral(_currentToken, value);
+  }
+
+  Expression _parseStringLiteral() {
+    return StringLiteral(_currentToken, _currentToken.literal);
   }
 
   Expression _parseBoolean() {
