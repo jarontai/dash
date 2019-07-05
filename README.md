@@ -1,10 +1,10 @@
 # Dash - A tiny interpreter written in Dart.
 
-Dash is a interpreter fully build with [Dart](https://dart.dev). Dash is also a small dynamic language which is a subset of the [Dart](https://dart.dev) language.
+Dash is an interpreter fully build with [Dart](https://dart.dev). Dash is also a small dynamic language which is a subset of the [Dart](https://dart.dev) language.
 
 ## Language
 
-The little Dash language includes a small subset of the [Dart](https://dart.dev) language features:
+The Dash language features:
 
   * C-like syntax and keywords
   * arithmetic expressions
@@ -16,13 +16,13 @@ The little Dash language includes a small subset of the [Dart](https://dart.dev)
     // Dash code
 
     var one = 1;
-    var tpf = 2.5;
+    var two = 2;
 
     var add = (x, y) {
       return x + y;
     };
 
-    var result = add(one, tpf);
+    var result = add(one, two);
   ```
 
 ## Interpreter
@@ -36,7 +36,7 @@ The Dash interpreter is build to parse the Dash language, which includes followi
 
 ## Run REPL
 
-    $ pub run bin/repl
+    $ pub run bin/dash
     >> 2 * 5 + 10
     20
     >> var a = 1; var b = 2; a + b;
@@ -52,11 +52,6 @@ The Dash interpreter is build to parse the Dash language, which includes followi
 
     $ pub run test
 
-## References
+## Reference
 
-  * [Writing An Interpreter In Go](https://interpreterbook.com/)
-  * [I wrote a programming language. Here’s how you can, too.](https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/)
-
-
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+Dash is a dartify version of [Writing An Interpreter In Go](https://interpreterbook.com/), which is a great book of interpreter implementation.
