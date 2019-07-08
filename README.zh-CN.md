@@ -4,7 +4,7 @@
 
 Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，它也是一门解释型语言，支持 [Dart](https://dart.dev) 语言的部分基础特性。
 
-Dash 的实现原理基于讲解编写解释器的好书 - 《[Writing An Interpreter In Go](https://interpreterbook.com/)》。
+Dash 的实现原理基于编写解释器的好书 - 《[Writing An Interpreter In Go](https://interpreterbook.com/)》。
 
 ## 语言
 
