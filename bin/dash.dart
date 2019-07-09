@@ -1,6 +1,11 @@
-import 'package:dash/dash.dart' as dash;
+import 'package:dash/dash.dart';
 
 main(List<String> args) {
-  var repl = dash.Repl();
-  repl.run();
+  if (args.length > 1) {
+    print("Usage: dash [script]");
+  } else if (args.length == 1) {
+    Dash.runFile(args[0]);
+  } else {
+    Dash.runPrompt();
+  }
 }
