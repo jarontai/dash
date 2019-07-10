@@ -33,11 +33,11 @@ class Dash {
     }
   }
 
-  void error(int line, String message) {
+  static void error(int line, String message) {
     _handleError(line, '', message);
   }
 
-  void _handleError(int line, String where, String message) {
+  static void _handleError(int line, String where, String message) {
     print('[line $line] Error $where: $message');
     hadError = true;
   }
