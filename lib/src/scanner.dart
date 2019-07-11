@@ -1,6 +1,8 @@
 import 'token.dart';
 import 'dash.dart';
 
+export 'token.dart';
+
 class Scanner {
   final String _source;
   final List<Token> _tokens = [];

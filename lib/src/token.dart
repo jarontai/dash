@@ -8,7 +8,7 @@ class Token {
 
   @override
   String toString() {
-    return '$type $lexeme $literal';
+    return '$type ${lexeme ?? ''} ${literal ?? ''}';
   }
 }
 

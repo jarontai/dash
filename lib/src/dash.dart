@@ -18,7 +18,7 @@ class Dash {
 
   static void runPrompt() {
     for (;;) {
-      print('> ');
+      stdout.write('> ');
       run(stdin.readLineSync());
       hadError = false;
     }
@@ -29,7 +29,7 @@ class Dash {
     var tokens = scanner.scanTokens();
 
     for (var token in tokens) {
-      print(token);
+      stdout.writeln(token);
     }
   }
 
