@@ -1,5 +1,6 @@
 import 'token.dart';
 import 'dash.dart';
+import 'util.dart' as util;
 
 export 'token.dart';
 
@@ -83,13 +84,24 @@ class Scanner {
       case '\r':
       case '\t':
         break;
-      
+
       case '\n':
         _line++;
         break;
 
+      case '\'':
+        _string('\'');
+        break;
+      case '"':
+        _string('"');
+        break;
+
       default:
-        Dash.error(_line, 'Unexpected character.');
+        if (util.isDigit(char)) {
+          _number();
+        } else {
+          Dash.error(_line, 'Unexpected character.');
+        }
         break;
     }
   }
@@ -111,5 +123,44 @@ class Scanner {
     return true;
   }
 
-  String _peek() => _isAtEnd() ? '\0' : _source[_current];
+  String _peek() => _isAtEnd() ? '' : _source[_current];
+
+  String _peekNext() {
+    if ((_current + 1) >= _source.length) return '';
+    return _source[_current + 1];
+  }
+
+  void _string(String quote) {
+    while (_peek() != quote && !_isAtEnd()) {
+      if (_peek() == '\n') _line++;
+      _advance();
+    }
+
+    if (_isAtEnd()) {
+      Dash.error(_line, 'Unterminated string.');
+      return;
+    }
+
+    _advance();
+
+    var value = _source.substring(_start + 1, _current - 1);
+    _addToken(TokenType.STRING, literal: value);
+  }
+
+  void _number() {
+    while (util.isDigit(_peek())) {
+      _advance();
+    }
+
+    if (_peek() == '.' && util.isDigit(_peekNext())) {
+      _advance();
+
+      while (util.isDigit(_peek())) {
+        _advance();
+      }
+    }
+
+    _addToken(TokenType.NUMBER,
+        literal: num.tryParse(_source.substring(_start, _current)));
+  }
 }

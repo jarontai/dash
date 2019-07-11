@@ -34,63 +34,22 @@ void main() {
     }
   });
 
-  // test('function', () {
-  //   var input = '''
-  //     var one = 1;
-  //     var tpf = 2.5;
+  test('literal', () {
+    var source = '"test string 1" \'test string 2\' 1 2 3.5';
 
-  //     var add = (x, y) {
-  //       return x + y;
-  //     };
+    var expects = [
+      'test string 1',
+      'test string 2',
+      1,
+      2,
+      3.5,
+      null
+    ];
 
-  //     var result = add(one, tpf);''';
+    var tokens = Scanner(source).scanTokens();
 
-  //   var expectTokens = [
-  //     Tokens.kVar,
-  //     Token.identifier('one'),
-  //     Tokens.assign,
-  //     Token.number('1'),
-  //     Tokens.semi,
-  //     Tokens.kVar,
-  //     Token.identifier('tpf'),
-  //     Tokens.assign,
-  //     Token.number('2.5'),
-  //     Tokens.semi,
-  //     Tokens.kVar,
-  //     Token.identifier('add'),
-  //     Tokens.assign,
-  //     Tokens.lparen,
-  //     Token.identifier('x'),
-  //     Tokens.comma,
-  //     Token.identifier('y'),
-  //     Tokens.rparen,
-  //     Tokens.lbrace,
-  //     Tokens.kReturn,
-  //     Token.identifier('x'),
-  //     Tokens.plus,
-  //     Token.identifier('y'),
-  //     Tokens.semi,
-  //     Tokens.rbrace,
-  //     Tokens.semi,
-  //     Tokens.kVar,
-  //     Token.identifier('result'),
-  //     Tokens.assign,
-  //     Token.identifier('add'),
-  //     Tokens.lparen,
-  //     Token.identifier('one'),
-  //     Tokens.comma,
-  //     Token.identifier('tpf'),
-  //     Tokens.rparen,
-  //     Tokens.semi,
-  //     Tokens.eof,
-  //   ];
-
-  //   Lexer lexer = Lexer(input);
-
-  //   for (var token in expectTokens) {
-  //     var tok = lexer.nextToken();
-  //     expect(tok.tokenType, token.tokenType);
-  //     expect(tok.literal, token.literal);
-  //   }
-  // });
+    for (var index = 0; index < tokens.length; index++) {
+      expect(tokens[index].literal, expects[index]);
+    }
+  });
 }
