@@ -7,8 +7,8 @@ main(List<String> args) {
     print("Usage: dash [script]");
     exit(64);
   } else if (args.length == 1) {
-    Dash.runFile(args[0]);
+    Runner.runFile(args[0]);
   } else {
-    Dash.runPrompt();
+    Runner.runPrompt();
   }
 }

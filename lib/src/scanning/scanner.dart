@@ -1,6 +1,6 @@
 import 'token.dart';
-import 'dash.dart';
-import 'util.dart' as util;
+import '../runner.dart';
+import '../util.dart' as util;
 
 export 'token.dart';
 
@@ -123,7 +123,7 @@ class Scanner {
         } else if (util.isAlpha(char)) {
           identifier();
         } else {
-          Dash.error(_line, 'Unexpected character.');
+          Runner.error(_line, 'Unexpected character.');
         }
         break;
     }
@@ -160,7 +160,7 @@ class Scanner {
     }
 
     if (_isAtEnd()) {
-      Dash.error(_line, 'Unterminated string.');
+      Runner.error(_line, 'Unterminated string.');
       return;
     }
 

@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'scanner.dart';
+import 'scanning/scanner.dart';
 
-class Dash {
+class Runner {
   static bool hadError = false;
 
   static void runFile(String arg) {

@@ -1,1 +1,1 @@
-export 'src/dash.dart';
+export 'src/runner.dart';
