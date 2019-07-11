@@ -10,6 +10,20 @@ class Scanner {
   int _start = 0;
   int _current = 0;
   int _line = 1;
+  final Map<String, TokenType> _keywords = {
+    'class': TokenType.CLASS,
+    'else': TokenType.ELSE,
+    'false': TokenType.FALSE,
+    'for': TokenType.FOR,
+    'if': TokenType.IF,
+    'null': TokenType.NULL,
+    'return': TokenType.RETURN,
+    'super': TokenType.SUPER,
+    'this': TokenType.THIS,
+    'true': TokenType.TRUE,
+    'var': TokenType.VAR,
+    'while': TokenType.WHILE,
+  };
 
   Scanner(this._source);
 
@@ -80,6 +94,13 @@ class Scanner {
         }
         break;
 
+      case '&':
+        _addToken(_match('&') ? TokenType.LOGIC_AND : TokenType.BIT_AND);
+        break;
+      case '|':
+        _addToken(_match('|') ? TokenType.LOGIC_OR : TokenType.BIT_OR);
+        break;
+
       case ' ':
       case '\r':
       case '\t':
@@ -99,6 +120,8 @@ class Scanner {
       default:
         if (util.isDigit(char)) {
           _number();
+        } else if (util.isAlpha(char)) {
+          identifier();
         } else {
           Dash.error(_line, 'Unexpected character.');
         }
@@ -162,5 +185,16 @@ class Scanner {
 
     _addToken(TokenType.NUMBER,
         literal: num.tryParse(_source.substring(_start, _current)));
+  }
+
+  void identifier() {
+    while (util.isAlphaNumeric(_peek())) {
+      _advance();
+    }
+
+    var text = _source.substring(_start, _current);
+    var type = _keywords[text] ?? TokenType.IDENTIFIER;
+
+    _addToken(type);
   }
 }

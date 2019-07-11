@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('basic', () {
-    var source = '=+-*/!><,;(){} == != >= <= ';
+    var source = '=+-*/!><,;(){} == != >= <= & | && ||';
 
     var expects = [
       TokenType.EQUAL,
@@ -24,6 +24,10 @@ void main() {
       TokenType.BANG_EQUAL,
       TokenType.GREATER_EQUAL,
       TokenType.LESS_EQUAL,
+      TokenType.BIT_AND,
+      TokenType.BIT_OR,
+      TokenType.LOGIC_AND,
+      TokenType.LOGIC_OR,
       TokenType.EOF,
     ];
 
@@ -52,4 +56,30 @@ void main() {
       expect(tokens[index].literal, expects[index]);
     }
   });
+
+  test('keywords', () {
+    var source = 'class else false for if null return super this true var while';
+
+    var expects = [
+      TokenType.CLASS,
+      TokenType.ELSE,
+      TokenType.FALSE,
+      TokenType.FOR,
+      TokenType.IF,
+      TokenType.NULL,
+      TokenType.RETURN,
+      TokenType.SUPER,
+      TokenType.THIS,
+      TokenType.TRUE,
+      TokenType.VAR,
+      TokenType.WHILE,
+      TokenType.EOF,
+    ];
+
+    var tokens = Scanner(source).scanTokens();
+
+    for (var index = 0; index < tokens.length; index++) {
+      expect(tokens[index].type, expects[index]);
+    }
+  });  
 }

@@ -35,6 +35,10 @@ enum TokenType {
   GREATER_EQUAL, // >=
   LESS, // <
   LESS_EQUAL, // <=
+  BIT_AND, // &
+  BIT_OR, // |
+  LOGIC_AND, // &&
+  LOGIC_OR, // ||
 
   // Literals.
   IDENTIFIER,
@@ -42,14 +46,13 @@ enum TokenType {
   NUMBER,
 
   // Keywords.
-  AND,
+  
   CLASS,
   ELSE,
   FALSE,
   FOR,
   IF,
   NULL,
-  OR,
   RETURN,
   SUPER,
   THIS,
