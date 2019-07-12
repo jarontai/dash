@@ -4,7 +4,7 @@ English | [简体中文](./README.zh-CN.md)
 
 Dash is an interpreter fully build with [Dart](https://dart.dev). Dash is also a small dynamic language which is a subset of the [Dart](https://dart.dev) language.
 
-Dash is a dartify version of [Writing An Interpreter In Go](https://interpreterbook.com/), which is a great book of interpreter implementation.
+Dash is a dartify version of [Bob Nystrom](https://github.com/munificent)'s [Crafting Interpreters](http://craftinginterpreters.com/), which is a great book of interpreter/language implementation.
 
 ## Language
 
@@ -33,9 +33,9 @@ The Dash language features:
 
 The Dash interpreter is build to parse the Dash language, which includes following:
 
-  * the lexer
-  * the parser
+  * the lexer (scanner)
   * the AST (Abstract Syntax Tree)
+  * the parser
   * the evaluator
 
 ## Run REPL

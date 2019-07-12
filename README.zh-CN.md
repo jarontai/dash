@@ -4,11 +4,11 @@
 
 Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，它也是一门解释型语言，支持 [Dart](https://dart.dev) 语言的部分基础特性。
 
-Dash 的实现原理基于编写解释器的好书 - 《[Writing An Interpreter In Go](https://interpreterbook.com/)》。
+Dash 的实现是基于 Dart 项目组成员 [Bob Nystrom](https://github.com/munificent) 的 《[Crafting Interpreters](http://craftinginterpreters.com/)》。
 
 ## 语言
 
-Dash 的语言特性包括以下：
+Dash 的语言特性包括：
 
   * Dart-like 的语法和关键字
   * 支持算术表达式，数字和布尔量
@@ -30,11 +30,11 @@ Dash 的语言特性包括以下：
 
 ## 解释器
 
-Dash 解释器的主要工作是分析 Dash 语言， 它由以下模块组成：
+Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主要模块组成：
 
-  * 词法分析器 lexer
-  * 语法分析器 parser
+  * 词法分析器 lexer (scanner)
   * 抽象语法树 AST
+  * 语法分析器 parser
   * 表达式计算器 evaluator
 
 ## 运行 REPL
