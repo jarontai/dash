@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'scanning/scanner.dart';
 
+// The dash runner
 class Runner {
   static bool hadError = false;
 
