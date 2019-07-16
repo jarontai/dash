@@ -36,10 +36,8 @@ enum TokenType {
   GREATER_EQUAL, // >=
   LESS, // <
   LESS_EQUAL, // <=
-  BIT_AND, // &
-  BIT_OR, // |
-  LOGIC_AND, // &&
-  LOGIC_OR, // ||
+  AND, // &&
+  OR, // ||
 
   // Literals.
   IDENTIFIER,

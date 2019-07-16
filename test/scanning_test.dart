@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('basic', () {
-    var source = '=+-*/!><,;(){} == != >= <= & | && ||';
+    var source = '=+-*/!><,;(){} == != >= <= && ||';
 
     var expects = [
       TokenType.EQUAL,
@@ -24,10 +24,8 @@ void main() {
       TokenType.BANG_EQUAL,
       TokenType.GREATER_EQUAL,
       TokenType.LESS_EQUAL,
-      TokenType.BIT_AND,
-      TokenType.BIT_OR,
-      TokenType.LOGIC_AND,
-      TokenType.LOGIC_OR,
+      TokenType.AND,
+      TokenType.OR,
       TokenType.EOF,
     ];
 

@@ -12,6 +12,8 @@ void main() {
       '1 + 2',
       '1 + 2 / 1 + 3',
       '1 + 2 / (1 + 3)',
+      '1 > 2',
+      '1 <= 2',
       ];
 
     var expects = [
@@ -22,11 +24,15 @@ void main() {
       'true',
       '(+ 1 2)',
       '(+ (+ 1 (/ 2 1)) 3)',
-      '(+ 1 (/ 2 (group (+ 1 3))))'
+      '(+ 1 (/ 2 (group (+ 1 3))))',
+      '(> 1 2)',
+      '(<= 1 2)',
     ];
 
+
     for (var i = 0; i < inputs.length; i++) {
-      expect(Runner.run(inputs[i]), expects[i]);
+      var tokens = Scanner(inputs[i]).scanTokens();
+      expect(Parser(tokens).parseStringify(), expects[i]);
     }
   });
 

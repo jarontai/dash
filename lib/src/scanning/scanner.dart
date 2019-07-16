@@ -94,12 +94,19 @@ class Scanner {
           _addToken(TokenType.SLASH);
         }
         break;
-
       case '&':
-        _addToken(_match('&') ? TokenType.LOGIC_AND : TokenType.BIT_AND);
+        if (_match('&')) {
+          _addToken(TokenType.AND);
+        } else {
+          Runner.error(_line, 'Unexpected character.');
+        }
         break;
       case '|':
-        _addToken(_match('|') ? TokenType.LOGIC_OR : TokenType.BIT_OR);
+        if (_match('|')) {
+          _addToken(TokenType.OR);
+        } else {
+          Runner.error(_line, 'Unexpected character.');
+        }
         break;
 
       case ' ':

@@ -1,3 +1,5 @@
+import 'package:dash/src/parsing/ast_printer.dart';
+
 import 'ast.dart';
 import '../scanning/token.dart';
 import '../runner.dart';
@@ -5,6 +7,7 @@ import '../runner.dart';
 class Parser {
   final List<Token> _tokens;
   int _current = 0;
+  static final AstPrinter astPrinter = AstPrinter();
 
   Parser(this._tokens);
 
@@ -15,7 +18,12 @@ class Parser {
       return null;
     } catch (e) {
       print(e);
+      return null;
     }
+  }
+
+  String parseStringify() {
+    return astPrinter.print(parse());
   }
 
   Expression _expression() {

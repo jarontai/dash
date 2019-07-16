@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'scanning/scanner.dart';
-import 'parsing/ast_printer.dart';
 import 'parsing/parser.dart';
+import 'evaluating/interpreter.dart';
 
 // The dash runner
 class Runner {
   static bool hadError = false;
+  static bool hadRuntimeError = false;
+  static final Interpreter interpreter = Interpreter();
 
   static void runFile(String arg) {
     var file = File(arg);
@@ -15,6 +17,9 @@ class Runner {
 
       if (hadError) {
         exit(65);
+      }
+      if (hadRuntimeError) {
+        exit(70);
       }
     }
   }
@@ -27,16 +32,18 @@ class Runner {
     }
   }
 
-  static String run(String source) {
+  static Object run(String source, [bool doPrint = true]) {
     var scanner = Scanner(source);
     var tokens = scanner.scanTokens();
     var parser = Parser(tokens);
-    var expr = parser.parse();
+    var expression = parser.parse();
 
     if (hadError) return null;
 
-    var result = AstPrinter().print(expr);
-    stdout.writeln(result);
+    var result = interpreter.interpreter(expression);
+    if (doPrint) {
+      stdout.writeln(result.toString());
+    }
     return result;
   }
 
@@ -45,7 +52,7 @@ class Runner {
   }
 
   static void _report(int line, String where, String message) {
-    print('[line $line] Error $where: $message');
+    stdout.writeln('[line $line] Error $where: $message');
     hadError = true;
   }
 
@@ -55,5 +62,10 @@ class Runner {
     } else {
       _report(token.line, ' at \'${token.lexeme}\'', message);
     }
+  }
+
+  static void runtimeError(RuntimeError error) {
+    stdout.writeln('${error.message} \n[line ${error.token.line}]');
+    hadRuntimeError = true;
   }
 }
