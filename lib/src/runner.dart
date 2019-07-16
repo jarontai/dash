@@ -58,14 +58,14 @@ class Runner {
 
   static void parseError(Token token, String message) {
     if (token.type == TokenType.EOF) {
-      _report(token.line, ' at end', message);
+      _report(token.line, 'at end', message);
     } else {
-      _report(token.line, ' at \'${token.lexeme}\'', message);
+      _report(token.line, 'at \'${token.lexeme}\'', message);
     }
   }
 
   static void runtimeError(RuntimeError error) {
-    stdout.writeln('${error.message} \n[line ${error.token.line}]');
+    stdout.writeln('[line ${error.token.line}] Runtime Error: ${error.message}');
     hadRuntimeError = true;
   }
 }

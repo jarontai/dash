@@ -1,9 +1,9 @@
-import 'package:dash/src/parsing/ast_printer.dart';
-
 import 'ast.dart';
+import 'ast_printer.dart';
 import '../scanning/token.dart';
 import '../runner.dart';
 
+// The parser, which response for producing ast [Expression]s from [Token]s.
 class Parser {
   final List<Token> _tokens;
   int _current = 0;

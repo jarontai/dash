@@ -1,8 +1,8 @@
 import '../runner.dart';
-import 'package:dash/src/scanning/scanner.dart';
-
 import '../parsing/ast.dart';
+import '../scanning/scanner.dart';
 
+// Dash's interpreter, which response for evaluating ast [Expression]s.
 class Interpreter implements Visitor<Object> {
   Object interpreter(Expression expression) {
     Object value;

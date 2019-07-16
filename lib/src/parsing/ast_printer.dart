@@ -1,7 +1,7 @@
 import 'ast.dart';
 import '../scanning/token.dart';
 
-// The pretty ast printer
+// The pretty ast printer.
 class AstPrinter implements Visitor<String> {
   @override
   String visitBinaryExpression(BinaryExpression expression) {
