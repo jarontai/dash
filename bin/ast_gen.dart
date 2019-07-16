@@ -7,10 +7,12 @@ final Map<String, Map<String, String>> astMap = {
     'BinaryExpression': 'Expression left, Token op, Expression right',
     'GroupingExpression': 'Expression expression',
     'LiteralExpression': 'Object value',
-    'UnaryExpression': 'Token op, Expression right'
+    'UnaryExpression': 'Token op, Expression right',
+    'VariableExpression': 'Token name',
   },
   'Statement': {
     'ExpressionStatement': 'Expression expression',
+    'VarStatement': 'Token name, Expression initializer',
   },  
 };
 

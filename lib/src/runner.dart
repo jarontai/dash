@@ -56,7 +56,9 @@ class Runner {
     hadError = true;
   }
 
-  static void parseError(Token token, String message) {
+  static void parseError(ParseError error) {
+    var token = error.token;
+    var message = error.message;
     if (token.type == TokenType.EOF) {
       _report(token.line, 'at end', message);
     } else {

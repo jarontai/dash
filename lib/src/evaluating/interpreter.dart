@@ -1,9 +1,12 @@
 import '../runner.dart';
 import '../parsing/ast.dart';
 import '../scanning/scanner.dart';
+import 'environment.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
 class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Object> {
+  Environment _environment = Environment();
+
   Object interpreter(List<Statement> statements) {
     var result;
     try {
@@ -127,6 +130,21 @@ class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Object>
   @override
   Object visitExpressionStatement(ExpressionStatement statement) {
     return _evaluate(statement.expression);
+  }
+
+  @override
+  Object visitVarStatement(VarStatement stmt) {
+    var result;
+    if (stmt.initializer != null) {
+      result = _evaluate(stmt.initializer);
+    }
+    _environment.define(stmt.name.lexeme, result);
+    return result;
+  }
+
+  @override
+  Object visitVariableExpression(VariableExpression expression) {
+    return _environment.fetch(expression.name);
   }
 }
 

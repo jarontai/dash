@@ -3,6 +3,8 @@ import 'ast_printer.dart';
 import '../scanning/token.dart';
 import '../runner.dart';
 
+export 'ast.dart';
+
 // The parser, which response for producing ast [Expression]s from [Token]s.
 class Parser {
   final List<Token> _tokens;
@@ -12,11 +14,18 @@ class Parser {
   Parser(this._tokens);
 
   List<Statement> parse() {
-    var result = <Statement>[];
-    while (!_isAtEnd()) {
-      result.add(_statement());
+    var stmts = <Statement>[];
+    try {
+      while (!_isAtEnd()) {
+        var stmt = _declaration();
+        if (stmt != null) {
+          stmts.add(stmt);
+        }
+      }
+    } on ParseError catch (e) {
+      Runner.parseError(e);
     }
-    return result;
+    return stmts;
   }
 
   String parseExpression() {
@@ -102,6 +111,10 @@ class Parser {
       return LiteralExpression(_previous().literal);
     }
 
+    if (_match([TokenType.IDENTIFIER])) {
+      return VariableExpression(_previous());
+    }
+
     if (_match([TokenType.LEFT_PAREN])) {
       var expr = _expression();
       _consume(TokenType.RIGHT_PAREN, 'Expect \')\' after expression.');
@@ -144,8 +157,7 @@ class Parser {
   Token _peek() => _tokens[_current];
 
   ParseError _error(Token token, String message) {
-    Runner.parseError(token, message);
-    return ParseError();
+    return ParseError(token, message);
   }
 
   void _synchronize() {
@@ -181,6 +193,42 @@ class Parser {
     _consume(TokenType.SEMICOLON, 'Expect \';\' after expression.');
     return ExpressionStatement(expr);
   }
+
+  Statement _declaration() {
+    try {
+      if (_match([TokenType.VAR])) {
+        return _varDeclaration();
+      }
+
+      return _statement();
+    } on ParseError catch (e) {
+      _synchronize();
+      Runner.parseError(e);
+      return null;
+    }
+  }
+
+  Statement _varDeclaration() {
+    Token name = _consume(TokenType.IDENTIFIER, 'Expect variable name.');
+
+    Expression initializer;
+    if (_match([TokenType.EQUAL])) {
+      initializer = _expression();
+    }
+
+    _consume(TokenType.SEMICOLON, 'Expect \';\' after variable declaration.');
+    return VarStatement(name, initializer);
+  }
 }
 
-class ParseError extends Error {}
+class ParseError extends Error {
+  final Token token;
+  final String message;
+
+  ParseError(this.token, this.message);
+
+  @override
+  String toString() {
+    return '$token: $message';
+  }
+}

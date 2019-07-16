@@ -42,6 +42,12 @@ class AstPrinter implements ExpressionVisitor<String> {
   String print(Expression expr) {
     return expr.acceptExpression(this);
   }
+
+  @override
+  String visitVariableExpression(VariableExpression expression) {
+    // TODO: implement visitVariableExpression
+    return null;
+  }
 }
 
 main(List<String> args) {

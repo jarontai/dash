@@ -36,34 +36,23 @@ void main() {
     }
   });
 
-  // test('var statement', () {
-  //   var input = '''
-  //     var one = 1;
-  //     var two = 2;
-  //     var three = 3;''';
+  test('var statements', () {
+    var input = '''
+      var one = 1;
+      var two = 2;
+      var string = 'string';''';
 
-  //   var expectIdentifiers = ['one', 'two', 'three'];
+    var expects = ['one', 'two', 'string'];
 
-  //   Lexer lexer = Lexer(input);
-  //   Parser parser = Parser(lexer);
-  //   Program program = parser.parseProgram();
+    var tokens = Scanner(input).scanTokens();
+    var stmts = Parser(tokens).parse();
 
-  //   expect(program, isNotNull);
-  //   expect(program.statements, isNotNull);
-  //   expect(program.statements.length, 3);
-  //   expect(parser.errors.isEmpty, true);
-
-  //   for (var i = 0; i < program.statements.length; i++) {
-  //     var stmt = program.statements[i];
-  //     expect(stmt, isA<VarStatement>());
-
-  //     var identifier = expectIdentifiers[i];
-  //     var varStmt = stmt as VarStatement;
-  //     expect(varStmt.name.value, identifier);
-  //     expect(varStmt.name.tokenLiteral, identifier);
-  //     expect(varStmt.value.toString(), (i + 1).toString());
-  //   }
-  // });
+    for (var i = 0; i < expects.length; i++) {
+      expect(stmts[i], isA<VarStatement>());
+      expect((stmts[i] as VarStatement).name.lexeme, expects[i]);
+      expect((stmts[i] as VarStatement).initializer, isA<LiteralExpression>());
+    }
+  });
 
   // test('return statement', () {
   //   var input = '''
