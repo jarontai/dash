@@ -2,7 +2,7 @@ import 'ast.dart';
 import '../scanning/token.dart';
 
 // The pretty ast printer.
-class AstPrinter implements Visitor<String> {
+class AstPrinter implements ExpressionVisitor<String> {
   @override
   String visitBinaryExpression(BinaryExpression expression) {
     return _parenthesize(
@@ -32,7 +32,7 @@ class AstPrinter implements Visitor<String> {
 
     sb.write('($name');
     for (var expr in expressions) {
-      sb.write(' ${expr.accept(this)}');
+      sb.write(' ${expr.acceptExpression(this)}');
     }
     sb.write(')');
 
@@ -40,7 +40,7 @@ class AstPrinter implements Visitor<String> {
   }
 
   String print(Expression expr) {
-    return expr.accept(this);
+    return expr.acceptExpression(this);
   }
 }
 

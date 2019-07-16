@@ -36,11 +36,11 @@ class Runner {
     var scanner = Scanner(source);
     var tokens = scanner.scanTokens();
     var parser = Parser(tokens);
-    var expression = parser.parse();
+    var stmts = parser.parse();
 
     if (hadError) return null;
 
-    var result = interpreter.interpreter(expression);
+    var result = interpreter.interpreter(stmts);
     if (doPrint) {
       stdout.writeln(result.toString());
     }

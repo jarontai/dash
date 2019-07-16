@@ -2,14 +2,17 @@ import 'dart:io';
 
 import 'package:dart_style/dart_style.dart';
 
-final Map<String, String> astMap = {
-  'BinaryExpression': 'Expression left, Token op, Expression right',
-  'GroupingExpression': 'Expression expression',
-  'LiteralExpression': 'Object value',
-  'UnaryExpression': 'Token op, Expression right'
+final Map<String, Map<String, String>> astMap = {
+  'Expression': {
+    'BinaryExpression': 'Expression left, Token op, Expression right',
+    'GroupingExpression': 'Expression expression',
+    'LiteralExpression': 'Object value',
+    'UnaryExpression': 'Token op, Expression right'
+  },
+  'Statement': {
+    'ExpressionStatement': 'Expression expression',
+  },  
 };
-
-final String baseName = 'Expression';
 
 main(List<String> args) {
   var sb = StringBuffer();
@@ -27,44 +30,50 @@ main(List<String> args) {
 
   sb.writeln();
 
-  sb.writeln('abstract class $baseName {');
+  for (var baseName in astMap.keys) {
+    sb.writeln('abstract class $baseName {');
 
-  sb.writeln('R accept<R>(Visitor<R> visitor);');
+    sb.writeln('R accept${baseName}<R>(${baseName}Visitor<R> visitor);');
 
-  sb.writeln('}');
+    sb.writeln('}');
 
-  for (var entry in astMap.entries) {
-    var className = entry.key;
-    var fields = entry.value;
+    for (var entry in astMap[baseName].entries) {
+      var className = entry.key;
+      var fields = entry.value;
 
-    sb.writeln();
-    sb.writeln('class $className extends $baseName {');
+      sb.writeln();
+      sb.writeln('class $className extends $baseName {');
 
-    fields.split(',').forEach((field) {
-      sb.writeln('final $field;');
+      fields.split(',').forEach((field) {
+        sb.writeln('final $field;');
+      });
+
+      var args = fields.split(',').map((field) {
+        return 'this.${field.trim().split(' ')[1]}';
+      }).join(',');
+      sb.writeln('$className($args);');
+
+      sb.writeln();
+
+      sb.writeln('R accept${baseName}<R>(${baseName}Visitor<R> visitor) {');
+      sb.writeln('return visitor.visit$className(this);');
+      sb.writeln('}');
+
+      sb.writeln('}');
+
+      sb.writeln();
+    }
+
+    sb.writeln('abstract class ${baseName}Visitor<R> {');
+    astMap[baseName].keys.forEach((className) {
+      sb.writeln('R visit$className($className ${baseName.toLowerCase()});');
     });
-
-    var args = fields.split(',').map((field) {
-      return 'this.${field.trim().split(' ')[1]}';
-    }).join(',');
-    sb.writeln('$className($args);');
+    sb.writeln('}');
 
     sb.writeln();
-
-    sb.writeln('R accept<R>(Visitor<R> visitor) {');
-    sb.writeln('return visitor.visit$className(this);');
-    sb.writeln('}');
-
-    sb.writeln('}');
-
+    sb.writeln();
     sb.writeln();
   }
-
-  sb.writeln('abstract class Visitor<R> {');
-  astMap.keys.forEach((className) {
-    sb.writeln('R visit$className($className ${baseName.toLowerCase()});');
-  });
-  sb.writeln('}');
 
   var formatter = DartFormatter();
   var file = File('./lib/src/parsing/ast.dart');

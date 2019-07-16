@@ -32,7 +32,7 @@ void main() {
 
     for (var i = 0; i < inputs.length; i++) {
       var tokens = Scanner(inputs[i]).scanTokens();
-      expect(Parser(tokens).parseStringify(), expects[i]);
+      expect(Parser(tokens).parseExpression(), expects[i]);
     }
   });
 

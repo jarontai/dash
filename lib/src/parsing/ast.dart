@@ -3,8 +3,9 @@
 import '../scanning/token.dart';
 
 // The ast expressions.
+
 abstract class Expression {
-  R accept<R>(Visitor<R> visitor);
+  R acceptExpression<R>(ExpressionVisitor<R> visitor);
 }
 
 class BinaryExpression extends Expression {
@@ -13,7 +14,7 @@ class BinaryExpression extends Expression {
   final Expression right;
   BinaryExpression(this.left, this.op, this.right);
 
-  R accept<R>(Visitor<R> visitor) {
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
     return visitor.visitBinaryExpression(this);
   }
 }
@@ -22,7 +23,7 @@ class GroupingExpression extends Expression {
   final Expression expression;
   GroupingExpression(this.expression);
 
-  R accept<R>(Visitor<R> visitor) {
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
     return visitor.visitGroupingExpression(this);
   }
 }
@@ -31,7 +32,7 @@ class LiteralExpression extends Expression {
   final Object value;
   LiteralExpression(this.value);
 
-  R accept<R>(Visitor<R> visitor) {
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
     return visitor.visitLiteralExpression(this);
   }
 }
@@ -41,14 +42,31 @@ class UnaryExpression extends Expression {
   final Expression right;
   UnaryExpression(this.op, this.right);
 
-  R accept<R>(Visitor<R> visitor) {
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
     return visitor.visitUnaryExpression(this);
   }
 }
 
-abstract class Visitor<R> {
+abstract class ExpressionVisitor<R> {
   R visitBinaryExpression(BinaryExpression expression);
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);
   R visitUnaryExpression(UnaryExpression expression);
+}
+
+abstract class Statement {
+  R acceptStatement<R>(StatementVisitor<R> visitor);
+}
+
+class ExpressionStatement extends Statement {
+  final Expression expression;
+  ExpressionStatement(this.expression);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitExpressionStatement(this);
+  }
+}
+
+abstract class StatementVisitor<R> {
+  R visitExpressionStatement(ExpressionStatement statement);
 }

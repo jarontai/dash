@@ -2,7 +2,7 @@ import 'package:dash/src/scanning/scanner.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('basic', () {
+  test('basics', () {
     var source = '=+-*/!><,;(){} == != >= <= && ||';
 
     var expects = [
@@ -39,6 +39,14 @@ void main() {
   test('literal', () {
     var source = '"test string 1" \'test string 2\' 1 2 3.5';
 
+    var expectTypes = [
+      TokenType.STRING,
+      TokenType.STRING,
+      TokenType.NUMBER,
+      TokenType.NUMBER,
+      TokenType.NUMBER,
+      TokenType.EOF,
+    ];
     var expects = [
       'test string 1',
       'test string 2',
@@ -51,6 +59,7 @@ void main() {
     var tokens = Scanner(source).scanTokens();
 
     for (var index = 0; index < tokens.length; index++) {
+      expect(tokens[index].type, expectTypes[index]);
       expect(tokens[index].literal, expects[index]);
     }
   });

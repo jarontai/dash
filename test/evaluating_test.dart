@@ -4,18 +4,18 @@ import 'package:test/test.dart';
 void main() {
   test('basic expressions', () {
     var inputs = [
-      '1',
-      '2',
-      '"string"',
-      'false',
-      'true',
-      '1 + 2',
-      '1 + 2 / 1 + 3',
-      '1 + 2 / (1 + 3)',
-      '1 > 2',
-      '1 < 2',
-      '1 <= 2',
-      '1 >= 2',
+      '1;',
+      '2;',
+      '"string";',
+      'false;',
+      'true;',
+      '1 + 2;',
+      '1 + 2 / 1 + 3;',
+      '1 + 2 / (1 + 3);',
+      '1 > 2;',
+      '1 < 2;',
+      '1 <= 2;',
+      '1 >= 2;',
       ];
 
     var expects = [
@@ -30,7 +30,7 @@ void main() {
       false,
       true,
       true,
-      false,      
+      false,
     ];
 
     for (var i = 0; i < inputs.length; i++) {

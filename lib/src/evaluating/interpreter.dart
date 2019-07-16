@@ -3,21 +3,17 @@ import '../parsing/ast.dart';
 import '../scanning/scanner.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
-class Interpreter implements Visitor<Object> {
-  Object interpreter(Expression expression) {
-    Object value;
+class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Object> {
+  Object interpreter(List<Statement> statements) {
+    var result;
     try {
-      value = _evaluate(expression);
+      for (var stmt in statements) {
+        result = stmt.acceptStatement(this);
+      }
     } on RuntimeError catch (e) {
       Runner.runtimeError(e);
     }
-    
-    // Hack, remove '.0' from integer-value doubles
-    if (value is double && value.toString().endsWith('.0')) {
-      value = int.parse(value.toString().substring(0, value.toString().length - 2));
-    }
-
-    return value;
+    return result;
   }
 
   @override
@@ -107,7 +103,7 @@ class Interpreter implements Visitor<Object> {
   }
 
   Object _evaluate(Expression expression) {
-    return expression.accept(this);
+    return expression.acceptExpression(this);
   }
 
   bool _isTruthy(Object right) {
@@ -126,6 +122,11 @@ class Interpreter implements Visitor<Object> {
 
     if (left is num && right is num) return;
     throw RuntimeError(token, 'Operands must be numbers.');
+  }
+
+  @override
+  Object visitExpressionStatement(ExpressionStatement statement) {
+    return _evaluate(statement.expression);
   }
 }
 

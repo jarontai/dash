@@ -11,19 +11,22 @@ class Parser {
 
   Parser(this._tokens);
 
-  Expression parse() {
-    try {
-      return _expression();
-    } on ParseError {
-      return null;
-    } catch (e) {
-      print(e);
-      return null;
+  List<Statement> parse() {
+    var result = <Statement>[];
+    while (!_isAtEnd()) {
+      result.add(_statement());
     }
+    return result;
   }
 
-  String parseStringify() {
-    return astPrinter.print(parse());
+  String parseExpression() {
+    var expr;
+    try {
+      expr = _expression();
+    } on ParseError catch (e) {
+      print(e);
+    }
+    return astPrinter.print(expr);
   }
 
   Expression _expression() {
@@ -148,11 +151,10 @@ class Parser {
   void _synchronize() {
     _advance();
 
-    while(!_isAtEnd()) {
+    while (!_isAtEnd()) {
       if (_previous().type == TokenType.SEMICOLON) return;
 
       switch (_peek().type) {
-        
         case TokenType.CLASS:
         case TokenType.VAR:
         case TokenType.FOR:
@@ -168,6 +170,16 @@ class Parser {
     }
 
     _advance();
+  }
+
+  Statement _statement() {
+    return _expressionStatement();
+  }
+
+  Statement _expressionStatement() {
+    var expr = _expression();
+    _consume(TokenType.SEMICOLON, 'Expect \';\' after expression.');
+    return ExpressionStatement(expr);
   }
 }
 
