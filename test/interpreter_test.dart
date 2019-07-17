@@ -55,8 +55,28 @@ void main() {
     ];
 
     var interpreter = Interpreter();
+
     for (var i = 0; i < inputs.length; i++) {
       var tokens = Scanner(inputs[i]).scanTokens();
+      var stmts = Parser(tokens).parse();
+      var result = interpreter.interpreter(stmts);
+      expect(result, expects[i]);
+    }
+  });
+
+  test('assign statements', () {
+    var inputs = [
+      'var one = 1; one = 2;',
+      'var string = "string"; string = "hello";'
+    ];
+
+    var expects = [2, 'hello'];
+
+    var interpreter = Interpreter();
+
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
       var stmts = Parser(tokens).parse();
       var result = interpreter.interpreter(stmts);
       expect(result, expects[i]);

@@ -4,6 +4,7 @@ import 'package:dart_style/dart_style.dart';
 
 final Map<String, Map<String, String>> astMap = {
   'Expression': {
+    'AssignExpression': 'Token name, Expression value',
     'BinaryExpression': 'Expression left, Token op, Expression right',
     'GroupingExpression': 'Expression expression',
     'LiteralExpression': 'Object value',
@@ -24,7 +25,7 @@ main(List<String> args) {
 
   sb.writeln();
 
-  sb.writeln("import '../scanning/token.dart';");
+  sb.writeln("import '../scanner/token.dart';");
 
   sb.writeln();
 
@@ -78,6 +79,6 @@ main(List<String> args) {
   }
 
   var formatter = DartFormatter();
-  var file = File('./lib/src/parsing/ast.dart');
+  var file = File('./lib/src/parser/ast.dart');
   file.writeAsStringSync(formatter.format(sb.toString()));
 }

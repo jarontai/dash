@@ -14,7 +14,7 @@ void main() {
       '1 + 2 / (1 + 3)',
       '1 > 2',
       '1 <= 2',
-      ];
+    ];
 
     var expects = [
       '1',
@@ -29,7 +29,6 @@ void main() {
       '(<= 1 2)',
     ];
 
-
     for (var i = 0; i < inputs.length; i++) {
       var tokens = Scanner(inputs[i]).scanTokens();
       expect(Parser(tokens).parseExpression(), expects[i]);
@@ -37,20 +36,30 @@ void main() {
   });
 
   test('var statements', () {
-    var input = '''
-      var one = 1;
-      var two = 2;
-      var string = 'string';''';
+    var inputs = ['var one = 1;', 'var two = 2;', 'var string = "string";'];
 
     var expects = ['one', 'two', 'string'];
 
-    var tokens = Scanner(input).scanTokens();
-    var stmts = Parser(tokens).parse();
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
+      var stmts = Parser(tokens).parse();
+      expect(stmts[0], isA<VarStatement>());
+      expect((stmts[0] as VarStatement).name.lexeme, expects[i]);
+      expect((stmts[0] as VarStatement).initializer, isA<LiteralExpression>());
+    }
+  });
 
-    for (var i = 0; i < expects.length; i++) {
-      expect(stmts[i], isA<VarStatement>());
-      expect((stmts[i] as VarStatement).name.lexeme, expects[i]);
-      expect((stmts[i] as VarStatement).initializer, isA<LiteralExpression>());
+  test('assign statements', () {
+    var inputs = ['var one = 1; one = 2;'];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
+      var stmts = Parser(tokens).parse();
+      expect(stmts[0], isA<VarStatement>());
+      expect(stmts[1], isA<ExpressionStatement>());
+      expect((stmts[1] as ExpressionStatement).expression, isA<AssignExpression>());
     }
   });
 

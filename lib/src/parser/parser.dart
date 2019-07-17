@@ -39,7 +39,7 @@ class Parser {
   }
 
   Expression _expression() {
-    return _equality();
+    return _assignment();
   }
 
   Expression _equality() {
@@ -218,6 +218,23 @@ class Parser {
 
     _consume(TokenType.SEMICOLON, 'Expect \';\' after variable declaration.');
     return VarStatement(name, initializer);
+  }
+
+  Expression _assignment() {
+    var expr = _equality();
+
+    if (_match([TokenType.EQUAL])) {
+      var token = _previous();
+      var value = _assignment();
+      if (expr is VariableExpression) {
+        var name = expr.name;
+        return AssignExpression(name, value);
+      }
+
+      _error(token, 'Invalid assignment target.');
+    }
+
+    return expr;
   }
 }
 

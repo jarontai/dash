@@ -48,6 +48,12 @@ class AstPrinter implements ExpressionVisitor<String> {
     // TODO: implement visitVariableExpression
     return null;
   }
+
+  @override
+  String visitAssignExpression(AssignExpression expression) {
+    // TODO: implement visitAssignExpression
+    return null;
+  }
 }
 
 main(List<String> args) {

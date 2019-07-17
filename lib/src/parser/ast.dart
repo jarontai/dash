@@ -8,6 +8,16 @@ abstract class Expression {
   R acceptExpression<R>(ExpressionVisitor<R> visitor);
 }
 
+class AssignExpression extends Expression {
+  final Token name;
+  final Expression value;
+  AssignExpression(this.name, this.value);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitAssignExpression(this);
+  }
+}
+
 class BinaryExpression extends Expression {
   final Expression left;
   final Token op;
@@ -57,6 +67,7 @@ class VariableExpression extends Expression {
 }
 
 abstract class ExpressionVisitor<R> {
+  R visitAssignExpression(AssignExpression expression);
   R visitBinaryExpression(BinaryExpression expression);
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);

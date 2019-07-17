@@ -146,6 +146,13 @@ class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Object>
   Object visitVariableExpression(VariableExpression expression) {
     return _environment.fetch(expression.name);
   }
+
+  @override
+  Object visitAssignExpression(AssignExpression expression) {
+    Object value = _evaluate(expression.value);
+    _environment.assign(expression.name, value);
+    return value;
+  }
 }
 
 class RuntimeError extends Error {
