@@ -12,6 +12,7 @@ final Map<String, Map<String, String>> astMap = {
     'VariableExpression': 'Token name',
   },
   'Statement': {
+    'BlockStatement': 'List<Statement> statements',
     'ExpressionStatement': 'Expression expression',
     'VarStatement': 'Token name, Expression initializer',
   },  

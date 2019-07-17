@@ -4,19 +4,24 @@ import '../scanner/scanner.dart';
 import 'environment.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
-class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Object> {
+class Interpreter
+    implements ExpressionVisitor<Object>, StatementVisitor<Object> {
   Environment _environment = Environment();
 
   Object interpreter(List<Statement> statements) {
     var result;
     try {
       for (var stmt in statements) {
-        result = stmt.acceptStatement(this);
+        result = _execute(stmt);
       }
     } on RuntimeError catch (e) {
       Runner.runtimeError(e);
     }
     return result;
+  }
+
+  Object _execute(Statement stmt) {
+    return stmt.acceptStatement(this);
   }
 
   @override
@@ -152,6 +157,26 @@ class Interpreter implements ExpressionVisitor<Object>, StatementVisitor<Object>
     Object value = _evaluate(expression.value);
     _environment.assign(expression.name, value);
     return value;
+  }
+
+  @override
+  Object visitBlockStatement(BlockStatement statement) {
+    return _executeBlock(statement.statements, Environment(_environment));
+  }
+
+  Object _executeBlock(List<Statement> statements, Environment environment) {
+    var previous = _environment;
+    
+    var result;
+    try {
+      _environment = environment;
+      for (var stmt in statements) {
+        result = _execute(stmt);
+      }
+    } finally {
+      _environment = previous;
+    }
+    return result;
   }
 }
 

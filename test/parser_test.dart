@@ -63,6 +63,18 @@ void main() {
     }
   });
 
+  test('block statements', () {
+    var inputs = ['{ var one = 1; one = 2; }'];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
+      var stmts = Parser(tokens).parse();
+      expect(stmts[0], isA<BlockStatement>());
+      expect((stmts[0] as BlockStatement).statements.length, 2);
+    }
+  });
+
   // test('return statement', () {
   //   var input = '''
   //     return 1;

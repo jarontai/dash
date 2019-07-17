@@ -185,6 +185,8 @@ class Parser {
   }
 
   Statement _statement() {
+    if (_match([TokenType.LEFT_BRACE])) return BlockStatement(_block());
+
     return _expressionStatement();
   }
 
@@ -235,6 +237,17 @@ class Parser {
     }
 
     return expr;
+  }
+
+  List<Statement> _block() {
+    var stmts = <Statement>[];
+
+    while(!_check(TokenType.RIGHT_BRACE) && !_isAtEnd()) {
+      stmts.add(_declaration());
+    }
+
+    _consume(TokenType.RIGHT_BRACE, 'Expect \'}\' after block.');
+    return stmts;
   }
 }
 

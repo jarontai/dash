@@ -79,6 +79,15 @@ abstract class Statement {
   R acceptStatement<R>(StatementVisitor<R> visitor);
 }
 
+class BlockStatement extends Statement {
+  final List<Statement> statements;
+  BlockStatement(this.statements);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitBlockStatement(this);
+  }
+}
+
 class ExpressionStatement extends Statement {
   final Expression expression;
   ExpressionStatement(this.expression);
@@ -99,6 +108,7 @@ class VarStatement extends Statement {
 }
 
 abstract class StatementVisitor<R> {
+  R visitBlockStatement(BlockStatement statement);
   R visitExpressionStatement(ExpressionStatement statement);
   R visitVarStatement(VarStatement statement);
 }
