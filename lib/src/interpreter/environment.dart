@@ -1,4 +1,4 @@
-import '../scanning/token.dart';
+import '../scanner/token.dart';
 import 'interpreter.dart';
 
 class Environment {

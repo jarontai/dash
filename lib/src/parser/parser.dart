@@ -1,6 +1,6 @@
 import 'ast.dart';
 import 'ast_printer.dart';
-import '../scanning/token.dart';
+import '../scanner/token.dart';
 import '../runner.dart';
 
 export 'ast.dart';

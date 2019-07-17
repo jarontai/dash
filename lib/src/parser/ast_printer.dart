@@ -1,5 +1,5 @@
 import 'ast.dart';
-import '../scanning/token.dart';
+import '../scanner/token.dart';
 
 // The pretty ast printer.
 class AstPrinter implements ExpressionVisitor<String> {

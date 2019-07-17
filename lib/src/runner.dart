@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'scanning/scanner.dart';
-import 'parsing/parser.dart';
-import 'evaluating/interpreter.dart';
+import 'scanner/scanner.dart';
+import 'parser/parser.dart';
+import 'interpreter/interpreter.dart';
 
 // The dash runner
 class Runner {

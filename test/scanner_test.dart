@@ -1,4 +1,4 @@
-import 'package:dash/src/scanning/scanner.dart';
+import 'package:dash/dash.dart';
 import 'package:test/test.dart';
 
 void main() {

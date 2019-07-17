@@ -1,6 +1,6 @@
 import '../runner.dart';
-import '../parsing/ast.dart';
-import '../scanning/scanner.dart';
+import '../parser/ast.dart';
+import '../scanner/scanner.dart';
 import 'environment.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
