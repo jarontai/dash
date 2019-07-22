@@ -185,6 +185,7 @@ class Parser {
   }
 
   Statement _statement() {
+    if (_match([TokenType.IF])) return _ifStatement();
     if (_match([TokenType.LEFT_BRACE])) return BlockStatement(_block());
 
     return _expressionStatement();
@@ -242,12 +243,26 @@ class Parser {
   List<Statement> _block() {
     var stmts = <Statement>[];
 
-    while(!_check(TokenType.RIGHT_BRACE) && !_isAtEnd()) {
+    while (!_check(TokenType.RIGHT_BRACE) && !_isAtEnd()) {
       stmts.add(_declaration());
     }
 
     _consume(TokenType.RIGHT_BRACE, 'Expect \'}\' after block.');
     return stmts;
+  }
+
+  Statement _ifStatement() {
+    _consume(TokenType.LEFT_PAREN, 'Expect \'(\' after if.');
+    var condition = _expression();
+    _consume(TokenType.RIGHT_PAREN, 'Expect \')\' after if condition.');
+
+    var thenBranch = _statement();
+    var elseBranch;
+    if (_match([TokenType.ELSE])) {
+      elseBranch = _statement();
+    }
+
+    return IfStatement(condition, thenBranch, elseBranch);
   }
 }
 

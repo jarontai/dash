@@ -178,6 +178,17 @@ class Interpreter
     }
     return result;
   }
+
+  @override
+  Object visitIfStatement(IfStatement statement) {
+    var result;
+    if (_isTruthy(_evaluate(statement.condition))) {
+      result = _execute(statement.thenBranch);
+    } else {
+      result = _execute(statement.elseBranch);
+    }
+    return result;
+  }
 }
 
 class RuntimeError extends Error {

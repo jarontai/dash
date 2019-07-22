@@ -59,7 +59,8 @@ void main() {
       var stmts = Parser(tokens).parse();
       expect(stmts[0], isA<VarStatement>());
       expect(stmts[1], isA<ExpressionStatement>());
-      expect((stmts[1] as ExpressionStatement).expression, isA<AssignExpression>());
+      expect((stmts[1] as ExpressionStatement).expression,
+          isA<AssignExpression>());
     }
   });
 
@@ -72,6 +73,21 @@ void main() {
       var stmts = Parser(tokens).parse();
       expect(stmts[0], isA<BlockStatement>());
       expect((stmts[0] as BlockStatement).statements.length, 2);
+    }
+  });
+
+  test('if statements', () {
+    var inputs = ['var one = 1; if (one > 1) { one = 2; } else { one = 3; }'];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
+      var stmts = Parser(tokens).parse();
+      expect(stmts[0], isA<VarStatement>());
+      expect(stmts[1], isA<IfStatement>());
+      expect((stmts[1] as IfStatement).condition, isNotNull);
+      expect((stmts[1] as IfStatement).thenBranch, isNotNull);
+      expect((stmts[1] as IfStatement).elseBranch, isNotNull);
     }
   });
 

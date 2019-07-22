@@ -97,6 +97,17 @@ class ExpressionStatement extends Statement {
   }
 }
 
+class IfStatement extends Statement {
+  final Expression condition;
+  final Statement thenBranch;
+  final Statement elseBranch;
+  IfStatement(this.condition, this.thenBranch, this.elseBranch);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitIfStatement(this);
+  }
+}
+
 class VarStatement extends Statement {
   final Token name;
   final Expression initializer;
@@ -110,5 +121,6 @@ class VarStatement extends Statement {
 abstract class StatementVisitor<R> {
   R visitBlockStatement(BlockStatement statement);
   R visitExpressionStatement(ExpressionStatement statement);
+  R visitIfStatement(IfStatement statement);
   R visitVarStatement(VarStatement statement);
 }
