@@ -166,7 +166,7 @@ class Interpreter
 
   Object _executeBlock(List<Statement> statements, Environment environment) {
     var previous = _environment;
-    
+
     var result;
     try {
       _environment = environment;
@@ -188,6 +188,17 @@ class Interpreter
       result = _execute(statement.elseBranch);
     }
     return result;
+  }
+
+  @override
+  Object visitLogicalExpression(LogicalExpression expression) {
+    var left = _evaluate(expression.left);
+    if (expression.op.type == TokenType.OR) {
+      if (_isTruthy(left)) return left;
+    } else {
+      if (!_isTruthy(left)) return left;
+    }
+    return _evaluate(expression.right);
   }
 }
 

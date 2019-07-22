@@ -47,6 +47,17 @@ class LiteralExpression extends Expression {
   }
 }
 
+class LogicalExpression extends Expression {
+  final Expression left;
+  final Token op;
+  final Expression right;
+  LogicalExpression(this.left, this.op, this.right);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitLogicalExpression(this);
+  }
+}
+
 class UnaryExpression extends Expression {
   final Token op;
   final Expression right;
@@ -71,6 +82,7 @@ abstract class ExpressionVisitor<R> {
   R visitBinaryExpression(BinaryExpression expression);
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);
+  R visitLogicalExpression(LogicalExpression expression);
   R visitUnaryExpression(UnaryExpression expression);
   R visitVariableExpression(VariableExpression expression);
 }

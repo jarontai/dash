@@ -8,6 +8,7 @@ final Map<String, Map<String, String>> astMap = {
     'BinaryExpression': 'Expression left, Token op, Expression right',
     'GroupingExpression': 'Expression expression',
     'LiteralExpression': 'Object value',
+    'LogicalExpression': 'Expression left, Token op, Expression right',
     'UnaryExpression': 'Token op, Expression right',
     'VariableExpression': 'Token name',
   },

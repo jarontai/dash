@@ -224,7 +224,7 @@ class Parser {
   }
 
   Expression _assignment() {
-    var expr = _equality();
+    var expr = _or();
 
     if (_match([TokenType.EQUAL])) {
       var token = _previous();
@@ -263,6 +263,30 @@ class Parser {
     }
 
     return IfStatement(condition, thenBranch, elseBranch);
+  }
+
+  Expression _or() {
+    var expr = _and();
+
+    while (_match([TokenType.OR])) {
+      var op = _previous();
+      var right = _and();
+      expr = LogicalExpression(expr, op, right);
+    }
+
+    return expr;
+  }
+
+  Expression _and() {
+    var expr = _equality();
+
+    while (_match([TokenType.AND])) {
+      var op = _previous();
+      var right = _equality();
+      expr = LogicalExpression(expr, op, right);
+    }
+
+    return expr;
   }
 }
 

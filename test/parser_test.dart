@@ -91,6 +91,21 @@ void main() {
     }
   });
 
+  test('logical', () {
+    var inputs = ['var one = 1; (one > 1) && true; (one < 1) && false;'];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
+      var stmts = Parser(tokens).parse();
+      expect(stmts[0], isA<VarStatement>());
+      expect(stmts[1], isA<ExpressionStatement>());
+      expect(stmts[2], isA<ExpressionStatement>());
+      expect((stmts[1] as ExpressionStatement).expression, isA<LogicalExpression>());
+      expect((stmts[2] as ExpressionStatement).expression, isA<LogicalExpression>());
+    }
+  });
+
   // test('return statement', () {
   //   var input = '''
   //     return 1;

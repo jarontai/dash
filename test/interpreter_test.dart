@@ -122,4 +122,23 @@ void main() {
       expect(result, expects[i]);
     }
   });
+
+  test('logical', () {
+    var inputs = [
+      'var one = 1; if (one < 1 && false) { one = 2; } else { one = 3; }',
+      'var one = 1; if (one >= 1 && true) { one = 2; } else { one = 3; }',
+    ];
+
+    var expects = [3, 2];
+
+    var interpreter = Interpreter();
+
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var tokens = Scanner(input).scanTokens();
+      var stmts = Parser(tokens).parse();
+      var result = interpreter.interpreter(stmts);
+      expect(result, expects[i]);
+    }
+  });
 }
