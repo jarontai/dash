@@ -140,4 +140,26 @@ void main() {
       expect(result, expects[i]);
     }
   });
+
+  test('for loop', () {
+    var inputs = [
+      '''
+        var a = 0;
+        var b = 1;
+
+        while (a < 100) {
+          var temp = a;
+          a = b;
+          b = temp + b;
+        }
+      '''
+    ];
+
+    var expects = [233];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var result = interprete(inputs[i]);
+      expect(result, expects[i]);
+    }
+  });  
 }
