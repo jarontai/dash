@@ -28,16 +28,6 @@ class Parser {
     return stmts;
   }
 
-  String parseExpression() {
-    var expr;
-    try {
-      expr = _expression();
-    } on ParseError catch (e) {
-      print(e);
-    }
-    return astPrinter.print(expr);
-  }
-
   Expression _expression() {
     return _assignment();
   }
@@ -185,6 +175,7 @@ class Parser {
   }
 
   Statement _statement() {
+    if (_match([TokenType.WHILE])) return _whileStatement();
     if (_match([TokenType.IF])) return _ifStatement();
     if (_match([TokenType.LEFT_BRACE])) return BlockStatement(_block());
 
@@ -287,6 +278,15 @@ class Parser {
     }
 
     return expr;
+  }
+
+  Statement _whileStatement() {
+    _consume(TokenType.LEFT_PAREN, 'Expect \'(\' after \'while\'.');
+    var condition = _expression();
+    _consume(TokenType.RIGHT_PAREN, 'Expect \')\' after condition.');
+    var body = _statement();
+
+    return WhileStatement(condition, body);    
   }
 }
 

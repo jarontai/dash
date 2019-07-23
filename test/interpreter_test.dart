@@ -2,6 +2,13 @@ import 'package:dash/dash.dart';
 import 'package:test/test.dart';
 
 void main() {
+  Object interprete(String input) {
+    var tokens = Scanner(input).scanTokens();
+    var stmts = Parser(tokens).parse();
+    var interpreter = Interpreter();
+    return interpreter.interprete(stmts);
+  }
+
   test('basic expressions', () {
     var inputs = [
       '1;',
@@ -32,12 +39,10 @@ void main() {
       true,
       false,
     ];
-
-    var interpreter = Interpreter();
     for (var i = 0; i < inputs.length; i++) {
-      var tokens = Scanner(inputs[i]).scanTokens();
-      var stmts = Parser(tokens).parse();
-      expect(interpreter.interpreter(stmts), expects[i]);
+      var result = interprete(inputs[i]);
+
+      expect(result, expects[i]);
     }
   });
 
@@ -54,12 +59,8 @@ void main() {
       'string',
     ];
 
-    var interpreter = Interpreter();
-
     for (var i = 0; i < inputs.length; i++) {
-      var tokens = Scanner(inputs[i]).scanTokens();
-      var stmts = Parser(tokens).parse();
-      var result = interpreter.interpreter(stmts);
+      var result = interprete(inputs[i]);
       expect(result, expects[i]);
     }
   });
@@ -72,13 +73,9 @@ void main() {
 
     var expects = [2, 'hello'];
 
-    var interpreter = Interpreter();
-
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var tokens = Scanner(input).scanTokens();
-      var stmts = Parser(tokens).parse();
-      var result = interpreter.interpreter(stmts);
+      var result = interprete(input);
       expect(result, expects[i]);
     }
   });
@@ -93,13 +90,9 @@ void main() {
 
     var expects = [2, 'hello', 3, 'what'];
 
-    var interpreter = Interpreter();
-
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var tokens = Scanner(input).scanTokens();
-      var stmts = Parser(tokens).parse();
-      var result = interpreter.interpreter(stmts);
+      var result = interprete(input);
       expect(result, expects[i]);
     }
   });
@@ -112,13 +105,9 @@ void main() {
 
     var expects = [2, 3];
 
-    var interpreter = Interpreter();
-
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var tokens = Scanner(input).scanTokens();
-      var stmts = Parser(tokens).parse();
-      var result = interpreter.interpreter(stmts);
+      var result = interprete(input);
       expect(result, expects[i]);
     }
   });
@@ -131,13 +120,23 @@ void main() {
 
     var expects = [3, 2];
 
-    var interpreter = Interpreter();
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var result = interprete(input);
+      expect(result, expects[i]);
+    }
+  });
+
+  test('while loop', () {
+    var inputs = [
+      'var one = 1; while (one < 10) { one = one + 1; } ',
+    ];
+
+    var expects = [10];
 
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var tokens = Scanner(input).scanTokens();
-      var stmts = Parser(tokens).parse();
-      var result = interpreter.interpreter(stmts);
+      var result = interprete(input);
       expect(result, expects[i]);
     }
   });

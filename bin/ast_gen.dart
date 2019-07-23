@@ -17,6 +17,7 @@ final Map<String, Map<String, String>> astMap = {
     'ExpressionStatement': 'Expression expression',
     'IfStatement': 'Expression condition, Statement thenBranch, Statement elseBranch',
     'VarStatement': 'Token name, Expression initializer',
+    'WhileStatement': 'Expression condition, Statement body',
   },  
 };
 

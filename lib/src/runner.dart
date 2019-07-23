@@ -40,7 +40,7 @@ class Runner {
 
     if (hadError) return null;
 
-    var result = interpreter.interpreter(stmts);
+    var result = interpreter.interprete(stmts);
     if (doPrint) {
       stdout.writeln(result.toString());
     }

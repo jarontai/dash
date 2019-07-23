@@ -130,9 +130,20 @@ class VarStatement extends Statement {
   }
 }
 
+class WhileStatement extends Statement {
+  final Expression condition;
+  final Statement body;
+  WhileStatement(this.condition, this.body);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitWhileStatement(this);
+  }
+}
+
 abstract class StatementVisitor<R> {
   R visitBlockStatement(BlockStatement statement);
   R visitExpressionStatement(ExpressionStatement statement);
   R visitIfStatement(IfStatement statement);
   R visitVarStatement(VarStatement statement);
+  R visitWhileStatement(WhileStatement statement);
 }

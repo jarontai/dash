@@ -8,7 +8,7 @@ class Interpreter
     implements ExpressionVisitor<Object>, StatementVisitor<Object> {
   Environment _environment = Environment();
 
-  Object interpreter(List<Statement> statements) {
+  Object interprete(List<Statement> statements) {
     var result;
     try {
       for (var stmt in statements) {
@@ -199,6 +199,15 @@ class Interpreter
       if (!_isTruthy(left)) return left;
     }
     return _evaluate(expression.right);
+  }
+
+  @override
+  Object visitWhileStatement(WhileStatement statement) {
+    var result;
+    while(_isTruthy(_evaluate(statement.condition))) {
+      result = _execute(statement.body);
+    }
+    return result;
   }
 }
 
