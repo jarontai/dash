@@ -34,7 +34,7 @@ class Parser {
 
   Expression _equality() {
     var expr = _comparison();
-    while (_match([TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL])) {
+    while (_matchAny([TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL])) {
       var op = _previous();
       var right = _comparison();
       expr = BinaryExpression(expr, op, right);
@@ -44,7 +44,7 @@ class Parser {
 
   Expression _comparison() {
     var expr = _addition();
-    while (_match([
+    while (_matchAny([
       TokenType.GREATER,
       TokenType.GREATER_EQUAL,
       TokenType.LESS,
@@ -59,7 +59,7 @@ class Parser {
 
   Expression _addition() {
     var expr = _multiplication();
-    while (_match([
+    while (_matchAny([
       TokenType.MINUS,
       TokenType.PLUS,
     ])) {
@@ -72,7 +72,7 @@ class Parser {
 
   Expression _multiplication() {
     var expr = _unary();
-    while (_match([
+    while (_matchAny([
       TokenType.SLASH,
       TokenType.STAR,
     ])) {
@@ -84,7 +84,7 @@ class Parser {
   }
 
   Expression _unary() {
-    if (_match([TokenType.BANG, TokenType.MINUS])) {
+    if (_matchAny([TokenType.BANG, TokenType.MINUS])) {
       var op = _previous();
       var right = _unary();
       return UnaryExpression(op, right);
@@ -93,19 +93,19 @@ class Parser {
   }
 
   Expression _primary() {
-    if (_match([TokenType.FALSE])) return LiteralExpression(false);
-    if (_match([TokenType.TRUE])) return LiteralExpression(true);
-    if (_match([TokenType.NULL])) return LiteralExpression(null);
+    if (_matchOne(TokenType.FALSE)) return LiteralExpression(false);
+    if (_matchOne(TokenType.TRUE)) return LiteralExpression(true);
+    if (_matchOne(TokenType.NULL)) return LiteralExpression(null);
 
-    if (_match([TokenType.NUMBER, TokenType.STRING])) {
+    if (_matchAny([TokenType.NUMBER, TokenType.STRING])) {
       return LiteralExpression(_previous().literal);
     }
 
-    if (_match([TokenType.IDENTIFIER])) {
+    if (_matchOne(TokenType.IDENTIFIER)) {
       return VariableExpression(_previous());
     }
 
-    if (_match([TokenType.LEFT_PAREN])) {
+    if (_matchOne(TokenType.LEFT_PAREN)) {
       var expr = _expression();
       _consume(TokenType.RIGHT_PAREN, 'Expect \')\' after expression.');
       return GroupingExpression(expr);
@@ -120,12 +120,20 @@ class Parser {
     throw _error(_peek(), message);
   }
 
-  bool _match(List<TokenType> types) {
+  bool _matchAny(List<TokenType> types) {
     for (var type in types) {
       if (_check(type)) {
         _advance();
         return true;
       }
+    }
+    return false;
+  }
+
+  bool _matchOne(TokenType type) {
+    if (_check(type)) {
+      _advance();
+      return true;
     }
     return false;
   }
@@ -175,10 +183,10 @@ class Parser {
   }
 
   Statement _statement() {
-    if (_match([TokenType.FOR])) return _forStatement();
-    if (_match([TokenType.WHILE])) return _whileStatement();
-    if (_match([TokenType.IF])) return _ifStatement();
-    if (_match([TokenType.LEFT_BRACE])) return BlockStatement(_block());
+    if (_matchOne(TokenType.FOR)) return _forStatement();
+    if (_matchOne(TokenType.WHILE)) return _whileStatement();
+    if (_matchOne(TokenType.IF)) return _ifStatement();
+    if (_matchOne(TokenType.LEFT_BRACE)) return BlockStatement(_block());
 
     return _expressionStatement();
   }
@@ -191,7 +199,7 @@ class Parser {
 
   Statement _declaration() {
     try {
-      if (_match([TokenType.VAR])) {
+      if (_matchOne(TokenType.VAR)) {
         return _varDeclaration();
       }
 
@@ -207,7 +215,7 @@ class Parser {
     Token name = _consume(TokenType.IDENTIFIER, 'Expect variable name.');
 
     Expression initializer;
-    if (_match([TokenType.EQUAL])) {
+    if (_matchOne(TokenType.EQUAL)) {
       initializer = _expression();
     }
 
@@ -218,7 +226,7 @@ class Parser {
   Expression _assignment() {
     var expr = _or();
 
-    if (_match([TokenType.EQUAL])) {
+    if (_matchAny([TokenType.EQUAL])) {
       var token = _previous();
       var value = _assignment();
       if (expr is VariableExpression) {
@@ -250,7 +258,7 @@ class Parser {
 
     var thenBranch = _statement();
     var elseBranch;
-    if (_match([TokenType.ELSE])) {
+    if (_matchOne(TokenType.ELSE)) {
       elseBranch = _statement();
     }
 
@@ -260,7 +268,7 @@ class Parser {
   Expression _or() {
     var expr = _and();
 
-    while (_match([TokenType.OR])) {
+    while (_matchOne(TokenType.OR)) {
       var op = _previous();
       var right = _and();
       expr = LogicalExpression(expr, op, right);
@@ -272,7 +280,7 @@ class Parser {
   Expression _and() {
     var expr = _equality();
 
-    while (_match([TokenType.AND])) {
+    while (_matchOne(TokenType.AND)) {
       var op = _previous();
       var right = _equality();
       expr = LogicalExpression(expr, op, right);
@@ -294,9 +302,9 @@ class Parser {
     _consume(TokenType.LEFT_PAREN, 'Expect \'(\' after \'for\'.');
 
     Statement initializer;
-    if (_match([TokenType.SEMICOLON])) {
+    if (_matchOne(TokenType.SEMICOLON)) {
       initializer = null;
-    } else if (_match([TokenType.VAR])) {
+    } else if (_matchOne(TokenType.VAR)) {
       initializer = _varDeclaration();
     } else {
       initializer = _expressionStatement();
