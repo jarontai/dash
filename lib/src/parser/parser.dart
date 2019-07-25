@@ -93,19 +93,19 @@ class Parser {
   }
 
   Expression _primary() {
-    if (_matchOne(TokenType.FALSE)) return LiteralExpression(false);
-    if (_matchOne(TokenType.TRUE)) return LiteralExpression(true);
-    if (_matchOne(TokenType.NULL)) return LiteralExpression(null);
+    if (_match(TokenType.FALSE)) return LiteralExpression(false);
+    if (_match(TokenType.TRUE)) return LiteralExpression(true);
+    if (_match(TokenType.NULL)) return LiteralExpression(null);
 
     if (_matchAny([TokenType.NUMBER, TokenType.STRING])) {
       return LiteralExpression(_previous().literal);
     }
 
-    if (_matchOne(TokenType.IDENTIFIER)) {
+    if (_match(TokenType.IDENTIFIER)) {
       return VariableExpression(_previous());
     }
 
-    if (_matchOne(TokenType.LEFT_PAREN)) {
+    if (_match(TokenType.LEFT_PAREN)) {
       var expr = _expression();
       _consume(TokenType.RIGHT_PAREN, 'Expect \')\' after expression.');
       return GroupingExpression(expr);
@@ -130,7 +130,7 @@ class Parser {
     return false;
   }
 
-  bool _matchOne(TokenType type) {
+  bool _match(TokenType type) {
     if (_check(type)) {
       _advance();
       return true;
@@ -183,10 +183,10 @@ class Parser {
   }
 
   Statement _statement() {
-    if (_matchOne(TokenType.FOR)) return _forStatement();
-    if (_matchOne(TokenType.WHILE)) return _whileStatement();
-    if (_matchOne(TokenType.IF)) return _ifStatement();
-    if (_matchOne(TokenType.LEFT_BRACE)) return BlockStatement(_block());
+    if (_match(TokenType.FOR)) return _forStatement();
+    if (_match(TokenType.WHILE)) return _whileStatement();
+    if (_match(TokenType.IF)) return _ifStatement();
+    if (_match(TokenType.LEFT_BRACE)) return BlockStatement(_block());
 
     return _expressionStatement();
   }
@@ -199,7 +199,7 @@ class Parser {
 
   Statement _declaration() {
     try {
-      if (_matchOne(TokenType.VAR)) {
+      if (_match(TokenType.VAR)) {
         return _varDeclaration();
       }
 
@@ -215,7 +215,7 @@ class Parser {
     Token name = _consume(TokenType.IDENTIFIER, 'Expect variable name.');
 
     Expression initializer;
-    if (_matchOne(TokenType.EQUAL)) {
+    if (_match(TokenType.EQUAL)) {
       initializer = _expression();
     }
 
@@ -226,7 +226,7 @@ class Parser {
   Expression _assignment() {
     var expr = _or();
 
-    if (_matchAny([TokenType.EQUAL])) {
+    if (_match(TokenType.EQUAL)) {
       var token = _previous();
       var value = _assignment();
       if (expr is VariableExpression) {
@@ -258,7 +258,7 @@ class Parser {
 
     var thenBranch = _statement();
     var elseBranch;
-    if (_matchOne(TokenType.ELSE)) {
+    if (_match(TokenType.ELSE)) {
       elseBranch = _statement();
     }
 
@@ -268,7 +268,7 @@ class Parser {
   Expression _or() {
     var expr = _and();
 
-    while (_matchOne(TokenType.OR)) {
+    while (_match(TokenType.OR)) {
       var op = _previous();
       var right = _and();
       expr = LogicalExpression(expr, op, right);
@@ -280,7 +280,7 @@ class Parser {
   Expression _and() {
     var expr = _equality();
 
-    while (_matchOne(TokenType.AND)) {
+    while (_match(TokenType.AND)) {
       var op = _previous();
       var right = _equality();
       expr = LogicalExpression(expr, op, right);
@@ -302,9 +302,9 @@ class Parser {
     _consume(TokenType.LEFT_PAREN, 'Expect \'(\' after \'for\'.');
 
     Statement initializer;
-    if (_matchOne(TokenType.SEMICOLON)) {
+    if (_match(TokenType.SEMICOLON)) {
       initializer = null;
-    } else if (_matchOne(TokenType.VAR)) {
+    } else if (_match(TokenType.VAR)) {
       initializer = _varDeclaration();
     } else {
       initializer = _expressionStatement();
