@@ -29,6 +29,17 @@ class BinaryExpression extends Expression {
   }
 }
 
+class CallExpression extends Expression {
+  final Expression callee;
+  final Token paren;
+  final List<Expression> arguments;
+  CallExpression(this.callee, this.paren, this.arguments);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitCallExpression(this);
+  }
+}
+
 class GroupingExpression extends Expression {
   final Expression expression;
   GroupingExpression(this.expression);
@@ -80,6 +91,7 @@ class VariableExpression extends Expression {
 abstract class ExpressionVisitor<R> {
   R visitAssignExpression(AssignExpression expression);
   R visitBinaryExpression(BinaryExpression expression);
+  R visitCallExpression(CallExpression expression);
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);
   R visitLogicalExpression(LogicalExpression expression);
@@ -120,6 +132,27 @@ class IfStatement extends Statement {
   }
 }
 
+class FunctionStatement extends Statement {
+  final Token name;
+  final List<Token> params;
+  final List<Statement> body;
+  FunctionStatement(this.name, this.params, this.body);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitFunctionStatement(this);
+  }
+}
+
+class ReturnStatement extends Statement {
+  final Token keyword;
+  final Expression value;
+  ReturnStatement(this.keyword, this.value);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitReturnStatement(this);
+  }
+}
+
 class VarStatement extends Statement {
   final Token name;
   final Expression initializer;
@@ -144,6 +177,8 @@ abstract class StatementVisitor<R> {
   R visitBlockStatement(BlockStatement statement);
   R visitExpressionStatement(ExpressionStatement statement);
   R visitIfStatement(IfStatement statement);
+  R visitFunctionStatement(FunctionStatement statement);
+  R visitReturnStatement(ReturnStatement statement);
   R visitVarStatement(VarStatement statement);
   R visitWhileStatement(WhileStatement statement);
 }

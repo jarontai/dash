@@ -41,14 +41,12 @@ The Dash interpreter is build to parse the Dash language, which includes followi
 ## Run REPL
 
     $ dart bin/dash.dart
-    >> 2 * 5 + 10
+    >> 2 * 5 + 10;
     20
-    >> var a = 1; var b = 2; a + b;
-    3
-    >> a
-    1
-    >> c
-    identifier not found: c
+    >> add(a, b) { return a + b; }
+    <function add>
+    >> add(2, 3);
+    5   
     ......
     
 

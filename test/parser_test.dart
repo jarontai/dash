@@ -147,4 +147,43 @@ void main() {
       expect(block.statements[2], isA<ExpressionStatement>());
     }
   });
+
+  test('print funcion', () {
+    var inputs = [
+      '''
+        var a = 1;
+        print(a);
+      '''
+    ];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var stmts = parse(inputs[i]);
+      expect(stmts[0], isA<VarStatement>());
+      expect(stmts[1], isA<ExpressionStatement>());
+      var stmt = (stmts[1] as ExpressionStatement);
+      expect(stmt.expression, isA<CallExpression>());
+    }
+  });
+
+  test('function', () {
+    var inputs = [
+      '''
+        sayHi(first, last) {
+          print("Hi, " + first + " " + last + "!");
+          return 1;
+        }
+      '''
+    ];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var stmts = parse(inputs[i]);
+      expect(stmts[0], isA<FunctionStatement>());
+      var stmt = (stmts[0] as FunctionStatement);
+      expect(stmt.name.lexeme, 'sayHi');
+      expect(stmt.params.length, 2);
+      expect(stmt.body, isNotNull);
+      expect(stmt.body[0], isA<ExpressionStatement>());
+      expect(stmt.body[1], isA<ReturnStatement>());
+    }
+  });
 }

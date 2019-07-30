@@ -60,6 +60,12 @@ class AstPrinter implements ExpressionVisitor<String> {
     // TODO: implement visitLogicalExpression
     return null;
   }
+
+  @override
+  String visitCallExpression(CallExpression expression) {
+    // TODO: implement visitCallExpression
+    return null;
+  }
 }
 
 main(List<String> args) {

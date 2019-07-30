@@ -161,5 +161,44 @@ void main() {
       var result = interprete(inputs[i]);
       expect(result, expects[i]);
     }
+  });
+
+  test('print function', () {
+    var inputs = [
+      '''
+        var a = 1;
+        var b = 2;
+
+        print(a + b);
+      '''
+    ];
+
+    var expects = [3];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var result = interprete(inputs[i]);
+      expect(result, expects[i]);
+    }
+  });  
+
+  test('function', () {
+    var inputs = [
+      '''
+        sayHi(first, last) {
+          var result = "Hi, " + first + " " + last + "!";
+          print(result);
+          return result;
+        }
+
+        var t = sayHi('one', 'two');
+      '''
+    ];
+
+    var expects = ['Hi, one two!'];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var result = interprete(inputs[i]);
+      expect(result, expects[i]);
+    }
   });  
 }

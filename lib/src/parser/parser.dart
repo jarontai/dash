@@ -10,6 +10,7 @@ class Parser {
   final List<Token> _tokens;
   int _current = 0;
   static final AstPrinter astPrinter = AstPrinter();
+  static final _argsNumLimit = 8;
 
   Parser(this._tokens);
 
@@ -89,7 +90,7 @@ class Parser {
       var right = _unary();
       return UnaryExpression(op, right);
     }
-    return _primary();
+    return _call();
   }
 
   Expression _primary() {
@@ -143,6 +144,37 @@ class Parser {
     return _peek().type == type;
   }
 
+  bool _checkSeq(List<TokenType> types) {
+    if (_isAtEnd()) return false;
+    var result = true;
+    var index = 0;
+    for (var type in types) {
+      var peekToken = _peek(index);
+      if (peekToken.type != type) {
+        result = false;
+        break;
+      }
+      index++;
+    }
+    return result;
+  }
+
+  bool _checkUntil(TokenType type, [int skipTokenNum = 1]) {
+    if (_isAtEnd()) return false;
+    var result = false;
+    for (var index = 0; index < skipTokenNum; index++) {
+      var peekToken = _peek(index);
+      if (peekToken.type == TokenType.EOF) {
+        break;
+      }
+      if (peekToken.type == type) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+
   Token _advance() {
     if (!_isAtEnd()) _current++;
     return _previous();
@@ -152,7 +184,7 @@ class Parser {
 
   bool _isAtEnd() => _peek().type == TokenType.EOF;
 
-  Token _peek() => _tokens[_current];
+  Token _peek([int depth = 0]) => _tokens[_current + depth];
 
   ParseError _error(Token token, String message) {
     return ParseError(token, message);
@@ -184,6 +216,7 @@ class Parser {
 
   Statement _statement() {
     if (_match(TokenType.FOR)) return _forStatement();
+    if (_match(TokenType.RETURN)) return _returnStatement();
     if (_match(TokenType.WHILE)) return _whileStatement();
     if (_match(TokenType.IF)) return _ifStatement();
     if (_match(TokenType.LEFT_BRACE)) return BlockStatement(_block());
@@ -201,6 +234,12 @@ class Parser {
     try {
       if (_match(TokenType.VAR)) {
         return _varDeclaration();
+      }
+
+      if (_checkSeq([TokenType.IDENTIFIER, TokenType.LEFT_PAREN])) {
+        if (_checkUntil(TokenType.LEFT_BRACE, 20)) {
+          return _functionStatement('function');
+        }
       }
 
       return _statement();
@@ -338,6 +377,68 @@ class Parser {
     }
 
     return body;
+  }
+
+  Expression _call() {
+    var expr = _primary();
+
+    while (true) {
+      if (_match(TokenType.LEFT_PAREN)) {
+        expr = _finishCall(expr);
+      } else {
+        break;
+      }
+    }
+
+    return expr;
+  }
+
+  Expression _finishCall(Expression callee) {
+    var arguments = <Expression>[];
+    if (!_check(TokenType.RIGHT_PAREN)) {
+      do {
+        if (arguments.length > _argsNumLimit) {
+          _error(_peek(), 'Cannot have more than $_argsNumLimit arguments.');
+        }
+
+        arguments.add(_expression());
+      } while (_match(TokenType.COMMA));
+    }
+
+    var paren =
+        _consume(TokenType.RIGHT_PAREN, 'Expect \')\' after arguments.');
+    return CallExpression(callee, paren, arguments);
+  }
+
+  Statement _functionStatement(String kind) {
+    var name = _consume(TokenType.IDENTIFIER, 'Expect $kind name.');
+    _consume(TokenType.LEFT_PAREN, 'Expect ( after $kind name.');
+    var parameters = <Token>[];
+    if (!_check(TokenType.RIGHT_PAREN)) {
+      do {
+        if (parameters.length > _argsNumLimit) {
+          _error(_peek(), 'Cannot have more than $_argsNumLimit parameters.');
+        }
+
+        parameters
+            .add(_consume(TokenType.IDENTIFIER, 'Expect parameter name.'));
+      } while (_match(TokenType.COMMA));
+    }
+    _consume(TokenType.RIGHT_PAREN, 'Expect ) after parameters.');
+
+    _consume(TokenType.LEFT_BRACE, 'Expect { before $kind body.');
+    var body = _block();
+    return FunctionStatement(name, parameters, body);
+  }
+
+  Statement _returnStatement() {
+    var keyword = _previous();
+    var value;
+    if (!_check(TokenType.SEMICOLON)) {
+      value = _expression();
+    }
+    _consume(TokenType.SEMICOLON, 'Expect \';\' after return value.');
+    return ReturnStatement(keyword, value);
   }
 }
 

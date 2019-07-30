@@ -2,11 +2,20 @@ import '../runner.dart';
 import '../parser/ast.dart';
 import '../scanner/scanner.dart';
 import 'environment.dart';
+import 'callable.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
 class Interpreter
     implements ExpressionVisitor<Object>, StatementVisitor<Object> {
-  Environment _environment = Environment();
+  Environment globals;
+  Environment _environment;
+
+  Interpreter() {
+    globals = Environment();
+    _environment = globals;
+
+    globals.define('print', NativePrintFunction());
+  }
 
   Object interprete(List<Statement> statements) {
     var result;
@@ -161,10 +170,10 @@ class Interpreter
 
   @override
   Object visitBlockStatement(BlockStatement statement) {
-    return _executeBlock(statement.statements, Environment(_environment));
+    return executeBlock(statement.statements, Environment(_environment));
   }
 
-  Object _executeBlock(List<Statement> statements, Environment environment) {
+  Object executeBlock(List<Statement> statements, Environment environment) {
     var previous = _environment;
 
     var result;
@@ -184,7 +193,7 @@ class Interpreter
     var result;
     if (_isTruthy(_evaluate(statement.condition))) {
       result = _execute(statement.thenBranch);
-    } else {
+    } else if (statement.elseBranch != null) {
       result = _execute(statement.elseBranch);
     }
     return result;
@@ -204,10 +213,46 @@ class Interpreter
   @override
   Object visitWhileStatement(WhileStatement statement) {
     var result;
-    while(_isTruthy(_evaluate(statement.condition))) {
+    while (_isTruthy(_evaluate(statement.condition))) {
       result = _execute(statement.body);
     }
     return result;
+  }
+
+  @override
+  Object visitCallExpression(CallExpression expression) {
+    var callee = _evaluate(expression.callee);
+    var arguments = expression.arguments
+        .map<Object>((argument) => _evaluate(argument))
+        .toList();
+
+    if (callee is Callable) {
+      if (callee.arity != arguments.length) {
+        throw RuntimeError(expression.paren,
+            'Expect ${callee.arity} arguments but got ${arguments.length}.');
+      }
+      return callee.call(this, arguments);
+    } else {
+      throw RuntimeError(
+          expression.paren, 'Can only call function and classes.');
+    }
+  }
+
+  @override
+  Object visitFunctionStatement(FunctionStatement statement) {
+    var function = DashFunction(statement);
+    _environment.define(statement.name.lexeme, function);
+    return function;
+  }
+
+  @override
+  Object visitReturnStatement(ReturnStatement statement) {
+    var value;
+    if (statement.value != null) {
+      value = _evaluate(statement.value);
+    }
+
+    throw Return(value);
   }
 }
 
@@ -221,4 +266,10 @@ class RuntimeError extends Error {
   String toString() {
     return '$token: $message';
   }
+}
+
+class Return {
+  final Object value;
+
+  Return(this.value);
 }
