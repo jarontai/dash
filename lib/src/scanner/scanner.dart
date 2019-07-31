@@ -1,6 +1,6 @@
-import 'token.dart';
 import '../runner.dart';
 import '../util.dart' as util;
+import 'token.dart';
 
 export 'token.dart';
 
@@ -28,6 +28,17 @@ class Scanner {
 
   Scanner(this._source);
 
+  void identifier() {
+    while (util.isAlphaNumeric(_peek())) {
+      _advance();
+    }
+
+    var text = _source.substring(_start, _current);
+    var type = _keywords[text] ?? TokenType.IDENTIFIER;
+
+    _addToken(type);
+  }
+
   List<Token> scanTokens() {
     while (!_isAtEnd()) {
       _start = _current;
@@ -38,7 +49,48 @@ class Scanner {
     return _tokens;
   }
 
+  void _addToken(TokenType type, {Object literal}) {
+    var text = _source.substring(_start, _current);
+    _tokens.add(Token(type, text, literal, _line));
+  }
+
+  String _advance() {
+    _current++;
+    return _source[_current - 1];
+  }
+
   bool _isAtEnd() => _current >= _source.length;
+
+  bool _match(String expected) {
+    if (_isAtEnd()) return false;
+    if (_source[_current] != expected) return false;
+    _current++;
+    return true;
+  }
+
+  void _number() {
+    while (util.isDigit(_peek())) {
+      _advance();
+    }
+
+    if (_peek() == '.' && util.isDigit(_peekNext())) {
+      _advance();
+
+      while (util.isDigit(_peek())) {
+        _advance();
+      }
+    }
+
+    _addToken(TokenType.NUMBER,
+        literal: num.tryParse(_source.substring(_start, _current)));
+  }
+
+  String _peek() => _isAtEnd() ? '' : _source[_current];
+
+  String _peekNext() {
+    if ((_current + 1) >= _source.length) return '';
+    return _source[_current + 1];
+  }
 
   void _scanToken() {
     var char = _advance();
@@ -137,30 +189,6 @@ class Scanner {
     }
   }
 
-  String _advance() {
-    _current++;
-    return _source[_current - 1];
-  }
-
-  void _addToken(TokenType type, {Object literal}) {
-    var text = _source.substring(_start, _current);
-    _tokens.add(Token(type, text, literal, _line));
-  }
-
-  bool _match(String expected) {
-    if (_isAtEnd()) return false;
-    if (_source[_current] != expected) return false;
-    _current++;
-    return true;
-  }
-
-  String _peek() => _isAtEnd() ? '' : _source[_current];
-
-  String _peekNext() {
-    if ((_current + 1) >= _source.length) return '';
-    return _source[_current + 1];
-  }
-
   void _string(String quote) {
     while (_peek() != quote && !_isAtEnd()) {
       if (_peek() == '\n') _line++;
@@ -176,33 +204,5 @@ class Scanner {
 
     var value = _source.substring(_start + 1, _current - 1);
     _addToken(TokenType.STRING, literal: value);
-  }
-
-  void _number() {
-    while (util.isDigit(_peek())) {
-      _advance();
-    }
-
-    if (_peek() == '.' && util.isDigit(_peekNext())) {
-      _advance();
-
-      while (util.isDigit(_peek())) {
-        _advance();
-      }
-    }
-
-    _addToken(TokenType.NUMBER,
-        literal: num.tryParse(_source.substring(_start, _current)));
-  }
-
-  void identifier() {
-    while (util.isAlphaNumeric(_peek())) {
-      _advance();
-    }
-
-    var text = _source.substring(_start, _current);
-    var type = _keywords[text] ?? TokenType.IDENTIFIER;
-
-    _addToken(type);
   }
 }

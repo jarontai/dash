@@ -32,22 +32,20 @@ Dash 的语言特性包括：
 
 Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主要模块组成：
 
-  * 词法分析器 lexer (scanner)
+  * 词法分析器 scanner (lexer)
   * 抽象语法树 AST
   * 语法分析器 parser
-  * 表达式计算器 evaluator
+  * 解释器 interpreter (evaluator)
 
 ## 运行 REPL
 
-    $ pub run bin/dash
-    >> 2 * 5 + 10
+    $ dart bin/dash.dart
+    >> 2 * 5 + 10;
     20
-    >> var a = 1; var b = 2; a + b;
-    3
-    >> a
-    1
-    >> c
-    identifier not found: c
+    >> var sayHi = (name) { return 'hello ' + name; };
+    <function sayHi>
+    >> sayHi('dart');
+    hello dart
     ......
     
 

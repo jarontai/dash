@@ -33,10 +33,10 @@ The Dash language features:
 
 The Dash interpreter is build to parse the Dash language, which includes following:
 
-  * the lexer (scanner)
+  * the scanner (lexer)
   * the AST (Abstract Syntax Tree)
   * the parser
-  * the evaluator
+  * the interpreter (evaluator)
 
 ## Run REPL
 

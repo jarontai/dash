@@ -1,8 +1,8 @@
-import '../runner.dart';
 import '../parser/ast.dart';
+import '../runner.dart';
 import '../scanner/scanner.dart';
-import 'environment.dart';
 import 'callable.dart';
+import 'environment.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
 class Interpreter
@@ -17,6 +17,21 @@ class Interpreter
     globals.define('print', NativePrintFunction());
   }
 
+  Object executeBlock(List<Statement> statements, Environment environment) {
+    var previous = _environment;
+
+    var result;
+    try {
+      _environment = environment;
+      for (var stmt in statements) {
+        result = _execute(stmt);
+      }
+    } finally {
+      _environment = previous;
+    }
+    return result;
+  }
+
   Object interprete(List<Statement> statements) {
     var result;
     try {
@@ -29,8 +44,11 @@ class Interpreter
     return result;
   }
 
-  Object _execute(Statement stmt) {
-    return stmt.acceptStatement(this);
+  @override
+  Object visitAssignExpression(AssignExpression expression) {
+    Object value = _evaluate(expression.value);
+    _environment.assign(expression.name, value);
+    return value;
   }
 
   @override
@@ -94,129 +112,8 @@ class Interpreter
   }
 
   @override
-  Object visitGroupingExpression(GroupingExpression expression) {
-    return _evaluate(expression.expression);
-  }
-
-  @override
-  Object visitLiteralExpression(LiteralExpression expression) {
-    return expression.value;
-  }
-
-  @override
-  Object visitUnaryExpression(UnaryExpression expression) {
-    var right = _evaluate(expression.right);
-    switch (expression.op.type) {
-      case TokenType.MINUS:
-        return -(right as num);
-        break;
-      case TokenType.BANG:
-        return !_isTruthy(right);
-        break;
-      default:
-        break;
-    }
-    return null;
-  }
-
-  Object _evaluate(Expression expression) {
-    return expression.acceptExpression(this);
-  }
-
-  bool _isTruthy(Object right) {
-    if (right == null) return false;
-    if (right is bool) {
-      return right;
-    }
-    return false;
-  }
-
-  void _checkNumberOperand(Token token, Object right, [Object left]) {
-    if (left == null) {
-      if (right is num) return;
-      throw RuntimeError(token, 'Operand must be a number.');
-    }
-
-    if (left is num && right is num) return;
-    throw RuntimeError(token, 'Operands must be numbers.');
-  }
-
-  @override
-  Object visitExpressionStatement(ExpressionStatement statement) {
-    return _evaluate(statement.expression);
-  }
-
-  @override
-  Object visitVarStatement(VarStatement stmt) {
-    var result;
-    if (stmt.initializer != null) {
-      result = _evaluate(stmt.initializer);
-    }
-    _environment.define(stmt.name.lexeme, result);
-    return result;
-  }
-
-  @override
-  Object visitVariableExpression(VariableExpression expression) {
-    return _environment.fetch(expression.name);
-  }
-
-  @override
-  Object visitAssignExpression(AssignExpression expression) {
-    Object value = _evaluate(expression.value);
-    _environment.assign(expression.name, value);
-    return value;
-  }
-
-  @override
   Object visitBlockStatement(BlockStatement statement) {
     return executeBlock(statement.statements, Environment(_environment));
-  }
-
-  Object executeBlock(List<Statement> statements, Environment environment) {
-    var previous = _environment;
-
-    var result;
-    try {
-      _environment = environment;
-      for (var stmt in statements) {
-        result = _execute(stmt);
-      }
-    } finally {
-      _environment = previous;
-    }
-    return result;
-  }
-
-  @override
-  Object visitIfStatement(IfStatement statement) {
-    var result;
-    if (_isTruthy(_evaluate(statement.condition))) {
-      result = _execute(statement.thenBranch);
-    } else if (statement.elseBranch != null) {
-      result = _execute(statement.elseBranch);
-    }
-    return result;
-  }
-
-  @override
-  Object visitLogicalExpression(LogicalExpression expression) {
-    var left = _evaluate(expression.left);
-    if (expression.op.type == TokenType.OR) {
-      if (_isTruthy(left)) return left;
-    } else {
-      if (!_isTruthy(left)) return left;
-    }
-    return _evaluate(expression.right);
-  }
-
-  @override
-  Object visitWhileStatement(WhileStatement statement) {
-    var result;
-    while (_isTruthy(_evaluate(statement.condition))) {
-      result = _execute(statement.body);
-    }
-    return result;
   }
 
   @override
@@ -239,10 +136,47 @@ class Interpreter
   }
 
   @override
+  Object visitExpressionStatement(ExpressionStatement statement) {
+    return _evaluate(statement.expression);
+  }
+
+  @override
   Object visitFunctionStatement(FunctionStatement statement) {
     var function = DashFunction(statement, _environment);
     _environment.define(statement.name.lexeme, function);
     return function;
+  }
+
+  @override
+  Object visitGroupingExpression(GroupingExpression expression) {
+    return _evaluate(expression.expression);
+  }
+
+  @override
+  Object visitIfStatement(IfStatement statement) {
+    var result;
+    if (_isTruthy(_evaluate(statement.condition))) {
+      result = _execute(statement.thenBranch);
+    } else if (statement.elseBranch != null) {
+      result = _execute(statement.elseBranch);
+    }
+    return result;
+  }
+
+  @override
+  Object visitLiteralExpression(LiteralExpression expression) {
+    return expression.value;
+  }
+
+  @override
+  Object visitLogicalExpression(LogicalExpression expression) {
+    var left = _evaluate(expression.left);
+    if (expression.op.type == TokenType.OR) {
+      if (_isTruthy(left)) return left;
+    } else {
+      if (!_isTruthy(left)) return left;
+    }
+    return _evaluate(expression.right);
   }
 
   @override
@@ -254,6 +188,78 @@ class Interpreter
 
     throw Return(value);
   }
+
+  @override
+  Object visitUnaryExpression(UnaryExpression expression) {
+    var right = _evaluate(expression.right);
+    switch (expression.op.type) {
+      case TokenType.MINUS:
+        return -(right as num);
+        break;
+      case TokenType.BANG:
+        return !_isTruthy(right);
+        break;
+      default:
+        break;
+    }
+    return null;
+  }
+
+  @override
+  Object visitVariableExpression(VariableExpression expression) {
+    return _environment.fetch(expression.name);
+  }
+
+  @override
+  Object visitVarStatement(VarStatement stmt) {
+    var result;
+    if (stmt.initializer != null) {
+      result = _evaluate(stmt.initializer);
+    }
+    _environment.define(stmt.name.lexeme, result);
+    return result;
+  }
+
+  @override
+  Object visitWhileStatement(WhileStatement statement) {
+    var result;
+    while (_isTruthy(_evaluate(statement.condition))) {
+      result = _execute(statement.body);
+    }
+    return result;
+  }
+
+  void _checkNumberOperand(Token token, Object right, [Object left]) {
+    if (left == null) {
+      if (right is num) return;
+      throw RuntimeError(token, 'Operand must be a number.');
+    }
+
+    if (left is num && right is num) return;
+    throw RuntimeError(token, 'Operands must be numbers.');
+  }
+
+  Object _evaluate(Expression expression) {
+    return expression.acceptExpression(this);
+  }
+
+  Object _execute(Statement stmt) {
+    return stmt.acceptStatement(this);
+  }
+
+  bool _isTruthy(Object right) {
+    if (right == null) return false;
+    if (right is bool) {
+      return right;
+    }
+    return false;
+  }
+}
+
+class Return {
+  final Object value;
+
+  Return(this.value);
 }
 
 class RuntimeError extends Error {
@@ -266,10 +272,4 @@ class RuntimeError extends Error {
   String toString() {
     return '$token: $message';
   }
-}
-
-class Return {
-  final Object value;
-
-  Return(this.value);
 }

@@ -1,12 +1,28 @@
-import 'ast.dart';
 import '../scanner/token.dart';
+import 'ast.dart';
 
 // The pretty ast printer.
 class AstPrinter implements ExpressionVisitor<String> {
+  String print(Expression expr) {
+    return expr.acceptExpression(this);
+  }
+
+  @override
+  String visitAssignExpression(AssignExpression expression) {
+    // TODO: implement visitAssignExpression
+    return null;
+  }
+
   @override
   String visitBinaryExpression(BinaryExpression expression) {
     return _parenthesize(
         expression.op.lexeme, [expression.left, expression.right]);
+  }
+
+  @override
+  String visitCallExpression(CallExpression expression) {
+    // TODO: implement visitCallExpression
+    return null;
   }
 
   @override
@@ -23,8 +39,20 @@ class AstPrinter implements ExpressionVisitor<String> {
   }
 
   @override
+  String visitLogicalExpression(LogicalExpression expression) {
+    // TODO: implement visitLogicalExpression
+    return null;
+  }
+
+  @override
   String visitUnaryExpression(UnaryExpression expression) {
     return _parenthesize(expression.op.lexeme, [expression.right]);
+  }
+
+  @override
+  String visitVariableExpression(VariableExpression expression) {
+    // TODO: implement visitVariableExpression
+    return null;
   }
 
   String _parenthesize(String name, List<Expression> expressions) {
@@ -37,34 +65,6 @@ class AstPrinter implements ExpressionVisitor<String> {
     sb.write(')');
 
     return sb.toString();
-  }
-
-  String print(Expression expr) {
-    return expr.acceptExpression(this);
-  }
-
-  @override
-  String visitVariableExpression(VariableExpression expression) {
-    // TODO: implement visitVariableExpression
-    return null;
-  }
-
-  @override
-  String visitAssignExpression(AssignExpression expression) {
-    // TODO: implement visitAssignExpression
-    return null;
-  }
-
-  @override
-  String visitLogicalExpression(LogicalExpression expression) {
-    // TODO: implement visitLogicalExpression
-    return null;
-  }
-
-  @override
-  String visitCallExpression(CallExpression expression) {
-    // TODO: implement visitCallExpression
-    return null;
   }
 }
 

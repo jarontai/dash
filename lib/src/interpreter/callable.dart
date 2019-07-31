@@ -1,7 +1,7 @@
 import 'package:dash/src/interpreter/environment.dart';
 
-import 'interpreter.dart';
 import '../parser/ast.dart';
+import 'interpreter.dart';
 
 // Base interface for all functions
 abstract class Callable {
@@ -9,28 +9,14 @@ abstract class Callable {
   Object call(Interpreter interpreter, List<Object> arguments);
 }
 
-class NativePrintFunction implements Callable {
-  @override
-  Object call(Interpreter interpreter, List<Object> arguments) {
-    var arg = arguments.first;
-    print(arg);
-    return null;
-  }
-
-  @override
-  int get arity => 1;
-
-  @override
-  String toString() {
-    return '<native function>';
-  }
-}
-
 class DashFunction implements Callable {
   FunctionStatement declaration;
   Environment closure;
 
   DashFunction(this.declaration, this.closure);
+
+  @override
+  int get arity => declaration.params.length;
 
   @override
   Object call(Interpreter interpreter, List<Object> arguments) {
@@ -49,10 +35,24 @@ class DashFunction implements Callable {
   }
 
   @override
-  int get arity => declaration.params.length;
+  String toString() {
+    return '<function ${declaration.name.lexeme}>';
+  }
+}
+
+class NativePrintFunction implements Callable {
+  @override
+  int get arity => 1;
+
+  @override
+  Object call(Interpreter interpreter, List<Object> arguments) {
+    var arg = arguments.first;
+    print(arg);
+    return null;
+  }
 
   @override
   String toString() {
-    return '<function ${declaration.name.lexeme}>';
+    return '<native function>';
   }
 }
