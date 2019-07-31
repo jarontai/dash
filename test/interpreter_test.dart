@@ -173,7 +173,7 @@ void main() {
       '''
     ];
 
-    var expects = [3];
+    var expects = [null];
 
     for (var i = 0; i < inputs.length; i++) {
       var result = interprete(inputs[i]);

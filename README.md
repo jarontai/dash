@@ -43,10 +43,10 @@ The Dash interpreter is build to parse the Dash language, which includes followi
     $ dart bin/dash.dart
     >> 2 * 5 + 10;
     20
-    >> add(a, b) { return a + b; }
-    <function add>
-    >> add(2, 3);
-    5   
+    >> var sayHi = (name) { return 'hello ' + name; };
+    <function sayHi>
+    >> sayHi('dart');
+    hello dart
     ......
     
 

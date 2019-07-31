@@ -14,7 +14,7 @@ class NativePrintFunction implements Callable {
   Object call(Interpreter interpreter, List<Object> arguments) {
     var arg = arguments.first;
     print(arg);
-    return arg;
+    return null;
   }
 
   @override

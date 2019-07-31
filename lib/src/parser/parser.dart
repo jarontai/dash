@@ -251,6 +251,10 @@ class Parser {
   }
 
   Statement _varDeclaration() {
+    if (_checkSeq([TokenType.IDENTIFIER, TokenType.EQUAL, TokenType.LEFT_PAREN])) {
+      return _varFunctionStatement();
+    }
+
     Token name = _consume(TokenType.IDENTIFIER, 'Expect variable name.');
 
     Expression initializer;
@@ -410,8 +414,8 @@ class Parser {
     return CallExpression(callee, paren, arguments);
   }
 
-  Statement _functionStatement(String kind) {
-    var name = _consume(TokenType.IDENTIFIER, 'Expect $kind name.');
+  Statement _functionStatement(String kind, {Token varToken}) {
+    var name = varToken != null ? varToken : _consume(TokenType.IDENTIFIER, 'Expect $kind name.');
     _consume(TokenType.LEFT_PAREN, 'Expect ( after $kind name.');
     var parameters = <Token>[];
     if (!_check(TokenType.RIGHT_PAREN)) {
@@ -429,6 +433,14 @@ class Parser {
     _consume(TokenType.LEFT_BRACE, 'Expect { before $kind body.');
     var body = _block();
     return FunctionStatement(name, parameters, body);
+  }
+
+  Statement _varFunctionStatement() {
+    var name = _consume(TokenType.IDENTIFIER, 'Expect identifier.');
+    _consume(TokenType.EQUAL, 'Expect = after identifier.');
+    var function = _functionStatement('function', varToken: name);
+    _consume(TokenType.SEMICOLON, 'Expect \';\' after function declaration.');
+    return function;
   }
 
   Statement _returnStatement() {

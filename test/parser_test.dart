@@ -172,6 +172,12 @@ void main() {
           print("Hi, " + first + " " + last + "!");
           return 1;
         }
+      ''',
+      '''
+        var sayHi = (first, last) {
+          print("Hi, " + first + " " + last + "!");
+          return 1;
+        };
       '''
     ];
 
