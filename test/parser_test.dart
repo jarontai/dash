@@ -192,4 +192,28 @@ void main() {
       expect(stmt.body[1], isA<ReturnStatement>());
     }
   });
+
+  test('closure', () {
+    var inputs = [
+      '''
+        makeAdder(num) {
+          var adder = (inputNum) {
+            return num + inputNum;
+          };
+          return adder;
+        }
+      '''
+    ];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var stmts = parse(inputs[i]);
+      expect(stmts[0], isA<FunctionStatement>());
+      var stmt = (stmts[0] as FunctionStatement);
+      expect(stmt.name.lexeme, 'makeAdder');
+      expect(stmt.params.length, 1);
+      expect(stmt.body, isNotNull);
+      expect(stmt.body[0], isA<FunctionStatement>());
+      expect(stmt.body[1], isA<ReturnStatement>());
+    }
+  });
 }

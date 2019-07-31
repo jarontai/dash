@@ -240,7 +240,7 @@ class Interpreter
 
   @override
   Object visitFunctionStatement(FunctionStatement statement) {
-    var function = DashFunction(statement);
+    var function = DashFunction(statement, _environment);
     _environment.define(statement.name.lexeme, function);
     return function;
   }

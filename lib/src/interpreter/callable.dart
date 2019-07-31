@@ -28,12 +28,13 @@ class NativePrintFunction implements Callable {
 
 class DashFunction implements Callable {
   FunctionStatement declaration;
+  Environment closure;
 
-  DashFunction(this.declaration);
+  DashFunction(this.declaration, this.closure);
 
   @override
   Object call(Interpreter interpreter, List<Object> arguments) {
-    var environment = Environment(interpreter.globals);
+    var environment = Environment(closure);
     for (var i = 0; i < declaration.params.length; i++) {
       environment.define(declaration.params[i].lexeme, arguments[i]);
     }

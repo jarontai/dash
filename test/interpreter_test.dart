@@ -200,5 +200,28 @@ void main() {
       var result = interprete(inputs[i]);
       expect(result, expects[i]);
     }
-  });  
+  });
+
+  test('closure', () {
+    var inputs = [
+      '''
+        makeAdder(num) {
+          var adder = (inputNum) {
+            return num + inputNum;
+          };
+          return adder;
+        }
+
+        var add2 = makeAdder(2);
+        var result = add2(3);
+      '''
+    ];
+
+    var expects = [5];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var result = interprete(inputs[i]);
+      expect(result, expects[i]);
+    }
+  });
 }
