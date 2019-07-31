@@ -1,8 +1,8 @@
 简体中文 | [English](./README.md)
 
-# Dash - 使用Dart实现的简单解释器（Interpreter）
+# Dash - 使用Dart实现的简单解释器
 
-Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，它也是一门解释型语言，支持 [Dart](https://dart.dev) 语言的部分基础特性。
+Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，同时它也是一门解释型语言，支持 [Dart](https://dart.dev) 语言的部分基础特性。
 
 Dash 的实现是基于 Dart 项目组成员 [Bob Nystrom](https://github.com/munificent) 的 《[Crafting Interpreters](http://craftinginterpreters.com/)》。
 
@@ -14,6 +14,7 @@ Dash 的语言特性包括：
   * 支持算术表达式，数字和布尔量
   * 支持字符串，数组和map
   * 支持函数和闭包
+  * 部分内置函数，如：print
 
   ``` dart
     // Dash 代码
