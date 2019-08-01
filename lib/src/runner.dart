@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dash/src/interpreter/resolver.dart';
+
 import 'interpreter/interpreter.dart';
 import 'parser/parser.dart';
 import 'scanner/scanner.dart';
@@ -14,9 +16,7 @@ class Runner {
     _report(line, '', message);
   }
 
-  static void parseError(ParseError error) {
-    var token = error.token;
-    var message = error.message;
+  static void reportError(Token token, String message) {
     if (token.type == TokenType.EOF) {
       _report(token.line, 'at end', message);
     } else {
@@ -29,6 +29,11 @@ class Runner {
     var tokens = scanner.scanTokens();
     var parser = Parser(tokens);
     var stmts = parser.parse();
+
+    if (hadError) return null;
+
+    var resolver = Resolver(interpreter);
+    resolver.resolveStatementList(stmts);
 
     if (hadError) return null;
 
@@ -62,7 +67,8 @@ class Runner {
   }
 
   static void runtimeError(RuntimeError error) {
-    stdout.writeln('[line ${error.token.line}] Runtime Error: ${error.message}');
+    stdout
+        .writeln('[line ${error.token.line}] Runtime Error: ${error.message}');
     hadRuntimeError = true;
   }
 

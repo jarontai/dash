@@ -6,7 +6,10 @@ void main() {
     var tokens = Scanner(input).scanTokens();
     var stmts = Parser(tokens).parse();
     var interpreter = Interpreter();
-    return interpreter.interprete(stmts);
+    var resolver = Resolver(interpreter);
+    resolver.resolveStatementList(stmts);
+    var result = interpreter.interprete(stmts);
+    return result;
   }
 
   test('basic expressions', () {
@@ -212,8 +215,9 @@ void main() {
           return adder;
         }
 
+        var result;
         var add2 = makeAdder(2);
-        var result = add2(3);
+        result = add2(3);
       '''
     ];
 

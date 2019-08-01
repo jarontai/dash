@@ -1,21 +1,24 @@
 import '../parser/ast.dart';
 import '../runner.dart';
 import '../scanner/scanner.dart';
-import 'callable.dart';
 import 'class.dart';
 import 'environment.dart';
+import 'function.dart';
+
+export 'resolver.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
 class Interpreter
     implements ExpressionVisitor<Object>, StatementVisitor<Object> {
-  Environment globals;
+  Environment _globals;
   Environment _environment;
+  final Map<Expression, int> _locals = {};
 
   Interpreter() {
-    globals = Environment();
-    _environment = globals;
+    _globals = Environment();
+    _environment = _globals;
 
-    globals.define('print', NativePrintFunction());
+    _globals.define('print', NativePrintFunction());
   }
 
   Object executeBlock(List<Statement> statements, Environment environment) {
@@ -45,10 +48,19 @@ class Interpreter
     return result;
   }
 
+  void resolve(Expression expression, int depth) {
+    _locals[expression] = depth;
+  }
+
   @override
   Object visitAssignExpression(AssignExpression expression) {
     Object value = _evaluate(expression.value);
-    _environment.assign(expression.name, value);
+    var distance = _locals[expression];
+    if (distance != null) {
+      _environment.assign(expression.name, value);
+    } else {
+      _globals.assign(expression.name, value);
+    }
     return value;
   }
 
@@ -114,7 +126,8 @@ class Interpreter
 
   @override
   Object visitBlockStatement(BlockStatement statement) {
-    return executeBlock(statement.statements, Environment(_environment));
+    return executeBlock(
+        statement.statements, Environment.enclosing(_environment));
   }
 
   @override
@@ -214,6 +227,18 @@ class Interpreter
   }
 
   @override
+  Object visitSetExpression(SetExpression expression) {
+    var obj = _evaluate(expression.object);
+    if (obj is! DashInstance) {
+      throw RuntimeError(expression.name, 'Only instances have fields.');
+    }
+
+    var value = _evaluate(expression.value);
+    (obj as DashInstance).define(expression.name, value);
+    return value;
+  }
+
+  @override
   Object visitUnaryExpression(UnaryExpression expression) {
     var right = _evaluate(expression.right);
     switch (expression.op.type) {
@@ -231,7 +256,7 @@ class Interpreter
 
   @override
   Object visitVariableExpression(VariableExpression expression) {
-    return _environment.fetch(expression.name);
+    return _lookupVariable(expression.name, expression);
   }
 
   @override
@@ -279,16 +304,15 @@ class Interpreter
     return false;
   }
 
-  @override
-  Object visitSetExpression(SetExpression expression) {
-    var obj = _evaluate(expression.object);
-    if (obj is! DashInstance) {
-      throw RuntimeError(expression.name, 'Only instances have fields.');
+  Object _lookupVariable(Token name, Expression expression) {
+    var distance = _locals[expression];
+    var result;
+    if (distance != null) {
+      result = _environment.fetch(name);
+    } else {
+      result = _globals.fetch(name);
     }
-
-    var value = _evaluate(expression.value);
-    (obj as DashInstance).define(expression.name, value);
-    return value;
+    return result;
   }
 }
 

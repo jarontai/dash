@@ -1,6 +1,6 @@
 import '../scanner/token.dart';
 import 'interpreter.dart';
-import 'callable.dart';
+import 'function.dart';
 
 class DashClass implements Callable {
   final String name;

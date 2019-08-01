@@ -5,7 +5,9 @@ class Environment {
   final Environment _enclosing;
   final Map<String, Object> _values = {};
 
-  Environment([this._enclosing]);
+  Environment() : _enclosing = null;
+
+  Environment.enclosing(Environment enclosing) : _enclosing = enclosing;
 
   void assign(Token name, Object value) {
     if (_values.containsKey(name.lexeme)) {
@@ -36,4 +38,23 @@ class Environment {
 
     throw RuntimeError(name, 'Undefined variable ${name.lexeme}.');
   }
+
+  // TODO: ancestor resolving is not working
+  // void assignAt(int distance, Token name, Object value) {
+  //   var env = _ancestor(distance);
+  //   env._values[name.lexeme] = value;
+  // }
+
+  // Object fetchAt(int distance, String lexeme) {
+  //   var env = _ancestor(distance);
+  //   return env._values[lexeme];
+  // }
+
+  // Environment _ancestor(int distance) {
+  //   var env = this;
+  //   for (var i = 0; i < distance; i++) {
+  //     env = env._enclosing;
+  //   }
+  //   return env;
+  // }
 }

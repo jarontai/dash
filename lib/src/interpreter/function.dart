@@ -19,7 +19,7 @@ class DashFunction implements Callable {
 
   @override
   Object call(Interpreter interpreter, List<Object> arguments) {
-    var environment = Environment(closure);
+    var environment = Environment.enclosing(closure);
     for (var i = 0; i < declaration.params.length; i++) {
       environment.define(declaration.params[i].lexeme, arguments[i]);
     }

@@ -36,7 +36,7 @@ class Parser {
         }
       }
     } on ParseError catch (e) {
-      Runner.parseError(e);
+      Runner.reportError(e.token, e.message);
     }
     return stmts;
   }
@@ -208,7 +208,7 @@ class Parser {
       return _statement();
     } on ParseError catch (e) {
       _synchronize();
-      Runner.parseError(e);
+      Runner.reportError(e.token, e.message);
       return null;
     }
   }
