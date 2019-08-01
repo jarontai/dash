@@ -40,6 +40,27 @@ class CallExpression extends Expression {
   }
 }
 
+class GetExpression extends Expression {
+  final Expression object;
+  final Token name;
+  GetExpression(this.object, this.name);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitGetExpression(this);
+  }
+}
+
+class SetExpression extends Expression {
+  final Expression object;
+  final Token name;
+  final Expression value;
+  SetExpression(this.object, this.name, this.value);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitSetExpression(this);
+  }
+}
+
 class GroupingExpression extends Expression {
   final Expression expression;
   GroupingExpression(this.expression);
@@ -92,6 +113,8 @@ abstract class ExpressionVisitor<R> {
   R visitAssignExpression(AssignExpression expression);
   R visitBinaryExpression(BinaryExpression expression);
   R visitCallExpression(CallExpression expression);
+  R visitGetExpression(GetExpression expression);
+  R visitSetExpression(SetExpression expression);
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);
   R visitLogicalExpression(LogicalExpression expression);
@@ -109,6 +132,16 @@ class BlockStatement extends Statement {
 
   R acceptStatement<R>(StatementVisitor<R> visitor) {
     return visitor.visitBlockStatement(this);
+  }
+}
+
+class ClassStatement extends Statement {
+  final Token name;
+  final List<FunctionStatement> methods;
+  ClassStatement(this.name, this.methods);
+
+  R acceptStatement<R>(StatementVisitor<R> visitor) {
+    return visitor.visitClassStatement(this);
   }
 }
 
@@ -175,6 +208,7 @@ class WhileStatement extends Statement {
 
 abstract class StatementVisitor<R> {
   R visitBlockStatement(BlockStatement statement);
+  R visitClassStatement(ClassStatement statement);
   R visitExpressionStatement(ExpressionStatement statement);
   R visitIfStatement(IfStatement statement);
   R visitFunctionStatement(FunctionStatement statement);

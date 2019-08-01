@@ -216,4 +216,31 @@ void main() {
       expect(stmt.body[1], isA<ReturnStatement>());
     }
   });
+
+  test('class', () {
+    var inputs = [
+      '''
+        class Test {
+          sayHi(name) {
+            return 'hello ' + name;
+          }
+
+          echo(name) {
+            print(name);
+          }          
+        }
+      '''
+    ];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var stmts = parse(inputs[i]);
+      expect(stmts[0], isA<ClassStatement>());
+      var stmt = (stmts[0] as ClassStatement);
+      expect(stmt.name.lexeme, 'Test');
+      expect(stmt.methods, isNotNull);
+      expect(stmt.methods.length, 2);
+      expect(stmt.methods[0].name.lexeme, 'sayHi');
+      expect(stmt.methods[1].name.lexeme, 'echo');
+    }
+  });
 }

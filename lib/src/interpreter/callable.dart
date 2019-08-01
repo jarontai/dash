@@ -1,6 +1,5 @@
-import 'package:dash/src/interpreter/environment.dart';
-
 import '../parser/ast.dart';
+import 'environment.dart';
 import 'interpreter.dart';
 
 // Base interface for all functions

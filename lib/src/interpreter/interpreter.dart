@@ -2,6 +2,7 @@ import '../parser/ast.dart';
 import '../runner.dart';
 import '../scanner/scanner.dart';
 import 'callable.dart';
+import 'class.dart';
 import 'environment.dart';
 
 // Dash's interpreter, which response for evaluating ast [Expression]s.
@@ -136,6 +137,20 @@ class Interpreter
   }
 
   @override
+  Object visitClassStatement(ClassStatement statement) {
+    _environment.define(statement.name.lexeme, null);
+
+    var methods = <String, DashFunction>{};
+    statement.methods.forEach((method) {
+      methods[method.name.lexeme] = DashFunction(method, _environment);
+    });
+
+    var klass = DashClass(statement.name.lexeme, methods);
+    _environment.assign(statement.name, klass);
+    return null;
+  }
+
+  @override
   Object visitExpressionStatement(ExpressionStatement statement) {
     return _evaluate(statement.expression);
   }
@@ -145,6 +160,15 @@ class Interpreter
     var function = DashFunction(statement, _environment);
     _environment.define(statement.name.lexeme, function);
     return function;
+  }
+
+  @override
+  Object visitGetExpression(GetExpression expression) {
+    var object = _evaluate(expression.object);
+    if (object is DashInstance) {
+      return object.fetch(expression.name);
+    }
+    throw RuntimeError(expression.name, "Only instances have properties.");
   }
 
   @override
@@ -253,6 +277,18 @@ class Interpreter
       return right;
     }
     return false;
+  }
+
+  @override
+  Object visitSetExpression(SetExpression expression) {
+    var obj = _evaluate(expression.object);
+    if (obj is! DashInstance) {
+      throw RuntimeError(expression.name, 'Only instances have fields.');
+    }
+
+    var value = _evaluate(expression.value);
+    (obj as DashInstance).define(expression.name, value);
+    return value;
   }
 }
 

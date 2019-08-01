@@ -26,6 +26,12 @@ class AstPrinter implements ExpressionVisitor<String> {
   }
 
   @override
+  String visitGetExpression(GetExpression expression) {
+    // TODO: implement visitGetExpression
+    return null;
+  }
+
+  @override
   String visitGroupingExpression(GroupingExpression expression) {
     return _parenthesize('group', [expression.expression]);
   }
@@ -41,6 +47,12 @@ class AstPrinter implements ExpressionVisitor<String> {
   @override
   String visitLogicalExpression(LogicalExpression expression) {
     // TODO: implement visitLogicalExpression
+    return null;
+  }
+
+  @override
+  String visitSetExpression(SetExpression expression) {
+    // TODO: implement visitSetExpression
     return null;
   }
 

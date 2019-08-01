@@ -224,4 +224,29 @@ void main() {
       expect(result, expects[i]);
     }
   });
+
+  test('class', () {
+    var inputs = [
+      '''
+        class Test {
+          sayHi(name) {
+            return 'Hello ' + name;
+          }
+
+          echo(name) {
+            print(name);
+          }          
+        }
+
+        Test().sayHi('jojo');
+      '''
+    ];
+
+    var expects = ['Hello jojo'];
+
+    for (var i = 0; i < inputs.length; i++) {
+      var result = interprete(inputs[i]);
+      expect(result, expects[i]);
+    }
+  });
 }

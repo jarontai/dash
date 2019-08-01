@@ -5,6 +5,8 @@ final Map<String, Map<String, String>> astMap = {
     'AssignExpression': 'Token name, Expression value',
     'BinaryExpression': 'Expression left, Token op, Expression right',
     'CallExpression': 'Expression callee, Token paren, List<Expression> arguments',
+    'GetExpression': 'Expression object, Token name',
+    'SetExpression': 'Expression object, Token name, Expression value',
     'GroupingExpression': 'Expression expression',
     'LiteralExpression': 'Object value',
     'LogicalExpression': 'Expression left, Token op, Expression right',
@@ -13,6 +15,7 @@ final Map<String, Map<String, String>> astMap = {
   },
   'Statement': {
     'BlockStatement': 'List<Statement> statements',
+    'ClassStatement': 'Token name, List<FunctionStatement> methods',
     'ExpressionStatement': 'Expression expression',
     'IfStatement': 'Expression condition, Statement thenBranch, Statement elseBranch',
     'FunctionStatement': 'Token name, List<Token> params, List<Statement> body',
@@ -34,7 +37,7 @@ String run() {
 
   sb.writeln();
 
-  sb.writeln('// The ast expressions.');
+  sb.writeln('// The ast expressions and statements.');
 
   sb.writeln();
 

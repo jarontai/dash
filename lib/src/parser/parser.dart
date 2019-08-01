@@ -80,6 +80,8 @@ class Parser {
       if (expr is VariableExpression) {
         var name = expr.name;
         return AssignExpression(name, value);
+      } else if (expr is GetExpression) {
+        return SetExpression(expr.object, expr.name, value);
       }
 
       _error(token, 'Invalid assignment target.');
@@ -105,6 +107,9 @@ class Parser {
     while (true) {
       if (_match(TokenType.LEFT_PAREN)) {
         expr = _finishCall(expr);
+      } else if (_match(TokenType.DOT)) {
+        var name = _consume(TokenType.IDENTIFIER, 'Expect property name after \'.\'.');
+        expr = GetExpression(expr, name);
       } else {
         break;
       }
@@ -149,6 +154,20 @@ class Parser {
     return result;
   }
 
+  Statement _classDeclaration() {
+    var name = _consume(TokenType.IDENTIFIER, "Expect class name.");
+    _consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
+
+    var methods = <FunctionStatement>[];
+    while (!_check(TokenType.RIGHT_BRACE) && !_isAtEnd()) {
+      methods.add(_functionStatement("method"));
+    }
+
+    _consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
+
+    return ClassStatement(name, methods);
+  }
+
   Expression _comparison() {
     var expr = _addition();
     while (_matchAny([
@@ -174,6 +193,10 @@ class Parser {
     try {
       if (_match(TokenType.VAR)) {
         return _varDeclaration();
+      }
+
+      if (_match(TokenType.CLASS)) {
+        return _classDeclaration();
       }
 
       if (_checkSeq([TokenType.IDENTIFIER, TokenType.LEFT_PAREN])) {
@@ -274,7 +297,9 @@ class Parser {
   }
 
   Statement _functionStatement(String kind, {Token varToken}) {
-    var name = varToken != null ? varToken : _consume(TokenType.IDENTIFIER, 'Expect $kind name.');
+    var name = varToken != null
+        ? varToken
+        : _consume(TokenType.IDENTIFIER, 'Expect $kind name.');
     _consume(TokenType.LEFT_PAREN, 'Expect ( after $kind name.');
     var parameters = <Token>[];
     if (!_check(TokenType.RIGHT_PAREN)) {
@@ -433,7 +458,8 @@ class Parser {
   }
 
   Statement _varDeclaration() {
-    if (_checkSeq([TokenType.IDENTIFIER, TokenType.EQUAL, TokenType.LEFT_PAREN])) {
+    if (_checkSeq(
+        [TokenType.IDENTIFIER, TokenType.EQUAL, TokenType.LEFT_PAREN])) {
       return _varFunctionStatement();
     }
 
