@@ -7,7 +7,7 @@ import 'function.dart';
 
 export 'resolver.dart';
 
-// Dash's interpreter, which response for evaluating ast [Expression]s.
+/// Dash's interpreter, which response for evaluating ast [Expression]s and [Statement]s.
 class Interpreter
     implements ExpressionVisitor<Object>, StatementVisitor<Object> {
   Environment _globals;

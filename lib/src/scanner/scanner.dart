@@ -4,7 +4,7 @@ import 'token.dart';
 
 export 'token.dart';
 
-// The scanner or lexer, which response for producing [Token]s from souce code.
+/// The scanner or lexer, which response for producing [Token]s from souce code.
 class Scanner {
   final String _source;
   final List<Token> _tokens = [];

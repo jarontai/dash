@@ -4,7 +4,7 @@ import '../parser/ast.dart';
 import 'environment.dart';
 import 'interpreter.dart';
 
-// Base interface for all functions
+/// Base interface for all functions
 abstract class Callable {
   int get arity;
   Object call(Interpreter interpreter, List<Object> arguments);

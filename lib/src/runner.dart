@@ -6,7 +6,7 @@ import 'interpreter/interpreter.dart';
 import 'parser/parser.dart';
 import 'scanner/scanner.dart';
 
-// The dash runner
+/// The dash runner.
 class Runner {
   static bool hadError = false;
   static bool hadRuntimeError = false;

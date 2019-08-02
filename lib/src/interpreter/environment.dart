@@ -1,6 +1,7 @@
 import '../scanner/token.dart';
 import 'interpreter.dart';
 
+/// The class for storing variable bindings.
 class Environment {
   final Environment _enclosing;
   final Map<String, Object> _values = {};
@@ -39,7 +40,7 @@ class Environment {
     throw RuntimeError(name, 'Undefined variable ${name.lexeme}.');
   }
 
-  // TODO: ancestor resolving is not working
+  // TODO: ancestor is not working
   // void assignAt(int distance, Token name, Object value) {
   //   var env = _ancestor(distance);
   //   env._values[name.lexeme] = value;

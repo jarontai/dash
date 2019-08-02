@@ -5,19 +5,7 @@ import 'ast_printer.dart';
 
 export 'ast.dart';
 
-// The parser, which response for producing ast [Expression]s from [Token]s.
-class ParseError extends Error {
-  final Token token;
-  final String message;
-
-  ParseError(this.token, this.message);
-
-  @override
-  String toString() {
-    return '$token: $message';
-  }
-}
-
+/// The parser, which response for producing ast [Expression]s from [Token]s.
 class Parser {
   static final AstPrinter astPrinter = AstPrinter();
   static final _argsNumLimit = 8;
@@ -499,5 +487,17 @@ class Parser {
     var body = _statement();
 
     return WhileStatement(condition, body);
+  }
+}
+
+class ParseError extends Error {
+  final Token token;
+  final String message;
+
+  ParseError(this.token, this.message);
+
+  @override
+  String toString() {
+    return '$token: $message';
   }
 }

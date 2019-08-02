@@ -2,7 +2,6 @@ import '../scanner/token.dart';
 import 'ast.dart';
 
 // The pretty ast printer.
-
 class AstPrinter implements ExpressionVisitor<String> {
   String print(Expression expr) {
     return expr.acceptExpression(this);
