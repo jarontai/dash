@@ -7,6 +7,7 @@ final Map<String, Map<String, String>> astMap = {
     'CallExpression': 'Expression callee, Token paren, List<Expression> arguments',
     'GetExpression': 'Expression object, Token name',
     'SetExpression': 'Expression object, Token name, Expression value',
+    'ThisExpression': 'Token keyword',
     'GroupingExpression': 'Expression expression',
     'LiteralExpression': 'Object value',
     'LogicalExpression': 'Expression left, Token op, Expression right',

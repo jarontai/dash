@@ -7,6 +7,7 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
   final Interpreter _interpreter;
   final List<Map<String, bool>> _scopes = [];
   FunctionType _currentFunction = FunctionType.NONE;
+  ClassType _currentClass = ClassType.NONE;
 
   Resolver(this._interpreter);
 
@@ -39,7 +40,23 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
 
   @override
   void visitClassStatement(ClassStatement statement) {
-    // TODO: implement visitClassStatement
+    var enclosingClass = _currentClass;
+    _currentClass = ClassType.CLASS;
+
+    _declare(statement.name);
+    _define(statement.name);
+
+    _beginScope();
+    _scopes.first['this'] = true;
+
+    statement.methods.forEach((method) {
+      var declaration = FunctionType.METHOD;
+      _resolveFunction(method, declaration);
+    });
+
+    _endScope();
+
+    _currentClass = enclosingClass;
   }
 
   @override
@@ -56,7 +73,7 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
 
   @override
   void visitGetExpression(GetExpression expression) {
-    // TODO: implement visitGetExpression
+    _resolveExpression(expression.object);
   }
 
   @override
@@ -96,7 +113,8 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
 
   @override
   void visitSetExpression(SetExpression expression) {
-    // TODO: implement visitSetExpression
+    _resolveExpression(expression.value);
+    _resolveExpression(expression.object);
   }
 
   @override
@@ -190,9 +208,24 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
       _resolveStatement(stmt);
     }
   }
+
+  @override
+  void visitThisExpression(ThisExpression expression) {
+    if (_currentClass == ClassType.NONE) {
+      Runner.reportError(expression.keyword, 'Cannot use \'this\' outside of a class.');
+      return;
+    }
+    _resolveLocal(expression, expression.keyword);
+  }
 }
 
 enum FunctionType {
   NONE,
   FUNCTION,
+  METHOD,
+}
+
+enum ClassType {
+  NONE,
+  CLASS,
 }

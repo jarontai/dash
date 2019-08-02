@@ -234,8 +234,13 @@ class Interpreter
     }
 
     var value = _evaluate(expression.value);
-    (obj as DashInstance).define(expression.name, value);
+    (obj as DashInstance).assign(expression.name, value);
     return value;
+  }
+
+  @override
+  Object visitThisExpression(ThisExpression expression) {
+    return _lookupVariable(expression.keyword, expression);
   }
 
   @override

@@ -22,7 +22,7 @@ class DashClass implements Callable {
     return instance;
   }
 
-  findMethod(String name) => methods[name];
+  DashFunction findMethod(String name) => methods[name];
 }
 
 class DashInstance {
@@ -37,12 +37,12 @@ class DashInstance {
     }
 
     var method = klass.findMethod(name.lexeme);
-    if (method != null) return method;
+    if (method != null) return method.bind(this);
 
     throw RuntimeError(name, 'Undefined property ${name.lexeme}.');
   }
 
-  void define(Token name, Object value) {
+  void assign(Token name, Object value) {
     fields[name.lexeme] = value;
   }
 

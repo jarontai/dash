@@ -2,7 +2,7 @@
 
 import '../scanner/token.dart';
 
-// The ast expressions.
+// The ast expressions and statements.
 
 abstract class Expression {
   R acceptExpression<R>(ExpressionVisitor<R> visitor);
@@ -61,6 +61,15 @@ class SetExpression extends Expression {
   }
 }
 
+class ThisExpression extends Expression {
+  final Token keyword;
+  ThisExpression(this.keyword);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitThisExpression(this);
+  }
+}
+
 class GroupingExpression extends Expression {
   final Expression expression;
   GroupingExpression(this.expression);
@@ -115,6 +124,7 @@ abstract class ExpressionVisitor<R> {
   R visitCallExpression(CallExpression expression);
   R visitGetExpression(GetExpression expression);
   R visitSetExpression(SetExpression expression);
+  R visitThisExpression(ThisExpression expression);
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);
   R visitLogicalExpression(LogicalExpression expression);

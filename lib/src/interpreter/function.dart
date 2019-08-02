@@ -1,3 +1,5 @@
+import 'package:dash/src/interpreter/class.dart';
+
 import '../parser/ast.dart';
 import 'environment.dart';
 import 'interpreter.dart';
@@ -36,6 +38,12 @@ class DashFunction implements Callable {
   @override
   String toString() {
     return '<function ${declaration.name.lexeme}>';
+  }
+
+  DashFunction bind(DashInstance instance) {
+    var env = Environment.enclosing(closure);
+    env.define('this', instance);
+    return DashFunction(declaration, env);
   }
 }
 

@@ -2,6 +2,7 @@ import '../scanner/token.dart';
 import 'ast.dart';
 
 // The pretty ast printer.
+
 class AstPrinter implements ExpressionVisitor<String> {
   String print(Expression expr) {
     return expr.acceptExpression(this);
@@ -53,6 +54,12 @@ class AstPrinter implements ExpressionVisitor<String> {
   @override
   String visitSetExpression(SetExpression expression) {
     // TODO: implement visitSetExpression
+    return null;
+  }
+
+  @override
+  String visitThisExpression(ThisExpression expression) {
+    // TODO: implement visitThisExpression
     return null;
   }
 

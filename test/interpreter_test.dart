@@ -242,11 +242,24 @@ void main() {
           }          
         }
 
-        Test().sayHi('jojo');
+        var test = Test();
+        test.sayHi('jojo');
+      ''',
       '''
+        class Test {
+          sayHi() {
+            return 'Hi ' + this.name;
+          }
+        }
+
+        var test = Test();
+        test.name = 'jojo';
+
+        var hello = test.sayHi();
+      '''      
     ];
 
-    var expects = ['Hello jojo'];
+    var expects = ['Hello jojo', 'Hi jojo'];
 
     for (var i = 0; i < inputs.length; i++) {
       var result = interprete(inputs[i]);
