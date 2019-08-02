@@ -2,7 +2,7 @@
 
 # Dash - 使用Dart实现的简单解释器
 
-Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，同时它也是一门解释型语言，具有接近于 [Dart](https://dart.dev) 的语法和语言特性。
+Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，同时它也是一门解释型动态编程语言，具备接近于 [Dart](https://dart.dev) 的语法和语言特性。
 
 Dash 的实现是基于 Dart 项目组成员 [Bob Nystrom](https://github.com/munificent) 的 《[Crafting Interpreters](http://craftinginterpreters.com/)》。
 
@@ -18,16 +18,22 @@ Dash 的语言特性包括：
   * 内置函数，如：print
 
   ``` dart
-    // Dash 代码
-
+    // Dash 示例代码
     var one = 1;
     var two = 2;
-
     var add = (x, y) {
       return x + y;
     };
-
     var result = add(one, two);
+
+    class Dash {
+      sayHi() {
+        print('Hello ' + this.name);
+      }
+    }
+    var dash = Dash();
+    dash.name = 'dash';
+    dash.sayHi();
   ```
 
 ## 解释器
@@ -38,6 +44,12 @@ Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主�
   * 抽象语法树 AST
   * 语法分析器 parser
   * 解释器 interpreter (evaluator)
+
+## 运行 Dash 代码
+
+将 Dash 代码保存为文件，然后使用 bin/dash 运行
+
+    $ dart bin/dash.dart example/hello.dash
 
 ## 运行 REPL
 

@@ -18,16 +18,22 @@ The Dash language features:
   * native functions: print
 
   ``` dart
-    // Dash code
-
+    // Dash code example
     var one = 1;
     var two = 2;
-
     var add = (x, y) {
       return x + y;
     };
-
     var result = add(one, two);
+
+    class Dash {
+      sayHi() {
+        print('Hello ' + this.name);
+      }
+    }
+    var dash = Dash();
+    dash.name = 'dash';
+    dash.sayHi();
   ```
 
 ## Interpreter
@@ -38,6 +44,12 @@ The Dash interpreter is build to parse the Dash language, which includes followi
   * the AST (Abstract Syntax Tree)
   * the parser
   * the interpreter (evaluator)
+
+## Run dash code file
+
+Save your dash code in a file, then pass it to bin/dash
+
+    $ dart bin/dash.dart example/hello.dash
 
 ## Run REPL
 

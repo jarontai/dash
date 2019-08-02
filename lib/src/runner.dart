@@ -47,7 +47,7 @@ class Runner {
   static void runFile(String arg) {
     var file = File(arg);
     if (file.existsSync()) {
-      run(file.readAsStringSync());
+      run(file.readAsStringSync(), false);
 
       if (hadError) {
         exit(65);

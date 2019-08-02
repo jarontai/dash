@@ -108,7 +108,8 @@ class Parser {
       if (_match(TokenType.LEFT_PAREN)) {
         expr = _finishCall(expr);
       } else if (_match(TokenType.DOT)) {
-        var name = _consume(TokenType.IDENTIFIER, 'Expect property name after \'.\'.');
+        var name =
+            _consume(TokenType.IDENTIFIER, 'Expect property name after \'.\'.');
         expr = GetExpression(expr, name);
       } else {
         break;
@@ -138,12 +139,17 @@ class Parser {
     return result;
   }
 
-  bool _checkUntil(TokenType type, [int skipTokenNum = 1]) {
+  bool _checkUntil(TokenType type,
+      [int skipTokenNum = 1,
+      List<TokenType> stopTokens = const [
+        TokenType.EOF,
+        TokenType.SEMICOLON
+      ]]) {
     if (_isAtEnd()) return false;
     var result = false;
     for (var index = 0; index < skipTokenNum; index++) {
       var peekToken = _peek(index);
-      if (peekToken.type == TokenType.EOF) {
+      if (stopTokens.contains(peekToken.type)) {
         break;
       }
       if (peekToken.type == type) {

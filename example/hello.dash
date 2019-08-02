@@ -1,0 +1,17 @@
+// Dash code example
+var one = 1;
+var two = 2;
+var add = (x, y) {
+  return x + y;
+};
+var result = add(one, two);
+print(result);
+
+class Dash {
+  sayHi() {
+    print('Hello ' + this.name);
+  }
+}
+var dash = Dash();
+dash.name = 'dash';
+dash.sayHi();
