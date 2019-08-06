@@ -83,4 +83,10 @@ class AstPrinter implements ExpressionVisitor<String> {
 
     return sb.toString();
   }
+
+  @override
+  String visitSuperExpression(SuperExpression expression) {
+    // TODO: implement visitSuperExpression
+    return null;
+  }
 }

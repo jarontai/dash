@@ -24,7 +24,7 @@ class Parser {
         }
       }
     } on ParseError catch (e) {
-      Runner.reportError(e.token, e.message);
+      Runner.reportTokenError(e.token, e.message);
     }
     return stmts;
   }
@@ -150,6 +150,13 @@ class Parser {
 
   Statement _classDeclaration() {
     var name = _consume(TokenType.IDENTIFIER, "Expect class name.");
+
+    var superclass;
+    if (_match(TokenType.EXTENDS)) {
+      _consume(TokenType.IDENTIFIER, 'Expect superclass name.');
+      superclass = VariableExpression(_previous());
+    }
+
     _consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
     var methods = <FunctionStatement>[];
@@ -159,7 +166,7 @@ class Parser {
 
     _consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
 
-    return ClassStatement(name, methods);
+    return ClassStatement(name, superclass, methods);
   }
 
   Expression _comparison() {
@@ -202,7 +209,7 @@ class Parser {
       return _statement();
     } on ParseError catch (e) {
       _synchronize();
-      Runner.reportError(e.token, e.message);
+      Runner.reportTokenError(e.token, e.message);
       return null;
     }
   }
@@ -383,6 +390,13 @@ class Parser {
 
     if (_matchAny([TokenType.NUMBER, TokenType.STRING])) {
       return LiteralExpression(_previous().literal);
+    }
+
+    if (_match(TokenType.SUPER)) {
+      var keyword = _previous();
+      _consume(TokenType.DOT, 'Expect \'.\' after super.');
+      var method = _consume(TokenType.IDENTIFIER, 'Expect superclass method name.');
+      return SuperExpression(keyword, method);
     }
 
     if (_match(TokenType.THIS)) {

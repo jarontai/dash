@@ -3,12 +3,12 @@ import 'interpreter.dart';
 
 /// The class for storing variable bindings.
 class Environment {
-  final Environment _enclosing;
+  final Environment enclosing;
   final Map<String, Object> _values = {};
 
-  Environment() : _enclosing = null;
+  Environment() : enclosing = null;
 
-  Environment.enclosing(Environment enclosing) : _enclosing = enclosing;
+  Environment.enclose(Environment enclosing) : this.enclosing = enclosing;
 
   void assign(Token name, Object value) {
     if (_values.containsKey(name.lexeme)) {
@@ -16,8 +16,8 @@ class Environment {
       return;
     }
 
-    if (_enclosing != null) {
-      _enclosing.assign(name, value);
+    if (enclosing != null) {
+      enclosing.assign(name, value);
       return;
     }
 
@@ -33,11 +33,15 @@ class Environment {
       return _values[name.lexeme];
     }
 
-    if (_enclosing != null) {
-      return _enclosing.fetch(name);
+    if (enclosing != null) {
+      return enclosing.fetch(name);
     }
 
     throw RuntimeError(name, 'Undefined variable ${name.lexeme}.');
+  }
+
+  Object fetchByName(String name) {
+    return _values[name] ?? enclosing.fetchByName(name);
   }
 
   // TODO: ancestor is not working

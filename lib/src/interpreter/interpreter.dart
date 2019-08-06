@@ -127,7 +127,7 @@ class Interpreter
   @override
   Object visitBlockStatement(BlockStatement statement) {
     return executeBlock(
-        statement.statements, Environment.enclosing(_environment));
+        statement.statements, Environment.enclose(_environment));
   }
 
   @override
@@ -151,14 +151,33 @@ class Interpreter
 
   @override
   Object visitClassStatement(ClassStatement statement) {
+    var superclass;
+    if (statement.superclass != null) {
+      superclass = _evaluate(statement.superclass);
+      if (superclass is! DashClass) {
+        throw RuntimeError(
+            statement.superclass.name, 'Superclass must be a class.');
+      }
+    }
+
     _environment.define(statement.name.lexeme, null);
+
+    if (statement.superclass != null) {
+      _environment = Environment.enclose(_environment);
+      _environment.define("super", superclass);
+    }
 
     var methods = <String, DashFunction>{};
     statement.methods.forEach((method) {
       methods[method.name.lexeme] = DashFunction(method, _environment);
     });
 
-    var klass = DashClass(statement.name.lexeme, methods);
+    var klass = DashClass(statement.name.lexeme, superclass, methods);
+
+    if (superclass != null) {
+      _environment = _environment.enclosing;
+    }
+
     _environment.assign(statement.name, klass);
     return null;
   }
@@ -236,6 +255,19 @@ class Interpreter
     var value = _evaluate(expression.value);
     (obj as DashInstance).assign(expression.name, value);
     return value;
+  }
+
+  @override
+  Object visitSuperExpression(SuperExpression expression) {
+    var superclass = _environment.fetchByName('super') as DashClass;
+    var object = _environment.fetchByName('this') as DashInstance;
+    var method = superclass.findMethod(expression.method.lexeme);
+
+    if (method == null) {
+      throw RuntimeError(expression.method,
+          "Undefined property '" + expression.method.lexeme + "'.");
+    }
+    return method.bind(object);
   }
 
   @override

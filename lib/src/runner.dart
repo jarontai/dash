@@ -12,11 +12,11 @@ class Runner {
   static bool hadRuntimeError = false;
   static final Interpreter interpreter = Interpreter();
 
-  static void error(int line, String message) {
+  static void reportError(int line, String message) {
     _report(line, '', message);
   }
 
-  static void reportError(Token token, String message) {
+  static void reportTokenError(Token token, String message) {
     if (token.type == TokenType.EOF) {
       _report(token.line, 'at end', message);
     } else {

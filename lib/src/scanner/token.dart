@@ -46,6 +46,7 @@ enum TokenType {
 
   // Keywords.
   
+  EXTENDS,
   CLASS,
   ELSE,
   FALSE,

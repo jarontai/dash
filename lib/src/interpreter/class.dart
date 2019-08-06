@@ -4,9 +4,10 @@ import 'function.dart';
 
 class DashClass implements Callable {
   final String name;
+  final DashClass superclass;
   final Map<String, DashFunction> methods;
 
-  DashClass(this.name, this.methods);
+  DashClass(this.name, this.superclass, this.methods);
 
   @override
   String toString() {
@@ -22,7 +23,7 @@ class DashClass implements Callable {
     return instance;
   }
 
-  DashFunction findMethod(String name) => methods[name];
+  DashFunction findMethod(String name) => methods[name] ?? superclass.findMethod(name);
 }
 
 class DashInstance {

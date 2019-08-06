@@ -12,6 +12,7 @@ class Scanner {
   int _current = 0;
   int _line = 1;
   final Map<String, TokenType> _keywords = {
+    'extends': TokenType.EXTENDS,
     'class': TokenType.CLASS,
     'else': TokenType.ELSE,
     'false': TokenType.FALSE,
@@ -150,14 +151,14 @@ class Scanner {
         if (_match('&')) {
           _addToken(TokenType.AND);
         } else {
-          Runner.error(_line, 'Unexpected character.');
+          Runner.reportError(_line, 'Unexpected character.');
         }
         break;
       case '|':
         if (_match('|')) {
           _addToken(TokenType.OR);
         } else {
-          Runner.error(_line, 'Unexpected character.');
+          Runner.reportError(_line, 'Unexpected character.');
         }
         break;
 
@@ -183,7 +184,7 @@ class Scanner {
         } else if (util.isAlpha(char)) {
           identifier();
         } else {
-          Runner.error(_line, 'Unexpected character.');
+          Runner.reportError(_line, 'Unexpected character.');
         }
         break;
     }
@@ -196,7 +197,7 @@ class Scanner {
     }
 
     if (_isAtEnd()) {
-      Runner.error(_line, 'Unterminated string.');
+      Runner.reportError(_line, 'Unterminated string.');
       return;
     }
 

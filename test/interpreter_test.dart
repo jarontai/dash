@@ -256,10 +256,26 @@ void main() {
         test.name = 'jojo';
 
         var hello = test.sayHi();
-      '''      
+      ''',      
+      '''
+        class Base {
+          sayHi() {
+            return 'Howdy ' + this.name;
+          }
+        }
+
+        class Test extends Base {
+
+        }
+
+        var test = Test();
+        test.name = 'jojo';
+
+        var hello = test.sayHi();
+      ''',      
     ];
 
-    var expects = ['Hello jojo', 'Hi jojo'];
+    var expects = ['Hello jojo', 'Hi jojo', 'Howdy jojo'];
 
     for (var i = 0; i < inputs.length; i++) {
       var result = interprete(inputs[i]);

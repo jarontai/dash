@@ -99,6 +99,16 @@ class LogicalExpression extends Expression {
   }
 }
 
+class SuperExpression extends Expression {
+  final Token keyword;
+  final Token method;
+  SuperExpression(this.keyword, this.method);
+
+  R acceptExpression<R>(ExpressionVisitor<R> visitor) {
+    return visitor.visitSuperExpression(this);
+  }
+}
+
 class UnaryExpression extends Expression {
   final Token op;
   final Expression right;
@@ -128,6 +138,7 @@ abstract class ExpressionVisitor<R> {
   R visitGroupingExpression(GroupingExpression expression);
   R visitLiteralExpression(LiteralExpression expression);
   R visitLogicalExpression(LogicalExpression expression);
+  R visitSuperExpression(SuperExpression expression);
   R visitUnaryExpression(UnaryExpression expression);
   R visitVariableExpression(VariableExpression expression);
 }
@@ -147,8 +158,9 @@ class BlockStatement extends Statement {
 
 class ClassStatement extends Statement {
   final Token name;
+  final VariableExpression superclass;
   final List<FunctionStatement> methods;
-  ClassStatement(this.name, this.methods);
+  ClassStatement(this.name, this.superclass, this.methods);
 
   R acceptStatement<R>(StatementVisitor<R> visitor) {
     return visitor.visitClassStatement(this);

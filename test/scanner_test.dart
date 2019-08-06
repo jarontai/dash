@@ -65,7 +65,7 @@ void main() {
   });
 
   test('keywords', () {
-    var source = 'class else false for if null return super this true var while';
+    var source = 'class else false for if null return super this true var while extends';
 
     var expects = [
       TokenType.CLASS,
@@ -80,6 +80,7 @@ void main() {
       TokenType.TRUE,
       TokenType.VAR,
       TokenType.WHILE,
+      TokenType.EXTENDS,
       TokenType.EOF,
     ];
 
