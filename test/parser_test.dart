@@ -121,30 +121,19 @@ void main() {
   test('for loop', () {
     var inputs = [
       '''
-        var a = 0;
-        var b = 1;
-
-        while (a < 100) {
-          var temp = a;
-          a = b;
-          b = temp + b;
+        for (var one = 0; one < 10; i = i + 1) {
         }
       '''
     ];
 
     for (var i = 0; i < inputs.length; i++) {
       var stmts = parse(inputs[i]);
-      expect(stmts[0], isA<VarStatement>());
-      expect(stmts[1], isA<VarStatement>());
-      expect(stmts[2], isA<WhileStatement>());
-      var stmt = (stmts[2] as WhileStatement);
-      expect(stmt.condition, isNotNull);
-      expect(stmt.body, isNotNull);
-      expect(stmt.body, isA<BlockStatement>());
-      var block = stmt.body as BlockStatement;
-      expect(block.statements[0], isA<VarStatement>());
-      expect(block.statements[1], isA<ExpressionStatement>());
-      expect(block.statements[2], isA<ExpressionStatement>());
+      expect(stmts[0], isA<BlockStatement>());
+      var stmt = (stmts[0] as BlockStatement);
+      expect(stmt.statements[0], isA<VarStatement>());
+      expect(stmt.statements[1], isA<WhileStatement>());
+      expect((stmt.statements[1] as WhileStatement).condition, isNotNull);
+      expect((stmt.statements[1] as WhileStatement).body, isNotNull);
     }
   });
 

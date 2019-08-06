@@ -24,15 +24,36 @@ Dash 的语言特性包括：
     var add = (x, y) {
       return x + y;
     };
-    var result = add(one, two);
+    var times = add(one, two);
 
-    class Dash {
+    if (times >= 3) {
+      print('Dash!!!');
+    } else {
+      print('Dash!');
+    }
+
+    while (times <= 10) {
+      print(times);
+      times = times + 1;
+    } 
+
+    class Base {
       sayHi() {
         print('Hello ' + this.name);
       }
     }
+
+    class Dash extends Base {
+      sayHi() {
+        for (var i = 0; i < this.times; i = i + 1) {
+          super.sayHi();
+        }
+      }
+    }
+
     var dash = Dash();
     dash.name = 'dash';
+    dash.times = times;
     dash.sayHi();
   ```
 
