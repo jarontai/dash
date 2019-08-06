@@ -1,9 +1,9 @@
+const _0Code = 48;
+const _9Code = 57;
 const _lowerA = 97;
 const _lowerZ = 122;
 const _upperA = 65;
 const _upperZ = 90;
-const _0Code = 48;
-const _9Code = 57;
 
 bool isAlpha(String ch) {
   int code = ch.runes.isEmpty ? 0 : ch.runes.first;

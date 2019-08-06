@@ -1,5 +1,7 @@
 import 'package:dart_style/dart_style.dart';
 
+// The script for generating ast expressions and statements.
+
 final Map<String, Map<String, String>> astMap = {
   'Expression': {
     'AssignExpression': 'Token name, Expression value',

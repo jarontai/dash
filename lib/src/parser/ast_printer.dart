@@ -1,4 +1,3 @@
-import '../scanner/token.dart';
 import 'ast.dart';
 
 // The pretty ast printer.
@@ -84,14 +83,4 @@ class AstPrinter implements ExpressionVisitor<String> {
 
     return sb.toString();
   }
-}
-
-main(List<String> args) {
-  var expression = BinaryExpression(
-      UnaryExpression(
-          Token(TokenType.MINUS, "-", null, 1), LiteralExpression(123)),
-      Token(TokenType.STAR, "*", null, 1),
-      GroupingExpression(LiteralExpression(45.67)));
-
-  print(AstPrinter().print(expression));
 }

@@ -1,4 +1,4 @@
-/// The minimal unit of lexcial analysis
+/// The minimal unit of lexcial analysis.
 class Token {
   final TokenType type;
   final String lexeme;
