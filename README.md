@@ -14,7 +14,7 @@ The Dash language features:
   * intergers, doubles and arithmetic expressions
   * booleans and string
   * functions and closures
-  * classes
+  * class and inheritance
   * native functions: print
 
   ``` dart
