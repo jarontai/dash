@@ -2,7 +2,7 @@ import 'package:dash/dash.dart';
 import 'package:test/test.dart';
 
 void main() {
-  Object interprete(String input) {
+  Object interpret(String input) {
     var tokens = Scanner(input).scanTokens();
     var stmts = Parser(tokens).parse();
     var interpreter = Interpreter();
@@ -43,7 +43,7 @@ void main() {
       false,
     ];
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
 
       expect(result, expects[i]);
     }
@@ -63,7 +63,7 @@ void main() {
     ];
 
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
   });
@@ -78,7 +78,7 @@ void main() {
 
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var result = interprete(input);
+      var result = interpret(input);
       expect(result, expects[i]);
     }
   });
@@ -95,7 +95,7 @@ void main() {
 
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var result = interprete(input);
+      var result = interpret(input);
       expect(result, expects[i]);
     }
   });
@@ -110,7 +110,7 @@ void main() {
 
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var result = interprete(input);
+      var result = interpret(input);
       expect(result, expects[i]);
     }
   });
@@ -125,7 +125,7 @@ void main() {
 
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var result = interprete(input);
+      var result = interpret(input);
       expect(result, expects[i]);
     }
   });
@@ -139,7 +139,7 @@ void main() {
 
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var result = interprete(input);
+      var result = interpret(input);
       expect(result, expects[i]);
     }
   });
@@ -161,7 +161,7 @@ void main() {
     var expects = [233];
 
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
   });
@@ -179,7 +179,7 @@ void main() {
     var expects = [null];
 
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
   });  
@@ -200,7 +200,7 @@ void main() {
     var expects = ['Hi, one two!'];
 
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
   });
@@ -224,7 +224,7 @@ void main() {
     var expects = [5];
 
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
   });
@@ -278,7 +278,7 @@ void main() {
     var expects = ['Hello jojo', 'Hi jojo', 'Howdy jojo'];
 
     for (var i = 0; i < inputs.length; i++) {
-      var result = interprete(inputs[i]);
+      var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
   });

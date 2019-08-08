@@ -29,17 +29,6 @@ class Scanner {
 
   Scanner(this._source);
 
-  void identifier() {
-    while (util.isAlphaNumeric(_peek())) {
-      _advance();
-    }
-
-    var text = _source.substring(_start, _current);
-    var type = _keywords[text] ?? TokenType.IDENTIFIER;
-
-    _addToken(type);
-  }
-
   List<Token> scanTokens() {
     while (!_isAtEnd()) {
       _start = _current;
@@ -58,6 +47,17 @@ class Scanner {
   String _advance() {
     _current++;
     return _source[_current - 1];
+  }
+
+  void _identifier() {
+    while (util.isAlphaNumeric(_peek())) {
+      _advance();
+    }
+
+    var text = _source.substring(_start, _current);
+    var type = _keywords[text] ?? TokenType.IDENTIFIER;
+
+    _addToken(type);
   }
 
   bool _isAtEnd() => _current >= _source.length;
@@ -182,7 +182,7 @@ class Scanner {
         if (util.isDigit(char)) {
           _number();
         } else if (util.isAlpha(char)) {
-          identifier();
+          _identifier();
         } else {
           Runner.reportError(_line, 'Unexpected character.');
         }
