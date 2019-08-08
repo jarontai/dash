@@ -2,6 +2,8 @@
 
 # Dash - 使用Dart实现的简单解释器
 
+[![Build status](https://travis-ci.org/jarontai/dash.svg)](https://travis-ci.org/jarontai/dash)
+
 Dash 是一个完全使用 [Dart](https://dart.dev) 实现的简单解释器，同时它也是一门解释型动态编程语言，具备接近于 [Dart](https://dart.dev) 的语法和语言特性。
 
 Dash 的实现是基于 Dart 项目组成员 [Bob Nystrom](https://github.com/munificent) 的 《[Crafting Interpreters](http://craftinginterpreters.com/)》。
