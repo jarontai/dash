@@ -36,7 +36,7 @@ class Interpreter
     return result;
   }
 
-  Object interprete(List<Statement> statements) {
+  Object interpret(List<Statement> statements) {
     var result;
     try {
       for (var stmt in statements) {

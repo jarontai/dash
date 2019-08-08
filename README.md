@@ -61,7 +61,7 @@ The Dash language features:
 
 The Dash interpreter is build to parse the Dash language, which includes following:
 
-  * the scanner (lexer)
+  * the scanner (lexer/tokenizer)
   * the AST (Abstract Syntax Tree)
   * the parser
   * the interpreter (evaluator)

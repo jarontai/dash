@@ -8,7 +8,7 @@ void main() {
     var interpreter = Interpreter();
     var resolver = Resolver(interpreter);
     resolver.resolveStatementList(stmts);
-    var result = interpreter.interprete(stmts);
+    var result = interpreter.interpret(stmts);
     return result;
   }
 

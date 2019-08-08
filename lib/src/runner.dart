@@ -37,7 +37,7 @@ class Runner {
 
     if (hadError) return null;
 
-    var result = interpreter.interprete(stmts);
+    var result = interpreter.interpret(stmts);
     if (doPrint) {
       stdout.writeln(result.toString());
     }

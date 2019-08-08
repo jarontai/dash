@@ -61,7 +61,7 @@ Dash 的语言特性包括：
 
 Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主要模块组成：
 
-  * 词法分析器 scanner (lexer)
+  * 词法分析器 scanner (lexer/tokenizer)
   * 抽象语法树 AST
   * 语法分析器 parser
   * 解释器 interpreter (evaluator)
