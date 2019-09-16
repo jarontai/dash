@@ -182,7 +182,7 @@ void main() {
       var result = interpret(inputs[i]);
       expect(result, expects[i]);
     }
-  });  
+  });
 
   test('function', () {
     var inputs = [
@@ -243,7 +243,7 @@ void main() {
         }
 
         var test = Test();
-        test.sayHi('jojo');
+        test.sayHi('dash');
       ''',
       '''
         class Test {
@@ -253,10 +253,10 @@ void main() {
         }
 
         var test = Test();
-        test.name = 'jojo';
+        test.name = 'dash';
 
         var hello = test.sayHi();
-      ''',      
+      ''',
       '''
         class Base {
           sayHi() {
@@ -269,13 +269,13 @@ void main() {
         }
 
         var test = Test();
-        test.name = 'jojo';
+        test.name = 'dash';
 
         var hello = test.sayHi();
-      ''',      
+      ''',
     ];
 
-    var expects = ['Hello jojo', 'Hi jojo', 'Howdy jojo'];
+    var expects = ['Hello dash', 'Hi dash', 'Howdy dash'];
 
     for (var i = 0; i < inputs.length; i++) {
       var result = interpret(inputs[i]);
