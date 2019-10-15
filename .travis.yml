@@ -1,3 +1,4 @@
 language: dart
 script:
+  - cd dash_interpreter
   - pub run test

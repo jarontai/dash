@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dash/src/interpreter/resolver.dart';
+import 'package:dash_interpreter/src/interpreter/resolver.dart';
 
 import 'interpreter/interpreter.dart';
 import 'parser/parser.dart';

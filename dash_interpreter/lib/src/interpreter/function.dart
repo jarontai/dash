@@ -1,4 +1,4 @@
-import 'package:dash/src/interpreter/class.dart';
+import 'package:dash_interpreter/src/interpreter/class.dart';
 
 import '../parser/ast.dart';
 import 'environment.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dash/dash.dart';
+import 'package:dash_interpreter/dash.dart';
 
 main(List<String> args) {
   if (args.length > 1) {

@@ -1,4 +1,4 @@
-name: dash
+name: dash_interpreter
 description: A toy language & interpreter written in Dart.
 # version: 0.1.0
 homepage: https://github.com/jarontai/dash

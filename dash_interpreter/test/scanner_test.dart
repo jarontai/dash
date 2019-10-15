@@ -1,4 +1,4 @@
-import 'package:dash/dash.dart';
+import 'package:dash_interpreter/dash.dart';
 import 'package:test/test.dart';
 
 void main() {
