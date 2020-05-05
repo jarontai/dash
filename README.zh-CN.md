@@ -4,7 +4,7 @@
 
 [![Build status](https://travis-ci.org/jarontai/dash.svg)](https://travis-ci.org/jarontai/dash)
 
-Dash 是一个使用 [Dart](https://dart.dev) 实现的简单脚本语言，同时它也是一门解释型动态编程语言，具备接近于 [Dart](https://dart.dev) 的语法和语言特性。
+Dash 是一个使用 [Dart](https://dart.dev) 实现的简单[解释器](https://baike.baidu.com/item/%E8%A7%A3%E9%87%8A%E5%99%A8)，同时也是一门脚本语言，具备接近于 [Dart](https://dart.dev) 的语法和语言特性。
 
 Dash 的实现是基于 Dart 项目组成员 [Bob Nystrom](https://github.com/munificent) 的 《[Crafting Interpreters](http://craftinginterpreters.com/)》。
 
