@@ -80,7 +80,7 @@ Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主�
 
 ## 运行 REPL
 
-<p align="center">
+<p align="left">
 <kbd>
   <img src="https://raw.github.com/jarontai/dash/master/dash-repl.gif">
 </kbd>

@@ -80,7 +80,7 @@ Save your dash code in a file, then pass it to bin/dash
 
 ## Run REPL
 
-<p align="center">
+<p align="left">
 <kbd>
   <img src="https://raw.github.com/jarontai/dash/master/dash-repl.gif">
 </kbd>
