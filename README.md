@@ -80,15 +80,12 @@ Save your dash code in a file, then pass it to bin/dash
 
 ## Run REPL
 
-    $ dart bin/dash.dart
-    >> 2 * 5 + 10;
-    20
-    >> var sayHi = (name) { return 'hello ' + name; };
-    <function sayHi>
-    >> sayHi('dart');
-    hello dart
-    ......
-    
+<p align="center">
+<kbd>
+  <img src="https://raw.github.com/jarontai/dash/master/dash-repl.gif">
+</kbd>
+</p>
+
 
 ## Test
 

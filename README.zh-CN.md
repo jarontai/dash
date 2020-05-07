@@ -80,14 +80,11 @@ Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主�
 
 ## 运行 REPL
 
-    $ dart bin/dash.dart
-    >> 2 * 5 + 10;
-    20
-    >> var sayHi = (name) { return 'hello ' + name; };
-    <function sayHi>
-    >> sayHi('dart');
-    hello dart
-    ......
+<p align="center">
+<kbd>
+  <img src="https://raw.github.com/jarontai/dash/master/dash-repl.gif">
+</kbd>
+</p>
     
 
 ## 测试
