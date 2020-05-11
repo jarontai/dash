@@ -87,6 +87,10 @@ Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主�
 </p>
     
 
+## 运行dash文件示例
+
+    $ dart bin/dash.dart ./example/hello.dash
+
 ## 测试
 
     $ pub run test

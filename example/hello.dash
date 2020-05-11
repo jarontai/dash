@@ -18,15 +18,15 @@ while (times <= 10) {
 } 
 
 class Base {
-  sayHi() {
-    print('Hello ' + this.name);
+  sayHi(param) {
+    print('Hello ' + this.name + ' ' + param);
   }
 }
 
 class Dash extends Base {
   sayHi() {
     for (var i = 0; i < this.times; i = i + 1) {
-      super.sayHi();
+      super.sayHi('from base');
     }
   }
 }

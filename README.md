@@ -87,6 +87,11 @@ Save your dash code in a file, then pass it to bin/dash
 </p>
 
 
+## Run dash example file
+
+    $ dart bin/dash.dart ./example/hello.dash
+
+
 ## Test
 
     $ pub run test
