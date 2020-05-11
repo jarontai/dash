@@ -57,7 +57,7 @@ class Interpreter
     Object value = _evaluate(expression.value);
     var distance = _locals[expression];
     if (distance != null) {
-      _environment.assign(expression.name, value);
+      _environment.assignAt(distance, expression.name, value);
     } else {
       _globals.assign(expression.name, value);
     }
@@ -259,8 +259,9 @@ class Interpreter
 
   @override
   Object visitSuperExpression(SuperExpression expression) {
-    var superclass = _environment.fetchByName('super') as DashClass;
-    var object = _environment.fetchByName('this') as DashInstance;
+    var distance = _locals[expression];
+    var superclass = _environment.fetchAt(distance, 'super') as DashClass;
+    var object = _environment.fetchAt(distance - 1, 'this') as DashInstance;
     var method = superclass.findMethod(expression.method.lexeme);
 
     if (method == null) {
@@ -345,7 +346,7 @@ class Interpreter
     var distance = _locals[expression];
     var result;
     if (distance != null) {
-      result = _environment.fetch(name);
+      result = _environment.fetchAt(distance, name.lexeme);
     } else {
       result = _globals.fetch(name);
     }

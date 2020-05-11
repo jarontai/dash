@@ -40,26 +40,21 @@ class Environment {
     throw RuntimeError(name, 'Undefined variable ${name.lexeme}.');
   }
 
-  Object fetchByName(String name) {
-    return _values[name] ?? enclosing.fetchByName(name);
+  void assignAt(int distance, Token name, Object value) {
+    var env = _ancestor(distance);
+    env._values[name.lexeme] = value;
   }
 
-  // TODO: ancestor is not working
-  // void assignAt(int distance, Token name, Object value) {
-  //   var env = _ancestor(distance);
-  //   env._values[name.lexeme] = value;
-  // }
+  Object fetchAt(int distance, String lexeme) {
+    var env = _ancestor(distance);
+    return env._values[lexeme];
+  }
 
-  // Object fetchAt(int distance, String lexeme) {
-  //   var env = _ancestor(distance);
-  //   return env._values[lexeme];
-  // }
-
-  // Environment _ancestor(int distance) {
-  //   var env = this;
-  //   for (var i = 0; i < distance; i++) {
-  //     env = env._enclosing;
-  //   }
-  //   return env;
-  // }
+  Environment _ancestor(int distance) {
+    var env = this;
+    for (var i = 0; i < distance; i++) {
+      env = env.enclosing;
+    }
+    return env;
+  }
 }

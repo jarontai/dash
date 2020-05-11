@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import '../parser/ast.dart';
 import '../runner.dart';
 import '../scanner/scanner.dart';
@@ -5,7 +7,7 @@ import 'interpreter.dart';
 
 class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
   final Interpreter _interpreter;
-  final List<Map<String, bool>> _scopes = [];
+  final ListQueue<Map<String, bool>> _scopes = ListQueue();
   FunctionType _currentFunction = FunctionType.NONE;
   ClassType _currentClass = ClassType.NONE;
 
@@ -65,11 +67,11 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
 
     if (statement.superclass != null) {
       _beginScope();
-      _scopes.first['super'] = true;
+      _scopes.last['super'] = true;
     }
 
     _beginScope();
-    _scopes.first['this'] = true;
+    _scopes.last['this'] = true;
 
     statement.methods.forEach((method) {
       var declaration = FunctionType.METHOD;
@@ -173,7 +175,7 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
 
   @override
   void visitVariableExpression(VariableExpression expression) {
-    if (_scopes.isNotEmpty && _scopes.first[expression.name.lexeme] == false) {
+    if (_scopes.isNotEmpty && _scopes.last[expression.name.lexeme] == false) {
       Runner.reportTokenError(
           expression.name, 'Cannot read local varialbe in its own initializer');
     }
@@ -197,26 +199,26 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
   }
 
   void _beginScope() {
-    _scopes.insert(0, {});
+    _scopes.addLast({});
   }
 
   void _declare(Token name) {
     if (_scopes.isEmpty) return;
-    if (_scopes.first.containsKey(name.lexeme)) {
+    if (_scopes.last.containsKey(name.lexeme)) {
       Runner.reportTokenError(
           name, 'Variable with this name already declared in this scope.');
     }
 
-    _scopes.first[name.lexeme] = false;
+    _scopes.last[name.lexeme] = false;
   }
 
   void _define(Token name) {
     if (_scopes.isEmpty) return;
-    _scopes.first[name.lexeme] = true;
+    _scopes.last[name.lexeme] = true;
   }
 
   void _endScope() {
-    _scopes.removeAt(0);
+    _scopes.removeLast();
   }
 
   void _resolveExpression(Expression expr) {
@@ -240,7 +242,7 @@ class Resolver implements ExpressionVisitor<void>, StatementVisitor<void> {
 
   void _resolveLocal(Expression expression, Token name) {
     for (var i = _scopes.length - 1; i >= 0; i--) {
-      if (_scopes[i].containsKey(name.lexeme)) {
+      if (_scopes.elementAt(i).containsKey(name.lexeme)) {
         var distance = _scopes.length - 1 - i;
         _interpreter.resolve(expression, distance);
         return;

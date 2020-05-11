@@ -273,9 +273,27 @@ void main() {
 
         var hello = test.sayHi();
       ''',
+      '''
+        class Base {
+          sayHi(param) {
+            return 'Hello ' + this.name + ' ' + param;
+          }
+        }
+
+        class Test extends Base {
+          sayHi() {
+            return super.sayHi('from test');
+          }
+        }
+
+        var test = Test();
+        test.name = 'dash';
+
+        var hello = test.sayHi();
+      ''',      
     ];
 
-    var expects = ['Hello dash', 'Hi dash', 'Howdy dash'];
+    var expects = ['Hello dash', 'Hi dash', 'Howdy dash', 'Hello dash from test'];
 
     for (var i = 0; i < inputs.length; i++) {
       var result = interpret(inputs[i]);
