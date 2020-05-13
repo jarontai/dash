@@ -72,12 +72,6 @@ The Dash interpreter is build to parse the Dash language, which includes followi
   * the parser
   * the interpreter (evaluator)
 
-## Run dash code file
-
-Save your dash code in a file, then pass it to bin/dash
-
-    $ dart bin/dash.dart example/hello.dash
-
 ## Run REPL
 
 <p align="left">
@@ -86,11 +80,11 @@ Save your dash code in a file, then pass it to bin/dash
 </kbd>
 </p>
 
+## Run dash file
 
-## Run dash example file
+Save your dash code in a file, then pass it to bin/dash
 
-    $ dart bin/dash.dart ./example/hello.dash
-
+    $ dart bin/dash.dart example/hello.dash
 
 ## Test
 

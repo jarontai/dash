@@ -72,12 +72,6 @@ Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主�
   * 语法分析器 parser
   * 解释器 interpreter (evaluator)
 
-## 运行 Dash 代码
-
-将 Dash 代码保存为文件，然后使用 bin/dash 运行
-
-    $ dart bin/dash.dart example/hello.dash
-
 ## 运行 REPL
 
 <p align="left">
@@ -86,10 +80,11 @@ Dash 解释器的主要工作是分析和执行 Dash 语言， 它由以下主�
 </kbd>
 </p>
     
+## 运行 Dash 文件
 
-## 运行dash文件示例
+将 Dash 代码保存为.dash文件，然后使用 bin/dash 运行
 
-    $ dart bin/dash.dart ./example/hello.dash
+    $ dart bin/dash.dart example/hello.dash
 
 ## 测试
 
