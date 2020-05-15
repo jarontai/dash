@@ -24,6 +24,7 @@ struct Chunk {
     name: &'static str,
     codes: Vec<u8>,
     constants: Vec<Value>,
+    lines: Vec<usize>,
 }
 
 impl Chunk {
@@ -32,6 +33,7 @@ impl Chunk {
             name,
             codes: vec![],
             constants: vec![],
+            lines: vec![],
         }
     }
 
@@ -40,11 +42,13 @@ impl Chunk {
             name,
             codes,
             constants: vec![],
+            lines: vec![],
         }
     }
 
-    pub fn write(&mut self, code: u8) {
+    pub fn write(&mut self, code: u8, line: usize) {
         self.codes.push(code);
+        self.lines.push(line);
     }
 
     pub fn add_constant(&mut self, val: Value) -> usize {
@@ -63,6 +67,12 @@ impl Chunk {
 
     fn disassemble_instruction(&self, offset: usize) -> usize {
         print!("{:04} ", offset);
+
+        if offset > 0 && self.lines[offset] == self.lines[offset - 1] {
+            print!("{}", "   | ");
+        } else {
+            print!("{:04} ", self.lines[offset]);
+        }
 
         let raw_code = self.codes[offset];
         match OpCode::try_from(raw_code) {
@@ -84,8 +94,8 @@ impl Chunk {
 
     fn constant_instruction(&self, name: &str, offset: usize) -> usize {
         let index = self.codes[offset + 1];
-        print!("{} {} ", name, index);
-        println!("{}", self.constants[index as usize]);
+        print!("{:16} {} ", name, index);
+        println!("'{}'", self.constants[index as usize]);
         offset + 2
     }
 }
@@ -97,9 +107,9 @@ mod tests {
     fn chunk() {
         let mut chunk = Chunk::new("test chunk");
         let constant = chunk.add_constant(1.2);
-        chunk.write(OpCode::Constant as u8);
-        chunk.write(constant as u8);
-        chunk.write(OpCode::Return as u8);
+        chunk.write(OpCode::Constant as u8, 123);
+        chunk.write(constant as u8, 123);
+        chunk.write(OpCode::Return as u8, 123);
         chunk.disassemble();
     }
 }
