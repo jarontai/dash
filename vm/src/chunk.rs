@@ -1,26 +1,26 @@
 use std::convert::TryFrom;
 
-type Value = f64;
+pub type Value = f64;
 
 #[repr(u8)]
-enum OpCode {
+pub enum OpCode {
     Constant = 0,
     Return,
 }
 
-impl TryFrom<u8> for OpCode {
+impl TryFrom<&u8> for OpCode {
     type Error = &'static str;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: &u8) -> Result<Self, Self::Error> {
         match value {
-            v if v == OpCode::Constant as u8 => Ok(OpCode::Constant),
-            v if v == OpCode::Return as u8 => Ok(OpCode::Return),
+            v if *v == OpCode::Constant as u8 => Ok(OpCode::Constant),
+            v if *v == OpCode::Return as u8 => Ok(OpCode::Return),
             _ => Err("Unknown opcode"),
         }
     }
 }
 
-struct Chunk {
+pub struct Chunk {
     name: &'static str,
     codes: Vec<u8>,
     constants: Vec<Value>,
@@ -75,7 +75,7 @@ impl Chunk {
         }
 
         let raw_code = self.codes[offset];
-        match OpCode::try_from(raw_code) {
+        match OpCode::try_from(&raw_code) {
             Ok(code) => match code {
                 OpCode::Constant => self.constant_instruction("OP_CONSTANT", offset),
                 OpCode::Return => self.simple_instruction("OP_RETURN", offset),
@@ -98,8 +98,17 @@ impl Chunk {
         println!("'{}'", self.constants[index as usize]);
         offset + 2
     }
+
+    pub fn read_code(&self, index: usize) -> &u8 {
+        self.codes.get(index).unwrap()
+    }
+
+    pub fn read_constant(&self, index: usize) -> &Value {
+        self.constants.get(index).unwrap()
+    }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
