@@ -11,11 +11,16 @@ pub enum InterpretResult {
 pub struct Vm {
     chunk: Chunk,
     ip: usize,
+    debug: bool,
 }
 
 impl Vm {
-    pub fn new(chunk: Chunk) -> Self {
-        Vm { chunk, ip: 0 }
+    pub fn new(chunk: Chunk, debug: bool) -> Self {
+        Vm {
+            chunk,
+            ip: 0,
+            debug,
+        }
     }
 
     pub fn interpret(&mut self) -> InterpretResult {
@@ -23,11 +28,15 @@ impl Vm {
             let code = self.read_byte();
             let code = OpCode::try_from(code);
             if let Ok(op_code) = code {
+                if self.debug {
+                    self.chunk.disassemble_instruction(self.ip - 1);
+                }
+
                 match op_code {
                     OpCode::Return => break InterpretResult::Ok,
                     OpCode::Constant => {
                         let constant = self.read_constant();
-                        println!("{}", constant);
+                        // println!("{}", constant);
                         break InterpretResult::Ok;
                     }
                 }
@@ -61,5 +70,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn vm() {}
+    fn vm() {
+        let mut chunk = Chunk::new("test chunk");
+        let constant = chunk.add_constant(1.2);
+        chunk.write(OpCode::Constant as u8, 1);
+        chunk.write(constant as u8, 1);
+        chunk.write(OpCode::Return as u8, 1);
+
+        let mut vm = Vm::new(chunk, true);
+        vm.interpret();
+    }
 }
