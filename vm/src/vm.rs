@@ -2,6 +2,8 @@ use std::convert::TryFrom;
 
 use crate::chunk::{Chunk, OpCode, Value};
 
+const STACK_MAX: usize = 256;
+
 pub enum InterpretResult {
     Ok,
     CompileError,
@@ -11,6 +13,7 @@ pub enum InterpretResult {
 pub struct Vm {
     chunk: Chunk,
     ip: usize,
+    stack: Vec<Value>,
     debug: bool,
 }
 
@@ -19,6 +22,7 @@ impl Vm {
         Vm {
             chunk,
             ip: 0,
+            stack: vec![],
             debug,
         }
     }
@@ -36,7 +40,7 @@ impl Vm {
                     OpCode::Return => break InterpretResult::Ok,
                     OpCode::Constant => {
                         let constant = self.read_constant();
-                        // println!("{}", constant);
+                        self.push(constant);
                         break InterpretResult::Ok;
                     }
                 }
@@ -46,22 +50,27 @@ impl Vm {
         }
     }
 
-    fn read_byte(&mut self) -> &u8 {
+    fn read_byte(&mut self) -> u8 {
         let ip = self.advance_ip();
         let result = self.chunk.read_code(ip);
-        result
+        *result
     }
 
-    fn read_constant(&mut self) -> &Value {
+    fn read_constant(&mut self) -> Value {
         let ip = self.advance_ip();
         let result = self.chunk.read_code(ip);
-        self.chunk.read_constant(*result as usize)
+        let result = self.chunk.read_constant(*result as usize);
+        *result
     }
 
     fn advance_ip(&mut self) -> usize {
         let result = self.ip;
         self.ip = self.ip + 1;
         result
+    }
+
+    fn push(&mut self, value: Value) {
+        self.stack.push(value);
     }
 }
 

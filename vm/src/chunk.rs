@@ -8,13 +8,13 @@ pub enum OpCode {
     Return,
 }
 
-impl TryFrom<&u8> for OpCode {
+impl TryFrom<u8> for OpCode {
     type Error = &'static str;
 
-    fn try_from(value: &u8) -> Result<Self, Self::Error> {
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            v if *v == OpCode::Constant as u8 => Ok(OpCode::Constant),
-            v if *v == OpCode::Return as u8 => Ok(OpCode::Return),
+            v if v == OpCode::Constant as u8 => Ok(OpCode::Constant),
+            v if v == OpCode::Return as u8 => Ok(OpCode::Return),
             _ => Err("Unknown opcode"),
         }
     }
@@ -75,7 +75,7 @@ impl Chunk {
         }
 
         let raw_code = self.codes[offset];
-        match OpCode::try_from(&raw_code) {
+        match OpCode::try_from(raw_code) {
             Ok(code) => match code {
                 OpCode::Constant => self.constant_instruction("OP_CONSTANT", offset),
                 OpCode::Return => self.simple_instruction("OP_RETURN", offset),
