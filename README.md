@@ -4,7 +4,7 @@ English | [简体中文](./README.zh-CN.md)
 
 [![Build status](https://travis-ci.org/jarontai/dash.svg)](https://travis-ci.org/jarontai/dash)
 
-Dash is an [interpreter](https://en.wikipedia.org/wiki/Interpreter_(computing)) which fully build with [Dart](https://dart.dev). Dash is also a small scripting language with Dart-like syntax and features.
+Dash is an [interpreter](https://en.wikipedia.org/wiki/Interpreter_(computing)) which fully build with [Dart](https://dart.dev). Dash is also a small scripting language with **Dart-like** syntax and features.
 
 Dash is a dart version of [Crafting Interpreters](http://craftinginterpreters.com/), which is a great tutorial of interpreter/language implementation.
 
